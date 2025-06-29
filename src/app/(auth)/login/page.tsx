@@ -17,6 +17,7 @@ import { ArrowBigRight, ArrowLeft, Globe } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { register } from "node:module";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -35,6 +36,7 @@ type LoginValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
+  const [rememberMe, setRememberMe] = useState(false);
   const setUser = useUserStore((state) => state.setUser);
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
@@ -54,6 +56,7 @@ export default function LoginPage() {
       const res = await axios.post("http://localhost:5001/users/login", {
         email: data.email,
         password: data.password,
+        rememberMe: rememberMe, 
       },
       { withCredentials: true });
       console.log("Response:", res);
@@ -147,6 +150,16 @@ export default function LoginPage() {
           <Link href="/auth/reset-password" className="text-blue-500 font-semibold">
           Reset here</Link></div>
       </div>
+       <div className="flex items-center gap-2">
+          <Label htmlFor="remember">Remember Me</Label>
+          <Input
+            id="remember"
+            type="checkbox"
+            className="h-4 w-4"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+          />
+        </div>
       </div>
     </div>
   );

@@ -159,6 +159,7 @@ type RegisterValues = z.infer<typeof registerSchema>;
 
 export default function RegistrationForm() {
   const router = useRouter();
+  const [rememberMe, setRememberMe] = useState(false);
 
   const form = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
@@ -183,6 +184,7 @@ export default function RegistrationForm() {
         {
           email: data.email,
           password: data.password,
+          rememberMe: rememberMe,
         },
         { withCredentials: true }
       );
@@ -207,7 +209,10 @@ export default function RegistrationForm() {
         </Link>
       </div>
       <div className="flex flex-col justify-center items-center w-full gap-2 py-16 px-4">
-        <form onSubmit={handleSubmit(onSubmit)} className="lg:w-2xl md:w-xl w-sm">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="lg:w-2xl md:w-xl w-sm"
+        >
           <Card className="">
             <CardHeader>
               <CardTitle>
@@ -280,12 +285,12 @@ export default function RegistrationForm() {
               >
                 {isSubmitting ? <Loader className="text-white" /> : "Continue"}
               </Button>
-            
+
               <div className="flex items-center gap-2 my-6 lg:w-md w-sm px-4">
-      <Separator className="flex-1" />
-      <span className="text-sm">OR</span>
-      <Separator className="flex-1" />
-    </div>
+                <Separator className="flex-1" />
+                <span className="text-sm">OR</span>
+                <Separator className="flex-1" />
+              </div>
               <Button className="bg-white text-black lg:w-md border border-black hover:bg-gray-200">
                 <Globe />
                 Sign In with Google
@@ -298,6 +303,16 @@ export default function RegistrationForm() {
           <Link href="/login" className="text-blue-500 font-semibold">
             Login
           </Link>
+        </div>
+        <div className="flex items-center gap-2">
+          <Label htmlFor="remember">Remember Me</Label>
+          <Input
+            id="remember"
+            type="checkbox"
+            className="h-4 w-4"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+          />
         </div>
       </div>
     </div>

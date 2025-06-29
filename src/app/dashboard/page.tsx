@@ -28,6 +28,13 @@ import { get } from "http";
 import type { Contact } from "../../helpers/type.ts";
 import { useUserStore } from "@/store/userStore";
 
+// import axiosInstance from "@/lib/axiosInstance";
+
+// const fetchProfile = async () => {
+//   const res = await axiosInstance.get("/user/profile");
+//   console.log(res.data);
+// };
+
 
 const tools = [
   {
@@ -101,7 +108,7 @@ export default function Dashboard() {
 
   return (
     <div className="p-6">
-      <section className="">
+      <section className="mb-8 lg:h-100 md:h-80 ">
         <Card className="rounded-0 w-full h-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white">
           <CardHeader>
             <CardTitle className="text-3xl font-extrabold">
@@ -113,14 +120,14 @@ export default function Dashboard() {
             </p>
           </CardHeader>
           <CardContent className="flex flex-col justify-center items-center ">
-            <div className="flex gap-2 w-full justify-start">
-              <Button className="bg-purple-500 text-white flex items-center justify-center">
+            <div className="flex gap-2 w-full justify-start flex-wrap">
+              <Button className="bg-purple-500 text-white flex items-center justify-center hover:bg-purple-800">
                 <Play />
                 Quick Tutorial
               </Button>
-              <Button className="bg-white text-purple-500 flex items-center justify-center">
+              <Button className="bg-white text-purple-500 flex items-center justify-center hover:text-purple-800 hover:bg-white" onClick={()=>router.push('/stealth/customize')}>
                 <Settings />
-                Customize dashboard
+                Customize Stealth Mode
               </Button>
             </div>
             <div className="bg-white text-purple-600 mt-6">
@@ -137,12 +144,12 @@ export default function Dashboard() {
 
           {/* sos */}
           <Card className="flex flex-col justify-center items-center gap-4 lg:w-200 h-100 m-2 p-4">
-            <h1 className="text-2xl font-bold">Emergency SOS</h1>
+            <h1 className="text-2xl font-bold text-purple-500 text">Emergency SOS</h1>
             <p className="text-gray-600">
               Activate in case of emergency to alert your contacts
             </p>
             <Button
-              className="bg-red-500 text-white rounded-full w-30 text-center h-30"
+              className="bg-red-500 text-white rounded-full w-40 text-center h-40"
               onClick={() => alert("SOS Activated!")}
             >
               Activate SOS
@@ -150,7 +157,7 @@ export default function Dashboard() {
             
             </AnimatePresence> */}
               <motion.div
-                className="absolute bg-white w-30 h-30 rounded-full border-6 border-red-500"
+                className="absolute bg-white w-40 h-40 rounded-full border-6 border-red-500"
                 initial={{ opacity: 0.5, scale: 0 }}
                 animate={{
                   opacity: [0.5, 0],
@@ -171,10 +178,10 @@ export default function Dashboard() {
           {/* safety timer */}
           <Card className="m-2 p-4 lg:w-200 min-h-70">
             <CardTitle>
-              <h1 className="text-2xl text-purple-500 font-bold">
+              <h1 className="text-2xl text-purple-500 font-bold text-center">
                 Safety Timer
               </h1>
-              <p className="text-gray-600 mt-2">
+              <p className="text-gray-600 mt-2 text-center">
                 Set a timer for activities and check-ins
               </p>
             </CardTitle>
@@ -189,39 +196,43 @@ export default function Dashboard() {
 
         {/* quick actions, my safety circle */}
         <div className="flex lg:flex-col">
-          <Card className="w-150 lg:h-80 h-100 m-2 p-4">
-            <CardTitle className="text-center relative">
+
+          {/* quick actions */}
+          <Card className="w-150 lg:h-80 h-100 m-2 p-4 flex flex-col items-center justify-center gap-4 relative">
+            <CardTitle className="text-center ">
               <h1 className="text-2xl text-purple-500 font-bold">
                 Quick Actions
               </h1>
-              <span className="absolute top-[-8px] lg:top-0 md:top-0 right-0" onClick={()=>router.push("/actions")}><MoreHorizontal/></span>
+              <span className="absolute right-4 top-2" onClick={()=>router.push("/actions")}><MoreHorizontal/></span>
               <p className="text-gray-600">Frequently used safety tools</p>
             </CardTitle>
-            <div className="flex flex-wrap col-span-2 gap-4 justify-center items-center">
+            <CardContent className="flex flex-wrap col-span-2 gap-4 justify-center items-center">
               {tools.map((tool) => (
                 <div
                   key={tool.id}
-                  className="flex items-center gap-2 border w-40 h-15 p-2"
+                  className="flex items-center gap-2 border w-40 h-15 p-2 rounded-xl"
                 >
                   <tool.Component />
                   <span>{tool.title}</span>
                 </div>
               ))}
-            </div>
+            </CardContent>
           </Card>
-          <Card className="p-4 m-2 w-150 lg:h-90 h-100 overflow-y-auto">
+
+          {/* safety circle */}
+          <Card className="p-4 m-2 w-150 lg:h-90 h-100 overflow-y-auto flex flex-col items-center justify-center">
             <CardTitle>
-              <h1 className="text-2xl text-purple-500 font-bold">
+              <h1 className="text-2xl text-purple-500 font-bold text-center">
                 My Safety Circle
               </h1>
-              <p className="text-gray-600 mt-2">
+              <p className="text-gray-600 mt-2 text-center">
                 People who will be notified in emergencies
               </p>
               {/* <Button onClick={()=>getContacts()}>Get</Button> */}
             </CardTitle>
 
             {/* contacts */}
-            <div className="flex flex-col gap-2">
+            <CardContent className="flex flex-col gap-2">
               {contacts.map((contact)=>(
                 <Card className="w-full" key={contact.id}>
                 <CardContent className="flex flex-wrap gap-2 justify-between">
@@ -242,7 +253,10 @@ export default function Dashboard() {
               </Card>
               ))}
               
-            </div>
+              {contacts.length === 0 && (
+                <p className="text-gray-500 text-center">No contacts added yet</p>
+              )}
+            </CardContent>
           </Card>
         </div>
       </section>
@@ -251,8 +265,10 @@ export default function Dashboard() {
 
       {/* fake call, emergency resource panel */}
       <section className="flex flex-wrap justify-center">
+
+        {/* fake call */}
         <Card className="flex flex-col justify-center items-center gap-4 lg:w-200 h-100 m-2 p-4 relative">
-          <h1 className="text-2xl font-bold">Fake Call</h1>
+          <h1 className="text-2xl font-bold text-purple-500">Fake Call</h1>
           <button className="absolute right-4 top-4" onClick={()=>setOpenSettings(true)}>
             <Settings2/>
           </button>
@@ -260,7 +276,7 @@ export default function Dashboard() {
             Trigger a fake incoming call to help escape uncomfortable
             situations.
           </p>
-          <Button className="w-30 h-30 rounded-full bg-purple-500 text-white" onClick={()=> scheduleFakeCall()}>
+          <Button className="w-40 h-40 rounded-full bg-purple-500 text-white" onClick={()=> scheduleFakeCall()}>
             <PhoneCall width={200} height={200} className="font-bold" />
           </Button>
           
@@ -288,12 +304,14 @@ export default function Dashboard() {
       )}
           {fakeCall && <FakeCall onClose={() => setFakeCall(false)} settings={settings} />}
         </Card>
+
+        {/* emergency resource */}
         <Card className="p-4 m-2 w-150 h-100 overflow-y-auto">
           <CardTitle>
-            <h1 className="text-2xl text-purple-500 font-bold">
+            <h1 className="text-2xl text-purple-500 font-bold text-center">
               Emergency Resources Panel
             </h1>
-            <p className="text-gray-600 mt-2">
+            <p className="text-gray-600 mt-2 text-center">
               People who will be notified in emergencies
             </p>
           </CardTitle>
@@ -314,16 +332,19 @@ export default function Dashboard() {
             <Card className="w-full">
               <CardContent className="flex flex-wrap gap-2 justify-between">
                 <p>Women&apos;s helpline</p>
-                <button onClick={() => {if (confirm("Do you want to call the Women Helpline?")) { window.location.href = "tel:1090";}  }}>  
-                  <PhoneCall />
-                </button>
+                  <button onClick={() => {if (confirm("Do you want to call the Women Helpline?")) { window.location.href = "tel:1090";}  }}>  
+                    <PhoneCall />
+                  </button>
                 
               </CardContent>
             </Card>
             <Card className="w-full">
               <CardContent className="flex flex-wrap gap-2 justify-between">
                 <p>Support chat </p>
-                <MessageCircle/>
+                <button onClick={() => router.push("/actions/support-chat")}>  
+                  <MessageCircle/>
+                </button>
+                
                 
               </CardContent>
             </Card>
