@@ -85,7 +85,7 @@ export default function LoginPage() {
         </Link>
       </div>
       <div className="flex flex-col justify-center items-center w-full gap-2 py-24 px-4">
-        <Card className="lg:w-2xl md:w-xl px-6 w-md">
+        <Card className="lg:w-2xl md:w-xl px-6 w-sm">
         <CardHeader>
           <CardTitle>
             <h1 className="text-3xl font-extrabold text-purple-800 text-center my-4">

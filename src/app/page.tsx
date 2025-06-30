@@ -3,30 +3,49 @@ import Footer from "@/components/common/footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
-import { Check, Clock, Lock, ShieldAlert } from "lucide-react";
+import {
+  BellRing,
+  Check,
+  Clock,
+  Clock1,
+  Locate,
+  Lock,
+  Shield,
+  ShieldAlert,
+  ShieldHalf,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { color } from "framer-motion";
 
 const cards = [
   {
     step: "1",
     title: "Instant SOS Alerts",
     desc: "Send emergency alerts to your trusted contacts with one tap when you feel unsafe.",
+    Icon: () => <BellRing className="text-pink-700"/>,
+    color: "pink-500",
   },
   {
     step: "2",
     title: "Live Location Tracking",
     desc: "Share your real-time location with selected contacts during your journeys.",
+    Icon: () => <Locate className="text-blue-600"/>,
+    color: "blue-400",
   },
   {
     step: "3",
     title: "Safety Timer",
     desc: "Set a timer for activities and automatically alert contacts if you don't check in.",
+    Icon: () => <Clock1 className="text-green-700"/>,
+    color: "green-500",
   },
   {
     step: "4",
     title: "Discreet Emergency Mode",
     desc: "Activate emergency protocols silently without alerting others around you.",
+    Icon: () => <ShieldHalf className="text-red-700"/> ,
+    color: "red-500",
   },
 ];
 
@@ -36,21 +55,21 @@ const work = [
     color: "blue-500",
     title: "Create Your Safety Circle",
     desc: "Add trusted friends and family members who will receive alerts in case of emergency.",
-    image: "/image.png",
+    image: "/photo1.jpg",
   },
   {
     step: "2",
     color: "pink-500",
     title: "Set Up Emergency Preferences",
     desc: "Customize alert triggers, messages, and safety check-in schedules to fit your lifestyle.",
-    image: "/image.png",
+    image: "/photo2.jpg",
   },
   {
     step: "3",
     color: "green-500",
     title: "Feel Protected, Wherever You Go",
     desc: "Enjoy peace of mind knowing that help is just a tap away whenever you need it",
-    image: "/image.png",
+    image: "/photo5.jpg",
   },
 ];
 
@@ -59,46 +78,48 @@ const features = [
     step: "1",
     icon: "lock",
     title: "256-bit Encryption",
-    Component: () => <Lock />,
+    Component: () => <Lock className="text-purple-600"/>,
   },
   {
     step: "2",
     icon: "shield",
     title: "Privacy Protected",
-    Component: () => <ShieldAlert />,
+    Component: () => <ShieldAlert className="text-purple-600"/>,
   },
   {
     step: "3",
     icon: "tick",
     title: "Verified Security",
-    Component: () => <Check />,
+    Component: () => <Check className="text-purple-600"/>,
   },
   {
     step: "4",
     icon: "robot",
     title: "24/7 Support",
-    Component: () => <Clock />,
+    Component: () => <Clock className="text-purple-600"/>,
   },
 ];
 
 export default function Home() {
-
-    useEffect(() => {
-    if ('serviceWorker' in navigator) {
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
       navigator.serviceWorker.getRegistrations().then((registrations) => {
         registrations.forEach((registration) => {
           registration.unregister().then(() => {
-            console.log('Service Worker unregistered:', registration);
+            console.log("Service Worker unregistered:", registration);
           });
         });
       });
     }
   }, []);
-  
+
   const router = useRouter();
   return (
     <div>
-      <section className="flex flex-col justify-between items-start gap-4 px-12 py-40 bg-purple-500 text-white">
+      <section
+        className="flex flex-col justify-center items-start gap-4 h-screen bg-cover bg-center p-8 text-white"
+        style={{ backgroundImage: "url('/photo6.jpg')" }}
+      >
         <h1 className="capitalize text-3xl font-extrabold w-1/3">
           Your silent shield, your digital guardian.
         </h1>
@@ -107,7 +128,12 @@ export default function Home() {
           by technology.
         </h2>
         <div className="flex gap-4">
-          <Button className="bg-white text-purple-600" onClick={()=> router.push("/registration")}>Get Started</Button>
+          <Button
+            className="bg-white text-purple-600"
+            onClick={() => router.push("/registration")}
+          >
+            Get Started
+          </Button>
           <Button className="bg-white text-purple-600">How it works</Button>
         </div>
       </section>
@@ -120,10 +146,12 @@ export default function Home() {
         </p>
         <div className="flex gap-4 justify-center py-4 flex-wrap">
           {cards.map((card) => (
-            <Card key={card.step} className="w-100 h-80">
-              <CardHeader>
-                <div className="rounded-full bg-blue-400 text-center place-content-center text-white w-10 h-10 mb-4">
-                  {card.step}
+            <Card key={card.step} className="w-70  text-center">
+              <CardHeader className="w-full flex flex-col items-center gap-2">
+                <div
+                  className={`rounded-full bg-${card.color} text-white w-10 h-10 p-2 flex justify-center items-center`}
+                >
+                  {card.Icon()}
                 </div>
                 <CardTitle>
                   <h1 className="text-xl">{card.title}</h1>
@@ -143,8 +171,11 @@ export default function Home() {
         </p>
         <div className="flex flex-wrap gap-8  p-4 items-center justify-center">
           {work.map((card) => (
-            <Card key={card.step} className="w-100 h-80">
-              <CardHeader>
+            <div
+              key={card.step}
+              className="w-80 text-center flex flex-col gap-2"
+            >
+              <Card className="w-full flex flex-col items-center gap-2">
                 <div
                   className={`rounded-full  w-10 h-10 p-2 flex justify-center items-center text-white bg-${card.color}`}
                 >
@@ -153,25 +184,24 @@ export default function Home() {
                 <CardTitle>
                   <h1>{card.title}</h1>
                 </CardTitle>
-              </CardHeader>
-              <CardContent className="flex flex-col justify-center items-center">
-                {card.desc}
+                <CardContent>{card.desc}</CardContent>
+              </Card>
+              <Card className="w-full h-60 overflow-hidden relative">
                 <Image
                   src={card.image}
                   alt="image description"
-                  width={200}
-                  height={100}
-                  className="border mt-4 rounded-2xl"
+                  fill
+                  className="object-cover"
                 />
-              </CardContent>
-            </Card>
+              </Card>
+            </div>
           ))}
         </div>
         <div className="flex flex-wrap gap-4 lg:px-36 py-4 items-center justify-center">
           {features.map((feature) => (
             <Card
               key={feature.step}
-              className="w-50 p-2 flex justify-center items-center gap-2"
+              className="p-2 flex justify-center items-center gap-2"
             >
               <CardContent className="flex justify-center items-center gap-2 text-[14px]">
                 <span>{feature.Component()}</span>
@@ -182,12 +212,11 @@ export default function Home() {
         </div>
       </section>
 
-
-          {/* our mission */}
+      {/* our mission */}
       <section className="mission flex px-10 pt-16 pb-24 gap-4 justify-between items-center lg:flex-nowrap md:flex-wrap flex-wrap">
         <div className="left lg:w-1/2 flex flex-col justify-center gap-4">
           <h1 className="text-3xl font-extrabold text-center">Our Mission</h1>
-          <h4 className="text-xl text-center">
+          <h4 className="text-xl">
             At HerGuardian, we believe that
             <span className="text-purple-600">
               {" "}
@@ -195,13 +224,13 @@ export default function Home() {
             </span>{" "}
             free from fear and anxiety.
           </h4>
-          <p className="text-center ">
+          <p className="">
             Our platform was born from a simple yet powerful idea: to harness
             technology in service of women&apos;s safety and peace of mind.
             We&apos;ve built a digital guardian that&apos;s always there when
             you need it, empowering you to live life on your own terms.
           </p>
-          <p className="text-center">
+          <p className="">
             We&apos;re committed to continuous innovation, working closely with
             safety experts and our user community to create the most effective,
             intuitive safety companion possible.
@@ -210,7 +239,7 @@ export default function Home() {
         <div className="right flex justify-center items-center md:w-full sm:w-full lg:w-1/2">
           <img
             src="/img1.avif"
-            alt="image description"            
+            alt="image description"
             className="border rounded-2xl lg:h-100 md:w-150 h-100 w-full"
           />
         </div>
@@ -225,11 +254,11 @@ export default function Home() {
           Join thousands of women who have found peace of mind with HerGuardian.
           Your safety is our priority.
         </h3>
-        <Button className="bg-white text-purple-600">Join Now</Button>
+        <Button className="bg-white text-purple-500 hover:bg-white hover:text-purple-800">Join Now</Button>
         <p>Available on iOS and Android</p>
         <div className="flex gap-2">
-          <Button className="bg-white text-purple-600">App store</Button>
-          <Button className="bg-white text-purple-600">Google Play</Button>
+          <Button className="bg-white text-purple-600 hover:text-purple-900 hover:bg-white/20">App store</Button>
+          <Button className="bg-white text-purple-600 hover:text-purple-900 hover:bg-white/20">Google Play</Button>
         </div>
       </section>
       <Footer />

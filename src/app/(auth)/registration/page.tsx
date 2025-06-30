@@ -200,8 +200,8 @@ export default function RegistrationForm() {
     }
   };
   return (
-    <div className="">
-      <div className="flex justify-between items-center p-4 bg-purple-500 text-white">
+    <div className="w-full">
+      <div className="flex justify-between items-center p-4 bg-purple-500 w-full  text-white">
         <div>HerGuardian</div>
         <Link href="/" className="flex">
           <ArrowLeft />

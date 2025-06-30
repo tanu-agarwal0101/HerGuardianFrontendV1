@@ -107,11 +107,11 @@ export default function Dashboard() {
   },[])
 
   return (
-    <div className="p-6">
-      <section className="mb-8 lg:h-100 md:h-80 ">
-        <Card className="rounded-0 w-full h-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white">
+    <div className="mx-4 py-8 ">
+      <section className="mb-2 lg:h-100 md:h-90 w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-lg">
+        <Card className="h-full text-white text-center bg-transparent">
           <CardHeader>
-            <CardTitle className="text-3xl font-extrabold">
+            <CardTitle className="text-3xl font-extrabold lg:text-5xl w-full text-center mb-2">
               Welcome to Your Safety Dashboard {user?.firstName || "User"}!
             </CardTitle>
             <p>
@@ -119,9 +119,9 @@ export default function Dashboard() {
               actions below to stay protected wherever you go.
             </p>
           </CardHeader>
-          <CardContent className="flex flex-col justify-center items-center ">
-            <div className="flex gap-2 w-full justify-start flex-wrap">
-              <Button className="bg-purple-500 text-white flex items-center justify-center hover:bg-purple-800">
+          <CardContent className="flex flex-col justify-center items-center gap-4">
+            <div className="flex gap-2 w-full justify-center flex-wrap ">
+              <Button className="bg-purple-500 text-white flex items-center justify-center border hover:bg-purple-800">
                 <Play />
                 Quick Tutorial
               </Button>
@@ -139,17 +139,17 @@ export default function Dashboard() {
 
 
 {/* sos, safety timer, quick actions, emergency contacts */}
-      <section className="flex flex-col lg:flex-row justify-center">
-        <div className="flex flex-col">
+      <section className="flex flex-col lg:flex-row justify-center items-center  gap-2 py-4">
+        <div className="flex lg:flex-col md:flex-row flex-wrap md:w-full justify-center p-2 lg:w-1/2  gap-2 ">
 
           {/* sos */}
-          <Card className="flex flex-col justify-center items-center gap-4 lg:w-200 h-100 m-2 p-4">
+          <Card className="flex flex-col justify-center items-center gap-4 h-100 my-2 p-2 md:w-fit lg:w-full w-full ">
             <h1 className="text-2xl font-bold text-purple-500 text">Emergency SOS</h1>
             <p className="text-gray-600">
               Activate in case of emergency to alert your contacts
             </p>
             <Button
-              className="bg-red-500 text-white rounded-full w-40 text-center h-40"
+              className="bg-red-500 text-white rounded-full w-40 text-center h-40 hover:bg-red-700"
               onClick={triggerSOS}
             >
               Activate SOS
@@ -157,7 +157,7 @@ export default function Dashboard() {
             
             </AnimatePresence> */}
               <motion.div
-                className="absolute bg-white w-40 h-40 rounded-full border-6 border-red-500"
+                className="absolute bg-white w-40 h-40 rounded-full border-6 border-red-00"
                 initial={{ opacity: 0.5, scale: 0 }}
                 animate={{
                   opacity: [0.5, 0],
@@ -176,7 +176,7 @@ export default function Dashboard() {
           </Card>
 
           {/* safety timer */}
-          <Card className="m-2 p-4 lg:w-200 min-h-70">
+          <Card className="p-4  min-h-70 flex flex-col items-center justify-around lg:w-full md:w-fit w-full">
             <CardTitle>
               <h1 className="text-2xl text-purple-500 font-bold text-center">
                 Safety Timer
@@ -186,7 +186,7 @@ export default function Dashboard() {
               </p>
             </CardTitle>
             <CardContent className="w-full flex justify-center">
-              <Button className="bg-purple-500 rounded-full w-40 h-40" onClick={()=>router.push('/actions/timer')}>
+              <Button className="bg-purple-500 rounded-full w-40 h-40 hover:bg-purple-800" onClick={()=>router.push('/actions/timer')}>
                 Go Set Timer
               </Button>
             </CardContent>
@@ -195,10 +195,10 @@ export default function Dashboard() {
         </div>
 
         {/* quick actions, my safety circle */}
-        <div className="flex lg:flex-col">
+        <div className="flex lg:flex-col md:flex-row  flex-wrap lg:w-1/3 justify-center">
 
           {/* quick actions */}
-          <Card className="w-150 lg:h-80 h-100 m-2 p-4 flex flex-col items-center justify-center gap-4 relative">
+          <Card className="m-2 p-4 flex flex-col items-center justify-center gap-4 relative md:w-100 w-full lg:w-full lg:h-72">
             <CardTitle className="text-center ">
               <h1 className="text-2xl text-purple-500 font-bold">
                 Quick Actions
@@ -206,7 +206,7 @@ export default function Dashboard() {
               <span className="absolute right-4 top-2" onClick={()=>router.push("/actions")}><MoreHorizontal/></span>
               <p className="text-gray-600">Frequently used safety tools</p>
             </CardTitle>
-            <CardContent className="flex flex-wrap col-span-2 gap-4 justify-center items-center">
+            <CardContent className="flex flex-wrap gap-4 justify-center items-center">
               {tools.map((tool) => (
                 <div
                   key={tool.id}
@@ -220,7 +220,7 @@ export default function Dashboard() {
           </Card>
 
           {/* safety circle */}
-          <Card className="p-4 m-2 w-150 lg:h-90 h-100 overflow-y-auto flex flex-col items-center justify-center">
+          <Card className="p-4 m-2  h-100 overflow-y-auto flex flex-col items-center justify-center lg:w-full w-full md:w-fit">
             <CardTitle>
               <h1 className="text-2xl text-purple-500 font-bold text-center mt-2">
                 My Safety Circle
@@ -264,10 +264,10 @@ export default function Dashboard() {
 
 
       {/* fake call, emergency resource panel */}
-      <section className="flex flex-wrap justify-center">
+      <section className="flex flex-wrap justify-center w-full p-2 gap-8 md:px-14">
 
         {/* fake call */}
-        <Card className="flex flex-col justify-center items-center gap-4 lg:w-200 h-100 m-2 p-4 relative">
+        <Card className="flex flex-col justify-center items-center gap-4 lg:w-1/2  w-full h-100 my-2 p-4 relative">
           <h1 className="text-2xl font-bold text-purple-500">Fake Call</h1>
           <button className="absolute right-4 top-4" onClick={()=>setOpenSettings(true)}>
             <Settings2/>
@@ -276,7 +276,7 @@ export default function Dashboard() {
             Trigger a fake incoming call to help escape uncomfortable
             situations.
           </p>
-          <Button className="w-40 h-40 rounded-full bg-purple-500 text-white" onClick={()=> scheduleFakeCall()}>
+          <Button className="w-40 h-40 rounded-full bg-purple-500 text-white hover:bg-purple-700" onClick={()=> scheduleFakeCall()}>
             <PhoneCall width={200} height={200} className="font-bold" />
           </Button>
           
@@ -306,7 +306,7 @@ export default function Dashboard() {
         </Card>
 
         {/* emergency resource */}
-        <Card className="p-4 m-2 w-150 h-100 overflow-y-auto">
+        <Card className="px-8 py-2 m-2  h-100 overflow-y-auto lg:w-1/3 w-full ">
           <CardTitle>
             <h1 className="text-2xl text-purple-500 font-bold text-center">
               Emergency Resources Panel
