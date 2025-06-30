@@ -24,9 +24,9 @@ import FakeCall from "@/components/common/fakeCall";
 import FakeCallSettings from "@/components/common/fakeCallSettings";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { get } from "http";
 import type { Contact } from "../../helpers/type.ts";
 import { useUserStore } from "@/store/userStore";
+import { triggerSOS } from "@/lib/sosTrigger";
 
 // import axiosInstance from "@/lib/axiosInstance";
 
@@ -150,7 +150,7 @@ export default function Dashboard() {
             </p>
             <Button
               className="bg-red-500 text-white rounded-full w-40 text-center h-40"
-              onClick={() => alert("SOS Activated!")}
+              onClick={triggerSOS}
             >
               Activate SOS
               {/* <AnimatePresence>
@@ -222,7 +222,7 @@ export default function Dashboard() {
           {/* safety circle */}
           <Card className="p-4 m-2 w-150 lg:h-90 h-100 overflow-y-auto flex flex-col items-center justify-center">
             <CardTitle>
-              <h1 className="text-2xl text-purple-500 font-bold text-center">
+              <h1 className="text-2xl text-purple-500 font-bold text-center mt-2">
                 My Safety Circle
               </h1>
               <p className="text-gray-600 mt-2 text-center">

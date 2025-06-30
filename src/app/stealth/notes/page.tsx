@@ -1,6 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
+import { triggerSOS } from "@/lib/sosTrigger";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -38,7 +39,7 @@ export default function NotesApp() {
       router.push("/dashboard")
     }
     else if(message === 'alert') {
-        alert("sos signal")
+        triggerSOS()
     }
     else{
         alert("Signal sent: " + message);

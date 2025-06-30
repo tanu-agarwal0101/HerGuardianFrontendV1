@@ -137,7 +137,7 @@ const Contacts = ({ nextStep, prevStep }: Props) => {
                           <Label>Full Name</Label>
                         <Input
                           placeholder="Enter your full name"
-                          className="mb-4"
+                          className="mb-4 mt-2"
                           
                           {...register(`emergencyContacts.${index}.name`)}
                         />
@@ -151,7 +151,7 @@ const Contacts = ({ nextStep, prevStep }: Props) => {
                           <Label>Relationship</Label>
                         <Input
                           placeholder="Eg. Friend, Roommate, Father, Mother"
-                          className="mb-4"
+                          className="mb-4 mt-2"
                           
                           {...register(`emergencyContacts.${index}.relationship`)}
                         />
@@ -165,7 +165,7 @@ const Contacts = ({ nextStep, prevStep }: Props) => {
                          <Label>Email</Label>
                         <Input
                           placeholder="Enter your email"
-                          className="mb-4"
+                          className="mb-4 mt-2"
                           
                           {...register(`emergencyContacts.${index}.email`)}
                         />
@@ -179,7 +179,7 @@ const Contacts = ({ nextStep, prevStep }: Props) => {
                          <Label>Phone Number</Label>
                         <Input
                           placeholder="Enter your phone number"
-                          className="mb-4"
+                          className="mb-4 mt-2"
                           
                           {...register(`emergencyContacts.${index}.phoneNumber`)}
                         />

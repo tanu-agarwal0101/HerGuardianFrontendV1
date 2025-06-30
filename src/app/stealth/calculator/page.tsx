@@ -1,4 +1,5 @@
 "use client"
+import { triggerSOS } from '@/lib/sosTrigger';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -33,7 +34,7 @@ export default function Calculator() {
       router.push("/dashboard")
     }
     else{
-        alert("sos signal")
+        triggerSOS()
     }
     //   await fetch('/api/signal', {
     //     method: 'POST',
