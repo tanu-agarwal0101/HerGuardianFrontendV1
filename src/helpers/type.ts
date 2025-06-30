@@ -31,6 +31,19 @@ export interface User {
   profilePicture?: string;
   addresses?: Address[];
   contacts?: Contact[];
+  sosTriggers: SOSTrigger[];
+  stealthType?: string;
+  stealthMode?: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface SOSTrigger {
+  id: string;
+  location: {
+    latitude: number;
+    longitude: number;
+  };
+  triggeredAt: string;
+  sentBy?: User; // Optional, can be null if not provided
 }
