@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:5001", {
+const socket = io("http://localhost:5000", {
   withCredentials: true,
 });
 socket.on("connect", () => {
@@ -25,7 +25,7 @@ export default function ChatPage() {
   const socketRef = useRef<any>(null);
 
   useEffect(() => {
-    const socket = io("http://localhost:5001", {
+    const socket = io("http://localhost:5000", {
       withCredentials: true,
       transports: ["websocket"],
     });
