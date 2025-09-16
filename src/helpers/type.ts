@@ -31,6 +31,7 @@ export interface User {
   profilePicture?: string;
   addresses?: Address[];
   contacts?: Contact[];
+  safetyTimers?: SafetyTimer[];
   sosTriggers: SOSTrigger[];
   stealthType?: string;
   stealthMode?: boolean;
@@ -45,5 +46,15 @@ export interface SOSTrigger {
     longitude: number;
   };
   triggeredAt: string;
-  sentBy?: User; // Optional, can be null if not provided
+  resolved: boolean;
+}
+
+export interface SafetyTimer {
+  id: string;
+  userId: string;
+  duration: number; // Duration in minutes
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  sharedLocation: boolean;
 }
