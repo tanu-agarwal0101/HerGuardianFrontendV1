@@ -7,11 +7,12 @@ import { AnimatePresence, motion } from "motion/react";
 
 export default function MobileDrawer({
     setSmallMenuOpen, onCloseMenu,
-    isOpen,
+    isOpen, handleLogout
 }: {
     setSmallMenuOpen: (open: boolean) => void;
     onCloseMenu: () => void;
     isOpen: boolean;
+    handleLogout: () => void;
 }) {
     return (
         <AnimatePresence mode="wait">
@@ -23,11 +24,11 @@ export default function MobileDrawer({
           exit={{ y: '-100%' }}
           transition={{ duration: 0.5 }}
         >
-          {1 && (
+          {/* {1 && (
             <div className="z-60 absolute right-20 top-4">
               hello
             </div>
-          )}
+          )} */}
           <div className="mr-4 mt-4 flex items-center justify-end">
             <Button onClick={onCloseMenu}>
               <X />
@@ -90,16 +91,16 @@ export default function MobileDrawer({
               }}
               className="absolute bottom-0 left-0 right-0 border-gray-100 bg-white p-4"
             >
-              {1 && (
+              
                 <Button
                   variant="outline"
-                  className="mb-4 w-full rounded-full py-6 text-sm text-black"
-                //   onClick={}
+                  className="mb-4 w-full rounded-full py-6 text-sm text-black" 
+                onClick={handleLogout}
                 >
                   {/* <LogOutIcon /> */}
                   Logout
                 </Button>
-              )}
+             
               <Button
                 variant="outline"
                 // onClick={onHelpClick}
