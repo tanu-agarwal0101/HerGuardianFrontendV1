@@ -8,9 +8,12 @@ import * as z from "zod";
 import { set, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import axios from "axios";
+import { toast } from "sonner";
+// import axios from "axios";
+import { Address as AddressApi } from "@/lib/api";
 import { addressSchema } from "@/helpers/schema";
-import LocationMap from "./LocationMap";
+import dynamic from "next/dynamic";
+const LocationMap = dynamic(() => import("./LocationMap"), { ssr: false });
 
 type AddressValues = z.infer<typeof addressSchema>;
 
@@ -36,7 +39,10 @@ export default function AddressForm() {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setValue("latitude", parseFloat(position.coords.latitude.toFixed(6)));
-          setValue("longitude", parseFloat(position.coords.longitude.toFixed(6)));
+          setValue(
+            "longitude",
+            parseFloat(position.coords.longitude.toFixed(6))
+          );
         },
         (error) => {
           alert("Unable to retrieve location");
@@ -49,26 +55,31 @@ export default function AddressForm() {
     setLoading(false);
   };
 
-   const fetchCoordinatesFromAddress = async () => {
-    console.log("Fetching coordinates with the following address:", getValues());
+  const fetchCoordinatesFromAddress = async () => {
+    console.log(
+      "Fetching coordinates with the following address:",
+      getValues()
+    );
     const { street, city, state, country, zipCode } = getValues();
     if (street && city && state && country && zipCode) {
       try {
         const fullAddress = `${street.toLowerCase()}, ${city.toLowerCase()}, ${state.toLowerCase()}, ${country.toLowerCase()}`;
-        const response = await axios.get("https://locationiq.com/v1/search", {
-          params: {
-            key: process.env.NEXT_PUBLIC_LOCATION_IQ_ACCESS_TOKEN,
-            q: fullAddress,
-            format: "json",
-          },
-        });
-        console.log(response.data);
-        if (response.data.length === 0) {
+        const url = new URL("https://locationiq.com/v1/search");
+        url.searchParams.append(
+          "key",
+          process.env.NEXT_PUBLIC_LOCATION_IQ_ACCESS_TOKEN || ""
+        );
+        url.searchParams.append("q", fullAddress);
+        url.searchParams.append("format", "json");
+        const response = await fetch(url.toString());
+        const data = await response.json();
+        console.log(data);
+        if (data.length === 0) {
           alert(
             "Could not find the address. Try removing street info or double-checking it."
           );
-        } else if (response.data.length > 0) {
-          const { lat, lon } = response.data[0];
+        } else if (data.length > 0) {
+          const { lat, lon } = data[0];
           setValue("latitude", parseFloat(lat));
           setValue("longitude", parseFloat(lon));
           setMap(true);
@@ -81,122 +92,120 @@ export default function AddressForm() {
     }
   };
 
-//    function getDistanceInMeters(
-//     lat1: number,
-//     lon1: number,
-//     lat2: number,
-//     lon2: number
-//   ): number {
-//     // Haversine formula to calculate the distance between two points on the Earth
-//     // lat1, lon1: coordinates of the first point (in degrees)
-//     // lat2, lon2: coordinates of the second point (in degrees)
-//     // Returns the distance in meters
-//     const R = 6371e3; // Earth radius in meters
-//     const φ1 = (lat1 * Math.PI) / 180;
-//     const φ2 = (lat2 * Math.PI) / 180;
-//     const Δφ = ((lat2 - lat1) * Math.PI) / 180;
-//     const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+  //    function getDistanceInMeters(
+  //     lat1: number,
+  //     lon1: number,
+  //     lat2: number,
+  //     lon2: number
+  //   ): number {
+  //     // Haversine formula to calculate the distance between two points on the Earth
+  //     // lat1, lon1: coordinates of the first point (in degrees)
+  //     // lat2, lon2: coordinates of the second point (in degrees)
+  //     // Returns the distance in meters
+  //     const R = 6371e3; // Earth radius in meters
+  //     const φ1 = (lat1 * Math.PI) / 180;
+  //     const φ2 = (lat2 * Math.PI) / 180;
+  //     const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+  //     const Δλ = ((lon2 - lon1) * Math.PI) / 180;
 
-//     const a =
-//       Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-//       Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+  //     const a =
+  //       Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+  //       Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
 
-//     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  //     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-//     return R * c; // Distance in meters
-//   } 
+  //     return R * c; // Distance in meters
+  //   }
 
-//     const [savedLocation, setSavedLocation] = useState({
-//     latitude: 0,
-//     longitude: 0,
-//     label: "Home",
-//     radiusMeters: 1000, // Example: 1 km
-//   });
+  //     const [savedLocation, setSavedLocation] = useState({
+  //     latitude: 0,
+  //     longitude: 0,
+  //     label: "Home",
+  //     radiusMeters: 1000, // Example: 1 km
+  //   });
 
-//   const checkIfWithinRadius = () => {
-//     const currentLat = getValues().latitude;
-//     const currentLon = getValues().longitude;
+  //   const checkIfWithinRadius = () => {
+  //     const currentLat = getValues().latitude;
+  //     const currentLon = getValues().longitude;
 
-//     // Check if the conversion was successful
-//     if (isNaN(currentLat) || isNaN(currentLon)) {
-//       console.error("Invalid latitude or longitude");
-//       return;
-//     }
+  //     // Check if the conversion was successful
+  //     if (isNaN(currentLat) || isNaN(currentLon)) {
+  //       console.error("Invalid latitude or longitude");
+  //       return;
+  //     }
 
-//     const distance = getDistanceInMeters(
-//       savedLocation.latitude,
-//       savedLocation.longitude,
-//       currentLat,
-//       currentLon
-//     );
-//     console.log(`Distance: ${distance} meters`);
+  //     const distance = getDistanceInMeters(
+  //       savedLocation.latitude,
+  //       savedLocation.longitude,
+  //       currentLat,
+  //       currentLon
+  //     );
+  //     console.log(`Distance: ${distance} meters`);
 
-//     if (distance <= savedLocation.radiusMeters) {
-//       console.log("Within the specified radius");
-//     } else {
-//       console.log("Outside the specified radius");
-//     }
-//   };
+  //     if (distance <= savedLocation.radiusMeters) {
+  //       console.log("Within the specified radius");
+  //     } else {
+  //       console.log("Outside the specified radius");
+  //     }
+  //   };
 
-//     useEffect(() => {
-//     if (getValues().latitude && getValues().longitude) {
-//       checkIfWithinRadius();
-//     }
-//   }, [getValues().latitude, getValues().longitude]);
+  //     useEffect(() => {
+  //     if (getValues().latitude && getValues().longitude) {
+  //       checkIfWithinRadius();
+  //     }
+  //   }, [getValues().latitude, getValues().longitude]);
 
   useEffect(() => {
     if (useCurrentLocation) {
       fetchCurrentLocation();
-    } 
+    }
     // else {
     //   fetchCoordinatesFromAddress();
     // }
   }, [useCurrentLocation]);
 
-  const saveAddress = async(data: AddressValues)=>{
-    
+  const saveAddress = async (data: AddressValues) => {
     try {
-        console.log("Form data:", data);
-      const res = await axios.post("http://localhost:5001/address/create-address", {
+      console.log("Form data:", data);
+      await AddressApi.create({
         type: data.type,
         latitude: data.latitude,
         longitude: data.longitude,
-        radiusMeters: data.radiusMeters,
+        radiusMeters: data.radiusMeters || undefined,
         street: data.street,
         city: data.city,
         state: data.state,
         country: data.country,
         zipCode: data.zipCode,
-
-      },{
-        withCredentials: true,
       });
+      toast.success("Address added successfully!");
     } catch (error) {
       console.error("Error submitting location:", error);
+      toast.error("Failed to add address. Please try again.");
     }
-  }
+  };
   const onSubmit = async () => {
     console.log("Submitting form with values:", getValues());
     if (!useCurrentLocation) {
-    await fetchCoordinatesFromAddress();
-  }
+      await fetchCoordinatesFromAddress();
+    }
 
-  const updated = getValues();
+    const updated = getValues();
 
-  if (!updated.latitude || !updated.longitude) {
-    alert("Please fetch coordinates before submitting.");
-    return;
-  }
+    if (!updated.latitude || !updated.longitude) {
+      alert("Please fetch coordinates before submitting.");
+      return;
+    }
 
-  await saveAddress(updated);
-    
+    await saveAddress(updated);
   };
-
-  
 
   return (
     <div className="flex justify-center my-4">
-      <form onSubmit={handleSubmit(onSubmit)} className="lg:w-3xl md:w-2xl w-xl">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="lg:w-3xl md:w-2xl w-xl"
+      >
         <Card className=" h-full p-4 m-4">
           <CardHeader>
             <CardTitle className="text-3xl font-extrabold">
@@ -273,7 +282,9 @@ export default function AddressForm() {
               readOnly
             />
             {errors.latitude && <p>{errors.latitude.message}</p>}
-            <Button onClick={() => fetchCoordinatesFromAddress()}>Get coordinates</Button>
+            <Button onClick={() => fetchCoordinatesFromAddress()}>
+              Get coordinates
+            </Button>
 
             <Label htmlFor="longitude">Longitude</Label>
             <Input
@@ -296,12 +307,12 @@ export default function AddressForm() {
             <Button type="submit">Add Location</Button>
           </CardContent>
           {map && (
-          <LocationMap
-            lat={getValues().latitude}
-            lon={getValues().longitude}
-            label={getValues().type}
-          />
-        )}
+            <LocationMap
+              lat={getValues().latitude}
+              lon={getValues().longitude}
+              label={getValues().type}
+            />
+          )}
         </Card>
 
         {/* <Button
@@ -311,7 +322,6 @@ export default function AddressForm() {
         >
           Update Location
         </Button> */}
-        
       </form>
     </div>
   );
