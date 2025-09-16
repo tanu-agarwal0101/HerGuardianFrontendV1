@@ -1,6 +1,7 @@
 import Footer from "@/components/common/footer";
 import Header from "@/components/common/header";
 import type { Metadata } from "next";
+import { ToastSetup } from "./toast-setup";
 
 // import Sidebar from '@/components/Sidebar';
 
@@ -15,12 +16,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className="">
-        <Header />
-        <div className="flex-1">{children}</div>
-        <Footer />
-      </body>
-    </html>
+    <>
+      <ToastSetup />
+      <Header />
+      <div className="flex-1">{children}</div>
+      <Footer />
+    </>
   );
 }

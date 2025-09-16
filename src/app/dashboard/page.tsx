@@ -1,5 +1,13 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -13,7 +21,8 @@ import {
   Settings,
   Settings2,
   ShieldAlert,
-  VideoIcon, Lock,
+  VideoIcon,
+  Lock,
   Videotape,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -23,7 +32,8 @@ import { Switch } from "@/components/ui/switch";
 import FakeCall from "@/components/common/fakeCall";
 import FakeCallSettings from "@/components/common/fakeCallSettings";
 import { useRouter } from "next/navigation";
-import axios from "axios";
+// import axios from "axios";
+import { Contacts as ContactsApi, SOS } from "@/lib/api";
 import type { Contact } from "../../helpers/type.ts";
 import { useUserStore } from "@/store/userStore";
 import { triggerSOS } from "@/lib/sosTrigger";
@@ -34,7 +44,6 @@ import { triggerSOS } from "@/lib/sosTrigger";
 //   const res = await axiosInstance.get("/user/profile");
 //   console.log(res.data);
 // };
-
 
 const tools = [
   {
@@ -63,18 +72,38 @@ export default function Dashboard() {
   // const [shareLocation, setShareLocation] = useState(false);
   const user = useUserStore((state) => state.user);
   const [fakeCall, setFakeCall] = useState(false);
-  const [delay, setDelay] = useState(10); 
+  const [delay, setDelay] = useState(10);
+  const [countdown, setCountdown] = useState<number | null>(null);
+  const [fakeCallPending, setFakeCallPending] = useState(false);
   const router = useRouter();
-  const [contacts, setContacts] = useState<Contact[]>([])
-  const scheduleFakeCall = ()=>{
-    setTimeout(()=>{
-      document.documentElement.requestFullscreen();
-      setFakeCall(true);
-    }, delay * 1000);
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [openContactDialog, setOpenContactDialog] = useState<string | null>(
+    null
+  );
+  const [openPoliceDialog, setOpenPoliceDialog] = useState(false);
+  const [openWomenDialog, setOpenWomenDialog] = useState(false);
+  const scheduleFakeCall = () => {
+    setFakeCallPending(true);
+    setCountdown(delay);
   };
 
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (fakeCallPending && countdown !== null && countdown > 0) {
+      timer = setInterval(() => {
+        setCountdown((prev) => (prev !== null ? prev - 1 : null));
+      }, 1000);
+    } else if (fakeCallPending && countdown === 0) {
+      document.documentElement.requestFullscreen();
+      setFakeCall(true);
+      setFakeCallPending(false);
+      setCountdown(null);
+    }
+    return () => clearInterval(timer);
+  }, [fakeCallPending, countdown]);
+
   const [openSettings, setOpenSettings] = useState(false);
-    const [settings, setSettings] = useState({
+  const [settings, setSettings] = useState({
     name: "Mom",
     photo: "/mom.jpg",
     ringtone: "/fake-ring.mp3",
@@ -82,29 +111,22 @@ export default function Dashboard() {
   });
 
   const handleEdit = (contactId: string) => {
-  console.log("Editing contact with ID:", contactId);
-  // Navigate to /edit-contact/[id] or open modal
-};
+    console.log("Editing contact with ID:", contactId);
+    // Navigate to /edit-contact/[id] or open modal
+  };
 
-  const getContacts = async()=>{
+  const getContacts = async () => {
     try {
-      const response = await axios.get("http://localhost:5001/contacts/get-all-contacts", {
-        withCredentials: true
-      })
-      const data = response.data;
-      console.log("Fetched contacts:", data);
-      setContacts(data.contacts);
-      // console.log("Contacts state updated:", contacts);
+      const data = await ContactsApi.getAll();
+      setContacts(data);
     } catch (error) {
       console.error("Error fetching contacts:", error);
-      return [];
-    } 
-  }
-  
-  useEffect(()=>{
+    }
+  };
+
+  useEffect(() => {
     getContacts();
-    console.log("user is",user)
-  },[])
+  }, []);
 
   return (
     <div className="mx-4 py-8 ">
@@ -125,26 +147,33 @@ export default function Dashboard() {
                 <Play />
                 Quick Tutorial
               </Button>
-              <Button className="bg-white text-purple-500 flex items-center justify-center hover:text-purple-800 hover:bg-white" onClick={()=>router.push('/stealth/customize')}>
+              <Button
+                className="bg-white text-purple-500 flex items-center justify-center hover:text-purple-800 hover:bg-white"
+                onClick={() => router.push("/stealth/customize")}
+              >
                 <Settings />
                 Customize Stealth Mode
               </Button>
             </div>
             <div className="bg-white text-purple-600 mt-6">
-              <ShieldAlert width={100} height={100} className="bg-purple-500 text-white" />
+              <ShieldAlert
+                width={100}
+                height={100}
+                className="bg-purple-500 text-white"
+              />
             </div>
           </CardContent>
         </Card>
       </section>
 
-
-{/* sos, safety timer, quick actions, emergency contacts */}
+      {/* sos, safety timer, quick actions, emergency contacts */}
       <section className="flex flex-col lg:flex-row justify-center items-center  gap-2 py-4">
         <div className="flex lg:flex-col md:flex-row flex-wrap md:w-full justify-center p-2 lg:w-1/2  gap-2 ">
-
           {/* sos */}
           <Card className="flex flex-col justify-center items-center gap-4 h-100 my-2 p-2 md:w-fit lg:w-full w-full ">
-            <h1 className="text-2xl font-bold text-purple-500 text">Emergency SOS</h1>
+            <h1 className="text-2xl font-bold text-purple-500 text">
+              Emergency SOS
+            </h1>
             <p className="text-gray-600">
               Activate in case of emergency to alert your contacts
             </p>
@@ -186,24 +215,30 @@ export default function Dashboard() {
               </p>
             </CardTitle>
             <CardContent className="w-full flex justify-center">
-              <Button className="bg-purple-500 rounded-full w-40 h-40 hover:bg-purple-800" onClick={()=>router.push('/actions/timer')}>
+              <Button
+                className="bg-purple-500 rounded-full w-40 h-40 hover:bg-purple-800"
+                onClick={() => router.push("/actions/timer")}
+              >
                 Go Set Timer
               </Button>
             </CardContent>
-
           </Card>
         </div>
 
         {/* quick actions, my safety circle */}
         <div className="flex lg:flex-col md:flex-row  flex-wrap lg:w-1/3 justify-center">
-
           {/* quick actions */}
           <Card className="m-2 p-4 flex flex-col items-center justify-center gap-4 relative md:w-100 w-full lg:w-full lg:h-72">
             <CardTitle className="text-center ">
               <h1 className="text-2xl text-purple-500 font-bold">
                 Quick Actions
               </h1>
-              <span className="absolute right-4 top-2" onClick={()=>router.push("/actions")}><MoreHorizontal/></span>
+              <span
+                className="absolute right-4 top-2"
+                onClick={() => router.push("/actions")}
+              >
+                <MoreHorizontal />
+              </span>
               <p className="text-gray-600">Frequently used safety tools</p>
             </CardTitle>
             <CardContent className="flex flex-wrap gap-4 justify-center items-center">
@@ -233,76 +268,134 @@ export default function Dashboard() {
 
             {/* contacts */}
             <CardContent className="flex flex-col gap-2">
-              {contacts.map((contact)=>(
+              {contacts.map((contact) => (
                 <Card className="w-full" key={contact.id}>
-                <CardContent className="flex flex-wrap gap-2 justify-between">
-                  <p>{contact.name}</p>
-                  <div className="flex gap-4">
-                    <a href={`tel:${contact.phoneNumber}`} aria-label="Call">
-            <PhoneCall className="text-green-600 cursor-pointer hover:scale-105" />
-          </a>
-                    <button
-            onClick={() => handleEdit(contact.id)}
-            aria-label="Edit"
-            className="text-blue-500 hover:text-blue-700"
-          >
-            <Lock /> {/* Replace with Edit icon if preferred */}
-          </button>
-                  </div>
-                </CardContent>
-              </Card>
+                  <CardContent className="flex flex-wrap gap-2 justify-between">
+                    <p>{contact.name}</p>
+                    <div className="flex gap-4">
+                      <Dialog
+                        open={openContactDialog === contact.id}
+                        onOpenChange={(open) =>
+                          setOpenContactDialog(open ? contact.id : null)
+                        }
+                      >
+                        <DialogTrigger asChild>
+                          <button
+                            onClick={() => setOpenContactDialog(contact.id)}
+                            aria-label="Call"
+                          >
+                            <PhoneCall className="text-green-600 cursor-pointer hover:scale-105" />
+                          </button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Call {contact.name}</DialogTitle>
+                          </DialogHeader>
+                          <p>
+                            Do you want to call {contact.name} at{" "}
+                            {contact.phoneNumber}?
+                          </p>
+                          <DialogFooter>
+                            <button
+                              className="bg-purple-600 text-white px-4 py-2 rounded"
+                              onClick={() => {
+                                window.location.href = `tel:${contact.phoneNumber}`;
+                                setOpenContactDialog(null);
+                              }}
+                            >
+                              Call
+                            </button>
+                            <button
+                              className="bg-gray-300 text-black px-4 py-2 rounded"
+                              onClick={() => setOpenContactDialog(null)}
+                            >
+                              Cancel
+                            </button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                      <button
+                        onClick={() => handleEdit(contact.id)}
+                        aria-label="Edit"
+                        className="text-blue-500 hover:text-blue-700"
+                      >
+                        <Lock /> {/* Replace with Edit icon if preferred */}
+                      </button>
+                    </div>
+                  </CardContent>
+                </Card>
               ))}
-              
+
               {contacts.length === 0 && (
-                <p className="text-gray-500 text-center">No contacts added yet</p>
+                <p className="text-gray-500 text-center">
+                  No contacts added yet
+                </p>
               )}
             </CardContent>
           </Card>
         </div>
       </section>
 
-
-
       {/* fake call, emergency resource panel */}
       <section className="flex flex-wrap justify-center w-full p-2 gap-8 md:px-14">
-
         {/* fake call */}
         <Card className="flex flex-col justify-center items-center gap-4 lg:w-1/2  w-full h-100 my-2 p-4 relative">
           <h1 className="text-2xl font-bold text-purple-500">Fake Call</h1>
-          <button className="absolute right-4 top-4" onClick={()=>setOpenSettings(true)}>
-            <Settings2/>
+          <button
+            className="absolute right-4 top-4"
+            onClick={() => setOpenSettings(true)}
+            aria-label="Open fake call settings"
+            title="Open fake call settings"
+          >
+            <Settings2 />
           </button>
           <p className="text-gray-600">
             Trigger a fake incoming call to help escape uncomfortable
             situations.
           </p>
-          <Button className="w-40 h-40 rounded-full bg-purple-500 text-white hover:bg-purple-700" onClick={()=> scheduleFakeCall()}>
+          <Button
+            className="w-40 h-40 rounded-full bg-purple-500 text-white hover:bg-purple-700 flex flex-col items-center justify-center"
+            onClick={() => scheduleFakeCall()}
+            disabled={fakeCallPending}
+          >
             <PhoneCall width={200} height={200} className="font-bold" />
+            {fakeCallPending && countdown !== null && (
+              <span className="mt-2 text-lg font-bold animate-pulse">
+                Fake call in {countdown}s
+              </span>
+            )}
           </Button>
-          
-          <p className="text-gray-600">Trigger a Fake Call in <select
-  className="bg-white text-black rounded px-3 py-1"
-  value={delay}
-  onChange={(e) => setDelay(Number(e.target.value))}
->
-  <option value={0}>0s</option>
-  <option value={5}>5s</option>
-  <option value={10}>10s</option>
-  <option value={30}>30s</option>
-</select> seconds</p>
 
+          <p className="text-gray-600">
+            Trigger a Fake Call in{" "}
+            <select
+              className="bg-white text-black rounded px-3 py-1"
+              value={delay}
+              onChange={(e) => setDelay(Number(e.target.value))}
+              aria-label="Fake call delay"
+              title="Fake call delay"
+            >
+              <option value={0}>0s</option>
+              <option value={5}>5s</option>
+              <option value={10}>10s</option>
+              <option value={30}>30s</option>
+            </select>{" "}
+            seconds
+          </p>
 
-{openSettings && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-40">
-          <FakeCallSettings
-            onSave={(newSettings) => {
-              setSettings(newSettings);
-              setOpenSettings(false);
-            }}
-          />
-        </div>
-      )}
-          {fakeCall && <FakeCall onClose={() => setFakeCall(false)} settings={settings} />}
+          {openSettings && (
+            <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-40">
+              <FakeCallSettings
+                onSave={(newSettings) => {
+                  setSettings(newSettings);
+                  setOpenSettings(false);
+                }}
+              />
+            </div>
+          )}
+          {fakeCall && (
+            <FakeCall onClose={() => setFakeCall(false)} settings={settings} />
+          )}
         </Card>
 
         {/* emergency resource */}
@@ -322,30 +415,97 @@ export default function Dashboard() {
               <CardContent className="flex flex-wrap gap-2 justify-between">
                 <p>nearest police station</p>
                 {/* add location and phone number */}
-                <button onClick={() => {if (confirm("Do you want to call the police station?")) { window.location.href = "tel:100";}  }}>  
-                  <PhoneCall />
-                </button>
-                  
-                
+                <Dialog
+                  open={openPoliceDialog}
+                  onOpenChange={setOpenPoliceDialog}
+                >
+                  <DialogTrigger asChild>
+                    <button
+                      onClick={() => setOpenPoliceDialog(true)}
+                      aria-label="Call police station"
+                      title="Call police station"
+                    >
+                      <PhoneCall />
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Call Police Station</DialogTitle>
+                    </DialogHeader>
+                    <p>Do you want to call the police station?</p>
+                    <DialogFooter>
+                      <button
+                        className="bg-purple-600 text-white px-4 py-2 rounded"
+                        onClick={() => {
+                          window.location.href = "tel:100";
+                          setOpenPoliceDialog(false);
+                        }}
+                      >
+                        Call
+                      </button>
+                      <button
+                        className="bg-gray-300 text-black px-4 py-2 rounded"
+                        onClick={() => setOpenPoliceDialog(false)}
+                      >
+                        Cancel
+                      </button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </CardContent>
             </Card>
             <Card className="w-full">
               <CardContent className="flex flex-wrap gap-2 justify-between">
                 <p>Women&apos;s helpline</p>
-                  <button onClick={() => {if (confirm("Do you want to call the Women Helpline?")) { window.location.href = "tel:1090";}  }}>  
-                    <PhoneCall />
-                  </button>
-                
+                <Dialog
+                  open={openWomenDialog}
+                  onOpenChange={setOpenWomenDialog}
+                >
+                  <DialogTrigger asChild>
+                    <button
+                      onClick={() => setOpenWomenDialog(true)}
+                      aria-label="Call women helpline"
+                      title="Call women helpline"
+                    >
+                      <PhoneCall />
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Call Women Helpline</DialogTitle>
+                    </DialogHeader>
+                    <p>Do you want to call the Women Helpline?</p>
+                    <DialogFooter>
+                      <button
+                        className="bg-purple-600 text-white px-4 py-2 rounded"
+                        onClick={() => {
+                          window.location.href = "tel:1090";
+                          setOpenWomenDialog(false);
+                        }}
+                      >
+                        Call
+                      </button>
+                      <button
+                        className="bg-gray-300 text-black px-4 py-2 rounded"
+                        onClick={() => setOpenWomenDialog(false)}
+                      >
+                        Cancel
+                      </button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </CardContent>
             </Card>
             <Card className="w-full">
               <CardContent className="flex flex-wrap gap-2 justify-between">
                 <p>Support chat </p>
-                <button onClick={() => router.push("/actions/support-chat")}>  
-                  <MessageCircle/>
+                <button
+                  onClick={() => router.push("/actions/support-chat")}
+                  aria-label="Open support chat"
+                  title="Open support chat"
+                >
+                  <MessageCircle />
                 </button>
-                
-                
               </CardContent>
             </Card>
             {/* <Card className="w-full">
