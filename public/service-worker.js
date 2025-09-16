@@ -1,13 +1,13 @@
-// import { precacheAndRoute } from "workbox-precaching";
-// import { registerRoute } from "workbox-routing";
-// import {
-//   NetworkFirst,
-//   CacheFirst,
-//   StaleWhileRevalidate,
-// } from "workbox-strategies";
+import { precacheAndRoute } from "workbox-precaching";
+import { registerRoute } from "workbox-routing";
+import {
+  NetworkFirst,
+  CacheFirst,
+  StaleWhileRevalidate,
+} from "workbox-strategies";
 
 // // Precache files injected by Workbox
-// precacheAndRoute(self.__WB_MANIFEST);
+precacheAndRoute(self.__WB_MANIFEST || []);
 
 // // Custom Push Notification Handler
 // self.addEventListener("push", (event) => {
@@ -23,37 +23,37 @@
 // });
 
 // // Automatically activate the service worker without waiting for it to be controlled
-// self.addEventListener("install", (event) => {
-//   self.skipWaiting();
-// });
+self.addEventListener("install", (event) => {
+  self.skipWaiting();
+});
 
-// self.addEventListener("activate", (event) => {
-//   event.waitUntil(self.clients.claim());
-// });
+self.addEventListener("activate", (event) => {
+  event.waitUntil(self.clients.claim());
+});
 
 // // Cache static resources (e.g., JS, CSS, HTML)
-// registerRoute(
-//   /.*\.(?:js|css|html)$/,
-//   new CacheFirst({
-//     cacheName: "static-resources",
-//   }),
-// );
+registerRoute(
+  /.*\.(?:js|css|html)$/,
+  new StaleWhileRevalidate({
+    cacheName: "static-resources",
+  })
+);
 
 // // Cache images
-// registerRoute(
-//   /\.(?:png|jpg|jpeg|svg|gif|webp)$/,
-//   new CacheFirst({
-//     cacheName: "images",
-//   }),
-// );
+registerRoute(
+  /\.(?:png|jpg|jpeg|svg|gif|webp)$/,
+  new CacheFirst({
+    cacheName: "images",
+  })
+);
 
 // // Cache fonts
-// registerRoute(
-//   /\.(?:woff2|woff|ttf|eot)$/,
-//   new CacheFirst({
-//     cacheName: "fonts",
-//   }),
-// );
+registerRoute(
+  /\.(?:woff2|woff|ttf|eot)$/,
+  new CacheFirst({
+    cacheName: "fonts",
+  })
+);
 
 // // Cache JSON and XML data
 // registerRoute(
