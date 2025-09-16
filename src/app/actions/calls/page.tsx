@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
-import axios from "axios";
+// import axios from "axios";
+import { Contacts as ContactsApi } from "@/lib/api";
 import type { Contact } from "../../../helpers/type.ts";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -304,19 +305,10 @@ export default function ContactsPage() {
   const [editContactId, setEditContactId] = useState<string | null>(null);
   const getContacts = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:5001/contacts/get-all-contacts",
-        {
-          withCredentials: true,
-        }
-      );
-      const data = response.data;
-      console.log("Fetched contacts:", data);
-      setContacts(data.contacts);
-      // console.log("Contacts state updated:", contacts);
+      const data = await ContactsApi.getAll();
+      setContacts(data);
     } catch (error) {
       console.error("Error fetching contacts:", error);
-      return [];
     }
   };
 
@@ -338,14 +330,7 @@ export default function ContactsPage() {
   const onSubmit = async (data: ContactValues) => {
     console.log(data);
     try {
-      const res = await axios.post(
-        "http://localhost:5001/contacts/add-single-contact",
-        data,
-        {
-          withCredentials: true,
-        }
-      );
-      console.log("Contact submitted successfully");
+      const res = await ContactsApi.addSingle(data);
       setContacts((prev) => [...prev, res.data.contact]);
     } catch (error) {
       console.error("Error submitting contacts:", error);
@@ -367,13 +352,7 @@ export default function ContactsPage() {
         email: contact.email?.trim(),
         relationship: contact.relationship?.trim(),
       };
-      const response = await axios.patch(
-        `http://localhost:5001/contacts/update-emergency-contact`,
-        updatedContact,
-        {
-          withCredentials: true,
-        }
-      );
+      const response = await ContactsApi.update(updatedContact as any);
       setContacts((prev) =>
         prev.map((c) => (c.id === contact.id ? response.data.contact : c))
       );
@@ -384,10 +363,7 @@ export default function ContactsPage() {
   };
   const handleDelete = async (contactId?: string) => {
     try {
-      await axios.delete(`http://localhost:5001/contacts/delete-contact`, {
-        data: { contactId: contactId },
-        withCredentials: true,
-      });
+      await ContactsApi.remove(contactId!);
       setContacts((prev) => prev.filter((c) => c.id !== contactId));
     } catch (error) {
       console.error("Error deleting contact:", error);
@@ -410,7 +386,9 @@ export default function ContactsPage() {
       </h1>
 
       <Card className="border p-4 m-2 w-full lg:w-xl md:w-xl">
-        <CardTitle className="text-xl mb-2 font-semibold">Add New Contact</CardTitle>
+        <CardTitle className="text-xl mb-2 font-semibold">
+          Add New Contact
+        </CardTitle>
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent className="flex flex-col gap-4">
             <Label htmlFor="name" className="">

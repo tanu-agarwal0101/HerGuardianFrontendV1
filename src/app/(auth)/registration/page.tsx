@@ -14,8 +14,10 @@ import { ArrowBigRight, ArrowLeft, Globe, Loader } from "lucide-react";
 import Link from "next/link";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
+// import axios from "axios";
+import { Auth } from "@/lib/api";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 // export const metadata: Metadata = {
 //   title: "Registration",
@@ -177,26 +179,20 @@ export default function RegistrationForm() {
   } = form;
 
   const onSubmit = async (data: RegisterValues) => {
-    console.log("Form data:", data);
     try {
-      const res = await axios.post(
-        "http://localhost:5001/users/register",
-        {
-          email: data.email,
-          password: data.password,
-          rememberMe: rememberMe,
-        },
-        { withCredentials: true }
-      );
-      console.log("Response:", res);
+      const res = await Auth.register({
+        firstName: "", // not collected yet
+        lastName: "", // not collected yet
+        email: data.email,
+        password: data.password,
+      });
       if (res.status === 201) {
-        console.log("Registration successful");
-        // Redirect to onboarding page or show success message
+        toast.success("Registration successful! Welcome to HerGuardian.");
         router.push("/onboarding");
       }
     } catch (error) {
       console.error("Registration error:", error);
-      // Handle error (e.g., show a notification)
+      toast.error("Registration failed. Please try again.");
     }
   };
   return (
