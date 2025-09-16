@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "sonner";
 import Header from "@/components/common/header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
@@ -14,17 +15,23 @@ import Footer from "@/components/common/footer";
 import { useRouter } from "next/navigation";
 
 export default function CustomizeStealthPage() {
-  const router = useRouter()
+  const router = useRouter();
   const [stealthMode, setStealthMode] = useState(false);
   const [stealthType, setStealthType] = useState("calculator");
+  const [customPin, setCustomPin] = useState("");
+  const [customKeyword, setCustomKeyword] = useState("");
+  const [customGesture, setCustomGesture] = useState("");
 
   const onSubmit = async () => {
     try {
       const res = await axios.patch(
-        "http://localhost:5001/users/update-stealth",
+        "http://localhost:5000/users/update-stealth",
         {
           stealthMode,
           stealthType,
+          customPin,
+          customKeyword,
+          customGesture,
         },
         {
           withCredentials: true,
@@ -34,13 +41,11 @@ export default function CustomizeStealthPage() {
         }
       );
 
-      alert("Stealth mode configured successfully!");
+      toast.success("Stealth mode configured successfully!");
       router.push("/dashboard");
-      // Optionally redirect
-      // router.push("/dashboard") or show success UI
     } catch (error) {
       console.error("Error setting stealth mode:", error);
-      alert("Failed to set stealth mode. Please try again.");
+      toast.error("Failed to set stealth mode. Please try again.");
     }
   };
 
@@ -63,6 +68,44 @@ export default function CustomizeStealthPage() {
           />
         </div>
         <div className="flex flex-wrap justify-center items-center">
+          <Card className="m-4 p-4 w-fit">
+            <CardTitle>Custom Triggers</CardTitle>
+            <CardContent className="flex flex-col gap-4">
+              <div>
+                <Label htmlFor="custom-pin">Custom PIN</Label>
+                <Input
+                  id="custom-pin"
+                  type="text"
+                  placeholder="e.g. 1234"
+                  value={customPin}
+                  onChange={(e) => setCustomPin(e.target.value)}
+                  maxLength={8}
+                />
+              </div>
+              <div>
+                <Label htmlFor="custom-keyword">Custom Keyword</Label>
+                <Input
+                  id="custom-keyword"
+                  type="text"
+                  placeholder="e.g. alert"
+                  value={customKeyword}
+                  onChange={(e) => setCustomKeyword(e.target.value)}
+                  maxLength={20}
+                />
+              </div>
+              <div>
+                <Label htmlFor="custom-gesture">Custom Gesture</Label>
+                <Input
+                  id="custom-gesture"
+                  type="text"
+                  placeholder="e.g. shake, triple tap"
+                  value={customGesture}
+                  onChange={(e) => setCustomGesture(e.target.value)}
+                  maxLength={20}
+                />
+              </div>
+            </CardContent>
+          </Card>
           <Card className="m-4 p-4 w-fit">
             <CardTitle>Calculator App</CardTitle>
             <CardContent className="w-full flex justify-center items-center">
@@ -123,7 +166,7 @@ export default function CustomizeStealthPage() {
           </Button>
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </div>
   );
 }
