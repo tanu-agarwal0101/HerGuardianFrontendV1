@@ -17,10 +17,15 @@ const LocationMap = dynamic(() => import("./LocationMap"), { ssr: false });
 
 type AddressValues = z.infer<typeof addressSchema>;
 
-export default function AddressForm() {
+interface AddressFormProps {
+  onAdded?: (address: any) => void;
+}
+
+export default function AddressForm({ onAdded }: AddressFormProps) {
   const [useCurrentLocation, setUseCurrentLocation] = useState(false);
   const [loading, setLoading] = useState(false);
   const [map, setMap] = useState(false);
+  const [coordsLoading, setCoordsLoading] = useState(false);
 
   const {
     register,
@@ -56,39 +61,36 @@ export default function AddressForm() {
   };
 
   const fetchCoordinatesFromAddress = async () => {
-    console.log(
-      "Fetching coordinates with the following address:",
-      getValues()
-    );
     const { street, city, state, country, zipCode } = getValues();
-    if (street && city && state && country && zipCode) {
-      try {
-        const fullAddress = `${street.toLowerCase()}, ${city.toLowerCase()}, ${state.toLowerCase()}, ${country.toLowerCase()}`;
-        const url = new URL("https://locationiq.com/v1/search");
-        url.searchParams.append(
-          "key",
-          process.env.NEXT_PUBLIC_LOCATION_IQ_ACCESS_TOKEN || ""
+    if (!(street && city && state && country && zipCode)) return;
+    setCoordsLoading(true);
+    try {
+      const fullAddress = `${street.toLowerCase()}, ${city.toLowerCase()}, ${state.toLowerCase()}, ${country.toLowerCase()}`;
+      const url = new URL("https://locationiq.com/v1/search");
+      url.searchParams.append(
+        "key",
+        process.env.NEXT_PUBLIC_LOCATION_IQ_ACCESS_TOKEN || ""
+      );
+      url.searchParams.append("q", fullAddress);
+      url.searchParams.append("format", "json");
+      const response = await fetch(url.toString());
+      const data = await response.json();
+      if (!Array.isArray(data) || data.length === 0) {
+        toast.error(
+          "Address not found. Try simplifying or double-check the details."
         );
-        url.searchParams.append("q", fullAddress);
-        url.searchParams.append("format", "json");
-        const response = await fetch(url.toString());
-        const data = await response.json();
-        console.log(data);
-        if (data.length === 0) {
-          alert(
-            "Could not find the address. Try removing street info or double-checking it."
-          );
-        } else if (data.length > 0) {
-          const { lat, lon } = data[0];
-          setValue("latitude", parseFloat(lat));
-          setValue("longitude", parseFloat(lon));
-          setMap(true);
-        } else {
-          console.error("No results found for the given address");
-        }
-      } catch (error) {
-        console.error("Error fetching coordinates:", error);
+      } else {
+        const { lat, lon } = data[0];
+        setValue("latitude", parseFloat(lat));
+        setValue("longitude", parseFloat(lon));
+        setMap(true);
+        toast.success("Coordinates fetched.");
       }
+    } catch (error) {
+      console.error("Error fetching coordinates:", error);
+      toast.error("Failed to fetch coordinates.");
+    } finally {
+      setCoordsLoading(false);
     }
   };
 
@@ -166,8 +168,7 @@ export default function AddressForm() {
 
   const saveAddress = async (data: AddressValues) => {
     try {
-      console.log("Form data:", data);
-      await AddressApi.create({
+      const res = await AddressApi.create({
         type: data.type,
         latitude: data.latitude,
         longitude: data.longitude,
@@ -178,25 +179,25 @@ export default function AddressForm() {
         country: data.country,
         zipCode: data.zipCode,
       });
+      const created = (res as any)?.data?.address;
       toast.success("Address added successfully!");
+      if (created) {
+        onAdded?.(created);
+        window.dispatchEvent(
+          new CustomEvent("address:added", { detail: created })
+        );
+      }
     } catch (error) {
       console.error("Error submitting location:", error);
       toast.error("Failed to add address. Please try again.");
     }
   };
   const onSubmit = async () => {
-    console.log("Submitting form with values:", getValues());
-    if (!useCurrentLocation) {
-      await fetchCoordinatesFromAddress();
-    }
-
     const updated = getValues();
-
     if (!updated.latitude || !updated.longitude) {
-      alert("Please fetch coordinates before submitting.");
+      toast.error("Fetch coordinates first.");
       return;
     }
-
     await saveAddress(updated);
   };
 
@@ -221,7 +222,9 @@ export default function AddressForm() {
               {...register("type")}
               placeholder="Eg. Home, college, work, school etc"
             />
-            {errors.type && <p>{errors.type.message}</p>}
+            {errors.type && (
+              <p className="text-red-600 text-sm">{errors.type.message}</p>
+            )}
             <Button
               variant="outline"
               onClick={() => setUseCurrentLocation(!useCurrentLocation)}
@@ -271,7 +274,43 @@ export default function AddressForm() {
                   {...register("zipCode")}
                   placeholder="Enter postal code"
                 />
-                {errors.street && <p>{errors.street.message}</p>}
+                {errors.street && (
+                  <p className="text-red-600 text-sm mt-1">
+                    {errors.street.message}
+                  </p>
+                )}
+                {getValues().latitude && errors.latitude && (
+                  <p className="text-red-600 text-sm mt-1">
+                    {errors.latitude.message}
+                  </p>
+                )}
+                {getValues().longitude && errors.longitude && (
+                  <p className="text-red-600 text-sm mt-1">
+                    {errors.longitude.message}
+                  </p>
+                )}
+                <Button
+                  type="button"
+                  onClick={fetchCoordinatesFromAddress}
+                  disabled={
+                    coordsLoading ||
+                    !getValues().street ||
+                    !getValues().city ||
+                    !getValues().state ||
+                    !getValues().country ||
+                    !getValues().zipCode
+                  }
+                  className="mt-2"
+                >
+                  {coordsLoading ? (
+                    <span className="flex items-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Fetching...
+                    </span>
+                  ) : (
+                    "Get Coordinates"
+                  )}
+                </Button>
               </>
             )}
             <Label htmlFor="latitude">Latitude</Label>
@@ -281,11 +320,11 @@ export default function AddressForm() {
               {...register("latitude", { valueAsNumber: true })}
               readOnly
             />
-            {errors.latitude && <p>{errors.latitude.message}</p>}
-            <Button onClick={() => fetchCoordinatesFromAddress()}>
-              Get coordinates
-            </Button>
-
+            {getValues().latitude && errors.latitude && (
+              <p className="text-red-600 text-sm mt-1">
+                {errors.latitude.message}
+              </p>
+            )}
             <Label htmlFor="longitude">Longitude</Label>
             <Input
               id="longitude"
@@ -293,7 +332,11 @@ export default function AddressForm() {
               {...register("longitude", { valueAsNumber: true })}
               readOnly
             />
-            {errors.longitude && <p>{errors.longitude.message}</p>}
+            {getValues().longitude && errors.longitude && (
+              <p className="text-red-600 text-sm mt-1">
+                {errors.longitude.message}
+              </p>
+            )}
             {/* <Label htmlFor="radiusMeters">
               Radius (in meters) that can be considered in safe zone
             </Label>
