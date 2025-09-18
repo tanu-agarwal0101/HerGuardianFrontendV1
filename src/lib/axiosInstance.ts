@@ -1,5 +1,9 @@
 import axios from "axios";
 
+// In-memory access token cache populated after refresh/login responses
+let accessTokenCache: string | null = null;
+let accessTokenExpiryEpoch = 0; // ms epoch
+
 let isRefreshing = false;
 let failedQueue: any[] = [];
 
@@ -19,8 +23,36 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 
+// Attach Authorization header if we have a cached token
+axiosInstance.interceptors.request.use((config) => {
+  if (accessTokenCache) {
+    config.headers = config.headers || {};
+    if (!config.headers["Authorization"]) {
+      config.headers["Authorization"] = `Bearer ${accessTokenCache}`;
+    }
+  }
+  return config;
+});
+
 axiosInstance.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // If auth endpoints return tokens, capture them
+    if (
+      response.config.url?.includes("/users/login") ||
+      response.config.url?.includes("/users/register")
+    ) {
+      const newToken = response.data?.accessToken; // backend currently not returning accessToken on login/register; future-proof
+      const expiresIn = response.data?.expiresIn; // seconds
+      if (newToken && expiresIn) {
+        accessTokenCache = newToken;
+        accessTokenExpiryEpoch = Date.now() + expiresIn * 1000;
+      } else if (expiresIn) {
+        // We only got expiresIn (current backend) – no token body; cookies will hold tokens
+        accessTokenExpiryEpoch = Date.now() + expiresIn * 1000;
+      }
+    }
+    return response;
+  },
   async (error) => {
     const originalRequest = error.config;
     if (error.response?.status === 401 && !originalRequest._retry) {
@@ -42,9 +74,14 @@ axiosInstance.interceptors.response.use(
       try {
         const res = await axiosInstance.post("/users/refresh-token");
         const newAccessToken = res.data?.accessToken;
+        const expiresIn = res.data?.expiresIn; // seconds
         if (newAccessToken) {
+          accessTokenCache = newAccessToken;
           axiosInstance.defaults.headers.common["Authorization"] =
             `Bearer ${newAccessToken}`;
+        }
+        if (expiresIn) {
+          accessTokenExpiryEpoch = Date.now() + expiresIn * 1000;
         }
         processQueue(null, newAccessToken || null);
         return axiosInstance(originalRequest);
@@ -61,3 +98,9 @@ axiosInstance.interceptors.response.use(
 );
 
 export default axiosInstance;
+
+// Export simple accessors (will be used by passive refresh scheduler)
+export const getAccessTokenMeta = () => ({
+  token: accessTokenCache,
+  expiresAt: accessTokenExpiryEpoch,
+});

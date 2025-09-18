@@ -77,8 +77,8 @@ export default function MobileDrawer({
                 animate={{ opacity: 1, translateY: 0 }}
                 transition={{ delay: 0.8, duration: 0.5 }}
               >
-                <Link href="/contact" className="text-lg font-medium text-gray-800">
-                  Contact
+                <Link href="/profile" className="text-lg font-medium text-gray-800">
+                  Profile
                 </Link>
               </motion.div>
             </motion.nav>

@@ -1,7 +1,7 @@
 "use client";
 import { useUserStore } from "@/store/userStore";
 // components/LoginFormDialog.tsx
- // This is needed for client-side interactivity
+// This is needed for client-side interactivity
 
 import { useState } from "react";
 import {
@@ -34,6 +34,13 @@ export function LogoutDialog({
     try {
       const res = await Users.logout();
       if (res.status === 200) {
+        // Clear cookies on logout
+        document.cookie =
+          "stealthMode=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        document.cookie =
+          "stealthType=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        document.cookie =
+          "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         toast.success("Logged out successfully.");
         router.push("/");
       }
@@ -41,6 +48,12 @@ export function LogoutDialog({
       console.error("Logout failed:", error);
       toast.error("Logout failed. Please try again.");
     }
+    // Always clear cookies even if API fails
+    document.cookie =
+      "stealthMode=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie =
+      "stealthType=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     logoutStore();
     setOpen(false);
   };

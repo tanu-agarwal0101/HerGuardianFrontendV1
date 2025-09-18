@@ -22,7 +22,7 @@ export default function Header() {
           <ShieldCheck />
           HerGuardian
         </h1>
-        <span className="bg-green-200/90 text-green-700 p-1 w-fit h-fit flex">
+        <span className="bg-green-300/90 p-1 rounded-lg text-green-700 w-fit h-fit flex">
           <CheckCircle className="text-green-700" />
           You&apos;re Safe
         </span>
