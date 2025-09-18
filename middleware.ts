@@ -15,9 +15,6 @@
 //   return NextResponse.next();
 // }
 
-
-
-
 // src/middleware.ts
 // import { NextRequest, NextResponse } from "next/server";
 
@@ -40,13 +37,10 @@
 //   return NextResponse.next();
 // }
 
-
 // // Apply middleware only to root route or specific pages
 // export const config = {
 //   matcher: ["/", "/stealth"],
 // };
-
-
 
 // src/middleware.ts
 import { NextRequest, NextResponse } from "next/server";
@@ -54,22 +48,37 @@ import { NextRequest, NextResponse } from "next/server";
 export function middleware(request: NextRequest) {
   const stealthMode = request.cookies.get("stealthMode")?.value;
   const stealthType = request.cookies.get("stealthType")?.value || "calculator";
+  const token = request.cookies.get("token")?.value;
+  const rememberMe = request.cookies.get("rememberMe")?.value === "true";
+  const url = request.nextUrl.clone();
 
-  console.log("🍪 Middleware running...");
-  console.log("🕵️ Stealth mode:", stealthMode);
-  console.log("📓 Stealth type:", stealthType);
-  console.log("📍 Pathname:", request.nextUrl.pathname);
-
-  if (stealthMode === "true" && request.nextUrl.pathname === "/") {
-    const redirectUrl = new URL(`/stealth/${stealthType}`, request.url);
-    console.log("➡️ Redirecting to:", redirectUrl.toString());
-    return NextResponse.redirect(redirectUrl);
+  // If no session, redirect to landing (except for landing itself)
+  if (!token && url.pathname !== "/") {
+    url.pathname = "/";
+    return NextResponse.redirect(url);
+  }
+  // Enforce rememberMe requirement for stealth entry or direct stealth navigation
+  if (
+    url.pathname.startsWith("/stealth") &&
+    (!rememberMe || stealthMode !== "true")
+  ) {
+    url.pathname = "/dashboard";
+    return NextResponse.redirect(url);
   }
 
+  // If stealthMode true & rememberMe, redirect / to /stealth/[type]
+  if (stealthMode === "true" && rememberMe && url.pathname === "/") {
+    url.pathname = `/stealth/${stealthType}`;
+    return NextResponse.redirect(url);
+  }
+  // If stealthMode false, redirect / to /dashboard
+  if (stealthMode !== "true" && url.pathname === "/") {
+    url.pathname = "/dashboard";
+    return NextResponse.redirect(url);
+  }
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/"], // Only runs on exact "/"
+  matcher: ["/", "/dashboard", "/stealth/:path*", "/"],
 };
-
