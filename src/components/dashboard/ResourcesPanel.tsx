@@ -113,118 +113,67 @@ export function ResourcesPanel() {
     //   </div>
     // </Card>
 
-    <Card className="px-8 py-4 w-sm md:w-lg h-110">
-      <CardTitle>
-        <h1 className="text-2xl text-purple-500 font-bold text-center">
-          Emergency Resources Panel
-        </h1>
-        <p className="text-gray-600 mt-2 text-center">
-          People who will be notified in emergencies
-        </p>
-      </CardTitle>
+    <Card className="flex flex-col h-full shadow-md p-4">
+       <CardHeader className="">
+        <CardTitle className="text-xl font-bold text-primary">
+          Emergency Resources
+        </CardTitle>
+        <p className="text-sm text-muted-foreground">Quick access to official help.</p>
+      </CardHeader>
 
-      {/* contacts */}
-      <div className="flex flex-col gap-4 capitalize h-full justify-center">
-        <Card className="w-full">
-          <CardContent className="flex flex-wrap gap-2 justify-between">
-            <p>nearest police station</p>
-            {/* add location and phone number */}
-            <Dialog open={openPoliceDialog} onOpenChange={setOpenPoliceDialog}>
-              <DialogTrigger asChild>
-                <button
-                  onClick={() => setOpenPoliceDialog(true)}
-                  aria-label="Call police station"
-                  title="Call police station"
-                >
-                  <PhoneCall />
-                </button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Call Police Station</DialogTitle>
-                </DialogHeader>
-                <p>Do you want to call the police station?</p>
-                <DialogFooter>
-                  <button
-                    className="bg-purple-600 text-white px-4 py-2 rounded"
-                    onClick={() => {
-                      window.location.href = "tel:100";
-                      setOpenPoliceDialog(false);
-                    }}
-                  >
-                    Call
-                  </button>
-                  <button
-                    className="bg-gray-300 text-black px-4 py-2 rounded"
-                    onClick={() => setOpenPoliceDialog(false)}
-                  >
-                    Cancel
-                  </button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </CardContent>
-        </Card>
-        <Card className="w-full">
-          <CardContent className="flex flex-wrap gap-2 justify-between">
-            <p>Women&apos;s helpline</p>
+      <CardContent className="flex flex-col gap-3 flex-1 overflow-y-auto max-h-[300px]">
+        {/* Police */}
+         <div className="flex items-center justify-between p-3 border border-border/50 bg-muted/10 rounded-lg">
+             <span className="font-medium text-sm">Police Station (100)</span>
+             <Dialog open={openPoliceDialog} onOpenChange={setOpenPoliceDialog}>
+                <DialogTrigger asChild>
+                    <Button variant="ghost" size="icon" className="text-primary bg-primary/10 hover:bg-primary hover:text-white" onClick={() => setOpenPoliceDialog(true)}>
+                        <PhoneCall className="h-4 w-4" />
+                    </Button>
+                </DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Call Police Station</DialogTitle>
+                    </DialogHeader>
+                     <p className="py-4">Do you want to call the Police Station?</p>
+                    <DialogFooter>
+                        <Button variant="ghost" onClick={() => setOpenPoliceDialog(false)}>Cancel</Button>
+                        <Button onClick={() => { window.location.href = "tel:100"; setOpenPoliceDialog(false); }}>Call</Button>
+                    </DialogFooter>
+                </DialogContent>
+             </Dialog>
+         </div>
+
+         {/* Women's Helpline */}
+         <div className="flex items-center justify-between p-3 border border-border/50 bg-muted/10 rounded-lg">
+             <span className="font-medium text-sm">Women's Helpline (1090)</span>
             <Dialog open={openWomenDialog} onOpenChange={setOpenWomenDialog}>
-              <DialogTrigger asChild>
-                <button
-                  onClick={() => setOpenWomenDialog(true)}
-                  aria-label="Call women helpline"
-                  title="Call women helpline"
-                >
-                  <PhoneCall />
-                </button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Call Women Helpline</DialogTitle>
-                </DialogHeader>
-                <p>Do you want to call the Women Helpline?</p>
-                <DialogFooter>
-                  <button
-                    className="bg-purple-600 text-white px-4 py-2 rounded"
-                    onClick={() => {
-                      window.location.href = "tel:1090";
-                      setOpenWomenDialog(false);
-                    }}
-                  >
-                    Call
-                  </button>
-                  <button
-                    className="bg-gray-300 text-black px-4 py-2 rounded"
-                    onClick={() => setOpenWomenDialog(false)}
-                  >
-                    Cancel
-                  </button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </CardContent>
-        </Card>
-        <Card className="w-full">
-          <CardContent className="flex flex-wrap gap-2 justify-between">
-            <p>Support chat </p>
-            <button
-              onClick={() => router.push("/actions/support-chat")}
-              aria-label="Open support chat"
-              title="Open support chat"
-            >
-              <MessageCircle />
-            </button>
-          </CardContent>
-        </Card>
-        {/* <Card className="w-full">
-              <CardContent className="flex flex-wrap gap-2 justify-between">
-                <p>John Doe</p>
-                
-                  <PhoneCall />
-                
-              </CardContent>
-            </Card> */}
-      </div>
+                <DialogTrigger asChild>
+                    <Button variant="ghost" size="icon" className="text-primary bg-primary/10 hover:bg-primary hover:text-white" onClick={() => setOpenWomenDialog(true)}>
+                        <PhoneCall className="h-4 w-4" />
+                    </Button>
+                </DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Call Women's Helpline</DialogTitle>
+                    </DialogHeader>
+                     <p className="py-4">Do you want to call the Women's Helpline?</p>
+                    <DialogFooter>
+                        <Button variant="ghost" onClick={() => setOpenWomenDialog(false)}>Cancel</Button>
+                        <Button onClick={() => { window.location.href = "tel:1090"; setOpenWomenDialog(false); }}>Call</Button>
+                    </DialogFooter>
+                </DialogContent>
+             </Dialog>
+         </div>
+
+         {/* Support Chat */}
+         {/* <div className="flex items-center justify-between p-3 border border-border/50 bg-muted/10 rounded-lg">
+             <span className="font-medium text-sm">Anonymous Support Chat</span>
+             <Button variant="ghost" size="icon" className="text-primary bg-primary/10 hover:bg-primary hover:text-white" onClick={() => router.push("/actions/support-chat")}>
+                <MessageCircle className="h-4 w-4" />
+             </Button>
+         </div> */}
+      </CardContent>
     </Card>
   );
 }

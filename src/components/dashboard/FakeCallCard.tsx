@@ -1,6 +1,7 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
-import { Card, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Settings2, PhoneCall } from "lucide-react";
 import dynamic from "next/dynamic";
@@ -55,58 +56,65 @@ export function FakeCallCard() {
   }, [pending, countdown]);
 
   return (
-    <Card className="relative flex flex-col items-center gap-4 p-4 w-sm md:w-lg">
-      <CardTitle className="text-center">
-        <h1 className="text-2xl text-purple-500 font-bold">Fake Call</h1>
-        <button
-          className="absolute right-4 top-4 text-gray-600 hover:text-purple-600"
-          onClick={() => setOpenSettings(true)}
-          aria-label="Open fake call settings"
-        >
-          <Settings2 />
-        </button>
-        <p className="text-gray-600 text-center text-sm max-w-sm">
-          Trigger a fake incoming call to help exit unsafe or uncomfortable
-          situations.
-        </p>
-      </CardTitle>
+    <Card className="relative flex flex-col h-full shadow-md hover:shadow-lg transition-all p-4">
+      <CardHeader className="">
+         <div className="flex justify-between items-start">
+            <div>
+                <CardTitle className="text-xl font-bold text-primary">Fake Call</CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">
+                    Trigger a fake incoming call to exit unsafe situations.
+                </p>
+            </div>
+                <Button variant="ghost" size="icon" onClick={() => setOpenSettings(true)}>
+                <Settings2 className="h-4 w-4" />
+            </Button>
+         </div>
+      </CardHeader>
 
-      <Button
-        className="w-36 h-36 rounded-full bg-purple-600 text-white hover:bg-purple-700 flex flex-col items-center justify-center"
-        onClick={schedule}
-        disabled={pending}
-        aria-live="polite"
-      >
-        <PhoneCall className="w-10 h-10" />
-        {pending && countdown !== null && (
-          <span className="mt-2 text-sm font-semibold animate-pulse">
-            In {countdown}s
-          </span>
-        )}
-      </Button>
-      <div className="text-gray-600 text-sm">
-        Delay:{" "}
-        <select
-          className="bg-white text-black rounded px-3 py-1 border"
-          value={delay}
-          onChange={(e) => setDelay(Number(e.target.value))}
-          aria-label="Fake call delay"
+      <CardContent className="flex-1 flex flex-col items-center justify-center gap-6">
+        <Button
+            size="lg"
+            className="w-24 h-24 rounded-full bg-primary hover:bg-primary/90 flex flex-col items-center justify-center shadow-xl hover:scale-105 transition-all"
+            onClick={schedule}
+            disabled={pending}
         >
-          {[0, 5, 10, 30].map((v) => (
-            <option value={v} key={v}>
-              {v}s
-            </option>
-          ))}
-        </select>
-      </div>
+            <PhoneCall className="w-10 h-10" />
+            {pending && countdown !== null && (
+            <span className="mt-1 text-xs font-semibold animate-pulse absolute -bottom-8 text-foreground">
+                In {countdown}s
+            </span>
+            )}
+        </Button>
+        
+        <div className="text-sm text-muted-foreground flex items-center gap-2 bg-muted/50 px-3 py-1 rounded-md">
+            <span>Delay:</span>
+            <select title="delay"
+            className="bg-transparent font-medium text-foreground focus:outline-none cursor-pointer"
+            value={delay}
+            onChange={(e) => setDelay(Number(e.target.value))}
+            >
+            {[0, 5, 10, 30].map((v) => (
+                <option value={v} key={v}>
+                {v}s
+                </option>
+            ))}
+            </select>
+        </div>
+      </CardContent>
+
       {openSettings && (
-        <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-40">
-          <FakeCallSettings
-            onSave={(s: any) => {
-              setSettings(s);
-              setOpenSettings(false);
-            }}
-          />
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+          <Card className="w-full max-w-md">
+             <FakeCallSettings
+                onSave={(s: any) => {
+                setSettings(s);
+                setOpenSettings(false);
+                }}
+            />
+             <div className="p-4 pt-0 flex justify-end">
+                <Button variant="ghost" onClick={() => setOpenSettings(false)}>Cancel</Button>
+            </div>
+          </Card>
         </div>
       )}
       {fakeCall && (

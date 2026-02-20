@@ -10,6 +10,9 @@ import { ResourcesPanel } from "@/components/dashboard/ResourcesPanel";
 import { FakeCallCard } from "@/components/dashboard/FakeCallCard";
 import { SafetyCircleCard } from "@/components/dashboard/SafetyCircleCard";
 import { motion } from "motion/react";
+import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { enableNotifications } from "@/lib/notificationsService";
 
 export default function Dashboard() {
   const { stealth } = useUserStore();
@@ -79,69 +82,95 @@ export default function Dashboard() {
       >
         <HeroCard />
       </motion.div>
-      {/* <section className="flex flex-col lg:flex-row justify-center items-center  gap-2 py-4 ">
-        <div className="flex lg:flex-col md:flex-row flex-wrap md:w-full justify-center p-2 lg:w-1/2  gap-2 ">
-          <SosCard />
-          <SafetyTimerCard />
-        </div>
-        <div className="flex lg:flex-col md:flex-row  flex-wrap lg:w-1/3 justify-center">
-          <QuickActionsCard />
-          <SafetyCircleCard />
-        </div>
+
+      <section className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Primary Safety Tools */}
+          <motion.div 
+             initial={{ opacity: 0, scale: 0.95 }}
+             animate={{ opacity: 1, scale: 1 }}
+             transition={{ duration: 0.4, delay: 0.1 }}
+             className="h-full"
+          >
+             <SosCard />
+          </motion.div>
+
+          <motion.div
+             initial={{ opacity: 0, scale: 0.95 }}
+             animate={{ opacity: 1, scale: 1 }}
+             transition={{ duration: 0.4, delay: 0.1 }}
+             className="h-full"
+          >
+             <SafetyTimerCard />
+          </motion.div>
+
+          {/* Secondary Actions & Info */}
+          <div className="space-y-6">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.2 }}
+             >
+                <SafetyCircleCard />
+             </motion.div>
+             <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.3 }}
+             >
+                <ResourcesPanel />
+             </motion.div>
+          </div>
+
+          <div className="space-y-6">
+             <motion.div
+                 initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.2 }}
+             >
+                 <QuickActionsCard />
+             </motion.div>
+              <motion.div
+                 initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.3 }}
+             >
+                 <FakeCallCard />
+             </motion.div>
+          </div>
       </section>
-
-      <section className="flex flex-wrap justify-center w-full p-2 gap-8 md:px-14">
-        <FakeCallCard />
-        <ResourcesPanel />
-      </section> */}
-
-      <section className="p-2 grid  mt-6 grid-cols-1 md:grid-cols-1 xl:grid-cols-2">
-        <div className="p-2 grid justify-center items-center gap-2">
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, delay: 0.05 }}
-          >
-            <SosCard />
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, delay: 0.15 }}
-          >
-            <QuickActionsCard />
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, delay: 0.25 }}
-          >
-            <FakeCallCard />
-          </motion.div>
-        </div>
-        <div className="p-2 grid justify-center items-center gap-2">
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, delay: 0.1 }}
-          >
-            <SafetyTimerCard />
-          </motion.div>
-          <motion.div
-            className=""
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, delay: 0.2 }}
-          >
-            <SafetyCircleCard />
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, delay: 0.3 }}
-          >
-            <ResourcesPanel />
-          </motion.div>
+      <section className="mt-6">
+        <h2 className="text-xl font-semibold mb-2">Quick Actions</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <Link href="/dashboard/chat">
+            <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer">
+              <CardHeader className="p-0 mb-2">
+                <CardTitle className="text-lg">Chatbot</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0 text-sm text-gray-600">
+                Talk to HerGuardian in real time.
+              </CardContent>
+            </Card>
+          </Link>
+          <Link href="/dashboard/logs">
+            <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer">
+              <CardHeader className="p-0 mb-2">
+                <CardTitle className="text-lg">Logs & SOS History</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0 text-sm text-gray-600">
+                Review recent SOS alerts and locations.
+              </CardContent>
+            </Card>
+          </Link>
+          <button onClick={() => enableNotifications()}>
+            <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer">
+              <CardHeader className="p-0 mb-2">
+                <CardTitle className="text-lg">Enable Notifications</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0 text-sm text-gray-600">
+                Allow alerts and updates from HerGuardian.
+              </CardContent>
+            </Card>
+          </button>
         </div>
       </section>
     </div>

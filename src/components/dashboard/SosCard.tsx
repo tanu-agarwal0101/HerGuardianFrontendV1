@@ -1,68 +1,51 @@
 "use client";
 import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { triggerSOS } from "@/lib/sosTrigger";
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 
 export function SosCard() {
   return (
-    // <Card className="relative flex flex-col items-center gap-4 p-4">
-    //   <h2 className="text-xl font-semibold text-purple-600">Emergency SOS</h2>
-    //   <p className="text-gray-600 text-center text-sm">
-    //     Activate in case of emergency to alert your contacts.
-    //   </p>
-    //   <div className="relative">
-    //     <Button
-    //       aria-label="Activate emergency SOS"
-    //       className="relative z-10 bg-red-600 hover:bg-red-700 text-white rounded-full w-40 h-40 text-center flex items-center justify-center font-semibold text-lg"
-    //       onClick={triggerSOS}
-    //     >
-    //       Activate
-    //     </Button>
-    //     <motion.span
-    //       aria-hidden
-    //       className="absolute inset-0 w-40 h-40 rounded-full bg-red-400/40"
-    //       initial={{ scale: 0.7, opacity: 0.6 }}
-    //       animate={{ scale: [0.7, 1.4], opacity: [0.6, 0] }}
-    //       transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-    //     />
-    //   </div>
-    //   <p className="text-gray-500 text-xs">
-    //     Long press mobile power + Activate for escalation (future hint)
-    //   </p>
-    // </Card>
-
-    <Card className="flex flex-col justify-center items-center gap-4 h-100 p-2 w-sm md:w-lg">
-      <h1 className="text-2xl font-bold text-purple-500 text">Emergency SOS</h1>
-      <p className="text-gray-600">
-        Activate in case of emergency to alert your contacts
-      </p>
-      <Button
-        className="bg-red-500 text-white rounded-full w-40 text-center h-40 hover:bg-red-700"
-        onClick={triggerSOS}
-      >
-        Activate SOS
-        {/* <AnimatePresence>
+    <Card className="flex flex-col items-center justify-between p-6 shadow-lg border-destructive/20 dark:border-destructive/30">
+      <CardHeader className="p-0 text-center space-y-2 w-full">
+        <CardTitle className="text-2xl font-bold text-destructive">
+          Emergency SOS
+        </CardTitle>
+        <p className="text-muted-foreground text-sm">
+          Activate to immediately alert your emergency contacts and share your live location.
+        </p>
+      </CardHeader>
+      
+      <CardContent className="flex flex-col items-center justify-center py-6 w-full">
+        <div className="relative flex items-center justify-center">
+            {/* Pulsing Effect */}
+            <motion.div
+                className="absolute w-48 h-48 rounded-full bg-destructive/20"
+                animate={{ scale: [1, 1.5], opacity: [0.5, 0] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
+            />
+            <motion.div
+                className="absolute w-48 h-48 rounded-full bg-destructive/20"
+                animate={{ scale: [1, 1.25], opacity: [0.5, 0] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeOut", delay: 0.5 }}
+            />
             
-            </AnimatePresence> */}
-        <motion.div
-          className="absolute bg-white w-40 h-40 rounded-full border-6 border-red-00"
-          initial={{ opacity: 0.5, scale: 0 }}
-          animate={{
-            opacity: [0.5, 0],
-            scale: [1, 1.5],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        ></motion.div>
-      </Button>
-      <p className="text-gray-600">
-        Long press to activate emergency mode and alert everyone
-      </p>
+            <Button
+                size="lg"
+                variant="destructive"
+                className="w-40 h-40 rounded-full text-xl font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all z-10 border-4 border-background"
+                onClick={triggerSOS}
+            >
+                ACTIVATE
+            </Button>
+        </div>
+      </CardContent>
+
+      <div className="text-xs text-destructive-foreground/80 text-center bg-destructive/10 px-4 py-2 rounded-full">
+        Long press for 3s to trigger silently
+      </div>
     </Card>
   );
 }
+

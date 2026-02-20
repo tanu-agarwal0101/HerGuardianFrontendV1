@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { PhoneCall, Lock, Plus } from "lucide-react";
 import {
   Dialog,
@@ -40,33 +41,37 @@ const router = useRouter()
       };
 
   return (
-    <Card className="p-4 flex flex-col gap-4 w-sm md:w-lg h-110">
-      <CardHeader className="p-0 text-center">
-        <CardTitle className="text-purple-500 text-2xl font-bold">
-          My Safety Circle
-        </CardTitle>
-        <p className="text-gray-600 text-md font-semibold">People notified in emergencies.</p>
+    <Card className="flex flex-col h-full shadow-md p-4">
+      <CardHeader className="">
+        <div className="flex justify-between items-center">
+             <CardTitle className="text-xl font-bold text-primary">
+                My Safety Circle
+            </CardTitle>
+            <Button variant="ghost" size="sm" className="text-primary gap-1" onClick={()=> router.push("/actions/calls")}>
+                <Plus className="h-4 w-4" /> Add
+            </Button>
+        </div>
+        <p className="text-sm text-muted-foreground">People notified in emergencies.</p>
       </CardHeader>
-      <CardContent className="flex flex-col gap-2 p-0 h-full items-center justify-center">
-        {contacts.length === 0 && (
-          <div className="">
-            <p className="text-gray-500 text-center text-lg">
+      <CardContent className="flex flex-col gap-2 flex-1 overflow-y-auto max-h-[300px] scrollbar-thin">
+        {contacts.length === 0 ? (
+          <div className="flex flex-col items-center justify-center flex-1 h-full py-8 space-y-4">
+            <p className="text-muted-foreground text-center">
               No contacts added yet
             </p>
-                      <button type="button" className="text-purple-500 hover:underline text-xl w-full font-semibold flex justify-center items-center gap-2"
-                      onClick={()=> router.push("/actions/calls")}>
-              Add <Plus />
-            </button>
+            <Button variant="outline" onClick={()=> router.push("/actions/calls")}>
+                Add Trusted Contact
+            </Button>
           </div>
-        )}
-        <ul className="flex flex-col gap-2">
+        ) : (
+             <ul className="flex flex-col gap-2">
           {contacts.map((c) => (
             <li
               key={c.id}
-              className="border rounded-md p-2 flex items-center justify-between"
+              className="border border-border/50 bg-muted/20 rounded-lg p-3 flex items-center justify-between hover:bg-muted/40 transition-colors"
             >
-              <span>{c.name}</span>
-              <div className="flex gap-4 items-center">
+              <span className="font-medium">{c.name}</span>
+              <div className="flex gap-2 items-center">
                 <Dialog
                   open={openContactDialog === c.id}
                   onOpenChange={(open) =>
@@ -74,50 +79,51 @@ const router = useRouter()
                   }
                 >
                   <DialogTrigger asChild>
-                    <button
+                    <Button
+                      variant="ghost" size="icon"
                       onClick={() => setOpenContactDialog(c.id)}
-                      aria-label={`Call ${c.name}`}
-                      className="text-green-600 hover:scale-105"
+                      className="text-green-600 hover:text-green-700 hover:bg-green-100 dark:hover:bg-green-900/30"
                     >
-                      <PhoneCall />
-                    </button>
+                      <PhoneCall className="h-4 w-4" />
+                    </Button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
                       <DialogTitle>Call {c.name}</DialogTitle>
                     </DialogHeader>
-                    <p>
-                      Do you want to call {c.name} at {c.phoneNumber}?
+                    <p className="py-4">
+                      Do you want to call {c.name} at <span className="font-mono bg-muted px-2 py-1 rounded">{c.phoneNumber}</span>?
                     </p>
                     <DialogFooter>
-                      <button
-                        className="bg-purple-600 text-white px-4 py-2 rounded"
+                      <Button
+                        variant="ghost"
+                        onClick={() => setOpenContactDialog(null)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
                         onClick={() =>
                           (window.location.href = `tel:${c.phoneNumber}`)
                         }
                       >
-                        Call
-                      </button>
-                      <button
-                        className="bg-gray-300 text-black px-4 py-2 rounded"
-                        onClick={() => setOpenContactDialog(null)}
-                      >
-                        Cancel
-                      </button>
+                        Call Now
+                      </Button>
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
-                <button
+                <Button
+                  variant="ghost" size="icon"
                   onClick={() => handleEdit(c.id)}
-                  aria-label="Edit contact"
-                  className="text-blue-500 hover:text-blue-700"
+                  className="text-muted-foreground hover:text-primary"
                 >
-                  <Lock />
-                </button>
+                  <Lock className="h-4 w-4" />
+                </Button>
               </div>
             </li>
           ))}
         </ul>
+        )}
+       
       </CardContent>
     </Card>
   );
