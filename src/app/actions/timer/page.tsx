@@ -10,6 +10,7 @@ import { Play, Pause, StopCircle } from "lucide-react";
 import CircularProgress from "@mui/material/CircularProgress";
 // import axiosInstance from "@/lib/axiosInstance";
 import { Timer } from "@/lib/api";
+import { getCurrentLocation, logLocation } from "@/lib/locationService";
 
 export default function SafetyTimer() {
   const [duration, setDuration] = useState(30);
@@ -20,46 +21,88 @@ export default function SafetyTimer() {
   const [loading, setLoading] = useState(false);
   const [latitude, setLatitude] = useState<number>(0);
   const [longitude, setLongitude] = useState<number>(0);
+  const [currentTimerId, setCurrentTimerId] = useState<string | null>(null);
 
   const startTimer = async () => {
     try {
+      setLoading(true);
+      let loc: { latitude: number; longitude: number } | null = null;
+
       if (shareLocation) {
-        setLoading(true);
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-            (position) => {
-              setLatitude(parseFloat(position.coords.latitude.toFixed(6)));
-              setLongitude(parseFloat(position.coords.longitude.toFixed(6)));
-            },
-            (error) => {
-              alert("Unable to retrieve location");
-              console.error(error);
-            }
-          );
-        } else {
-          alert("Geolocation is not supported by this browser.");
+        loc = await getCurrentLocation();
+        if (loc) {
+          setLatitude(loc.latitude);
+          setLongitude(loc.longitude);
         }
-        setLoading(false);
       }
-      await Timer.start({ duration, shareLocation, latitude, longitude });
+
+      const response = await Timer.start({
+        duration,
+        shareLocation: !!loc,
+        latitude: loc?.latitude,
+        longitude: loc?.longitude,
+      });
+
+      const timerId = response?.data?.timer?.id;
+      if (timerId) setCurrentTimerId(timerId);
+
+      // Log location snapshot when timer starts (if location was captured)
+      if (loc && timerId) {
+        await logLocation({
+          latitude: loc.latitude,
+          longitude: loc.longitude,
+          timerId,
+          event: "started",
+        });
+      }
+
       setCountdown(duration * 60);
       setTimerActive(true);
     } catch (e) {
-      console.error("Failed to start timer");
+      console.error("Failed to start timer:", e);
+      toast.error("Failed to start timer. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   const cancelTimer = async () => {
+    const wasActive = timerActive;
     setCountdown(null);
     setTimerActive(false);
-    // notify backend
+
+    // Log location snapshot when timer is cancelled
+    if (wasActive && currentTimerId) {
+      const loc = await getCurrentLocation();
+      if (loc) {
+        await logLocation({
+          latitude: loc.latitude,
+          longitude: loc.longitude,
+          timerId: currentTimerId,
+          event: "cancelled",
+        });
+      }
+    }
+
+    setCurrentTimerId(null);
+
     try {
       await Timer.cancel();
       console.log("Timer cancelled successfully");
     } catch (e) {
-      console.error("Failed to cancel timer");
+      console.error("Failed to cancel timer:", e);
     }
   };
+
+
+  const expiryHandled = React.useRef(false);
+
+  // Reset expiry ref when timer starts
+  useEffect(() => {
+    if (timerActive) {
+      expiryHandled.current = false;
+    }
+  }, [timerActive]);
 
   useEffect(() => {
     let interval: any;
@@ -68,12 +111,38 @@ export default function SafetyTimer() {
         setCountdown((prev) => (prev ? prev - 1 : 0));
       }, 1000);
     } else if (countdown === 0) {
+        // Prevent double execution
+       if (expiryHandled.current) return;
+       expiryHandled.current = true;
+
       setTimerActive(false);
       toast.error("Safety timer expired! SOS has been sent to your contacts.");
+
+      // Log location snapshot when timer expires
+      // "Second Chance" logic: Always try to get location, but fail silently if denied
+      if (currentTimerId) {
+        getCurrentLocation()
+            .then((loc) => {
+                if (loc) {
+                    logLocation({
+                    latitude: loc.latitude,
+                    longitude: loc.longitude,
+                    timerId: currentTimerId,
+                    event: "expired",
+                    });
+                }
+            })
+            .catch((err) => {
+                // User denied or failed; respect wish and proceed without location
+                console.log("Location not shared on expiry:", err);
+            });
+      }
+
+      setCurrentTimerId(null);
     }
 
     return () => clearInterval(interval);
-  }, [countdown]);
+  }, [countdown, currentTimerId]);
 
   useEffect(() => {
     let animationFrame: number;

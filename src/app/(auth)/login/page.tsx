@@ -10,14 +10,15 @@ import { CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { useUserStore } from "@/store/userStore";
 // import { zodResolver } from "@hookform/resolvers/zod";
 // import axios from "axios";
-import { Auth } from "@/lib/api";
+import { Auth, Users } from "@/lib/api";
+import { notifyError } from "@/lib/httpErrors";
+import { useUserStore } from "@/store/userStore";
 import { ArrowBigRight, ArrowLeft, Globe } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -50,11 +51,29 @@ export default function LoginPage() {
   });
 
   const [rememberWarning, setRememberWarning] = useState("");
+  const setUser = useUserStore((s) => s.setUser);
+
+  // If already logged in with rememberMe, skip auth page
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const cookies = document.cookie;
+    const hasSession = /(?:^|; )(accessToken|refreshToken)=/.test(cookies);
+    if (hasSession) router.replace("/dashboard");
+  }, [router]);
   const onSubmit = async (data: any) => {
     setIsSubmitting(true);
     try {
       // Call login API
       const response = await Auth.login({ ...data, rememberMe });
+      // Hydrate user in store (prefer response.user, else fetch profile)
+      if (response?.data?.user) {
+        setUser(response.data.user);
+      } else {
+        try {
+          const profile = await Users.getProfile();
+          setUser(profile as any);
+        } catch {}
+      }
       // If stealth onboarding needed, show dialog
       if (
         response.data.user &&
@@ -74,7 +93,8 @@ export default function LoginPage() {
         router.push("/dashboard");
       }
     } catch (err) {
-      // handle error (show toast, etc)
+      console.error("Login failed", err);
+      // notifyError(err); // Handled by interceptor
     } finally {
       setIsSubmitting(false);
     }

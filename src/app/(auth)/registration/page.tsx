@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 // import { Metadata } from "next";
 import { CardHeader } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,7 +16,8 @@ import Link from "next/link";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 // import axios from "axios";
-import { Auth } from "@/lib/api";
+import { Auth, Users } from "@/lib/api";
+import { useUserStore } from "@/store/userStore";
 // No local rememberMe state; using RHF directly.
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
@@ -45,6 +47,18 @@ type RegisterValues = z.infer<typeof registerSchema>;
 
 export default function RegistrationForm() {
   const router = useRouter();
+  const setUser = useUserStore((s) => s.setUser);
+  // If already logged in, attempt to hydrate user from httpOnly cookies and skip auth page
+  const loadingUser = useUserStore((s) => s.loadingUser);
+  const user = useUserStore((s) => s.user);
+  useEffect(() => {
+    // trigger hydration once
+    useUserStore.getState().hydrateUser?.();
+  }, []);
+  useEffect(() => {
+    if (loadingUser) return;
+    if (user) router.replace("/dashboard");
+  }, [loadingUser, user, router]);
 
   const form = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
@@ -72,6 +86,10 @@ export default function RegistrationForm() {
         rememberMe: data.rememberMe,
       });
       if (res.status === 201) {
+        try {
+          const profile = await Users.getProfile();
+          setUser(profile as any);
+        } catch {}
         toast.success("Registration successful! Welcome to HerGuardian.");
         router.push("/onboarding");
       }
@@ -122,14 +140,12 @@ export default function RegistrationForm() {
                   type="email"
                   {...register("email")}
                 />
-
-                
               </div>
               {errors.email && (
-                  <span className="text-red-500 text-sm">
-                    {errors.email.message}
-                  </span>
-                )}
+                <span className="text-red-500 text-sm">
+                  {errors.email.message}
+                </span>
+              )}
               <div className="p-4 flex gap-2 justify-left items-center w-full ">
                 <Label htmlFor="password" className="w-1/4">
                   Password

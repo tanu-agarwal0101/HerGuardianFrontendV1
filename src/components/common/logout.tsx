@@ -33,6 +33,10 @@ export function LogoutDialog({
   const handleSubmit = async () => {
     try {
       const res = await Users.logout();
+      
+      // Clear store/localstorage *before* navigating
+      logoutStore();
+      
       if (res.status === 200) {
         // Clear cookies on logout
         document.cookie =
@@ -42,18 +46,15 @@ export function LogoutDialog({
         document.cookie =
           "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         toast.success("Logged out successfully.");
-        router.push("/");
+        // Force full reload to clear any lingering state/cookies
+        window.location.href = "/";
+        return;
       }
     } catch (error) {
       console.error("Logout failed:", error);
       toast.error("Logout failed. Please try again.");
     }
-    // Always clear cookies even if API fails
-    document.cookie =
-      "stealthMode=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    document.cookie =
-      "stealthType=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    // Backup cleanup
     logoutStore();
     setOpen(false);
   };

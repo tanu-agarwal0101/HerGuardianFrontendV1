@@ -1,6 +1,7 @@
 import Footer from "@/components/common/footer";
 import Header from "@/components/common/header";
 import type { Metadata } from "next";
+import RequireAuth from "@/components/common/RequireAuth";
 
 // import Sidebar from '@/components/Sidebar';
 
@@ -15,13 +16,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      
-      <body className="">
-        <Header />
+    <>
+      <Header />
+      <RequireAuth>
         <div className="flex-1 p-4">{children}</div>
-        <Footer />
-      </body>
-    </html>
+      </RequireAuth>
+      <Footer />
+    </>
   );
 }
