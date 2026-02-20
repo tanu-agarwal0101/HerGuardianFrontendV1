@@ -1,26 +1,25 @@
 import { precacheAndRoute } from "workbox-precaching";
 import { registerRoute } from "workbox-routing";
-import {
-  NetworkFirst,
-  CacheFirst,
-  StaleWhileRevalidate,
-} from "workbox-strategies";
+import { NetworkFirst, CacheFirst, StaleWhileRevalidate } from "workbox-strategies";
 
 // // Precache files injected by Workbox
 precacheAndRoute(self.__WB_MANIFEST || []);
 
-// // Custom Push Notification Handler
-// self.addEventListener("push", (event) => {
-//   const data = event.data?.json() || {};
-//   const title = data.title || "HerGuardian Alert";
-//   const options = {
-//     body: data.body || "You've received an emergency SOS.",
-//     icon: "/icon-192.png",
-//     badge: "/icon-192.png",
-//   };
-
-//   event.waitUntil(self.registration.showNotification(title, options));
-// });
+// Push notification placeholder
+self.addEventListener("push", (e) => {
+  let data = {};
+  try {
+    data = e.data?.json() || {};
+  } catch {}
+  const title = data.title || "HerGuardian Alert";
+  const options = {
+    body: data.body || "You've received a notification.",
+    icon: "/android-chrome-192x192.png",
+    badge: "/favicon-32x32.png",
+    data,
+  };
+  e.waitUntil(self.registration.showNotification(title, options));
+});
 
 // // Automatically activate the service worker without waiting for it to be controlled
 self.addEventListener("install", (event) => {
@@ -29,6 +28,21 @@ self.addEventListener("install", (event) => {
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(self.clients.claim());
+});
+
+// Notification click placeholder
+self.addEventListener("notificationclick", (e) => {
+  e.notification.close();
+  const url = e.notification?.data?.url;
+  e.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if (client.url && "focus" in client) return client.focus();
+      }
+      if (url && self.clients.openWindow) return self.clients.openWindow(url);
+      if (self.clients.openWindow) return self.clients.openWindow("/");
+    })
+  );
 });
 
 // // Cache static resources (e.g., JS, CSS, HTML)

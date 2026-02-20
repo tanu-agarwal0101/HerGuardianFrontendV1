@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Footer from "@/components/common/footer";
+
+// import Footer from "@/components/common/footer";
 import "leaflet/dist/leaflet.css";
 import { SonnerToaster } from "@/components/common/SonnerToaster";
+
+import { StealthTriggerProvider } from "@/components/common/StealthTriggerProvider";
+import { SessionRefresherProvider } from "@/components/SessionRefresherProvider";
+import StoreHydrator from "@/components/StoreHydrator";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,10 +23,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "HerGuardian",
   description: "HerGuardian is an app for safety and assistance.",
-};
-
-export const viewport = {
-  themeColor: "#6C63FF",
+  icons: {
+    icon: "/favicon-32x32.png",
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
 };
 
 export default function RootLayout({
@@ -30,10 +36,44 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#1d4ed8" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta
+          name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent"
+        />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin=""
+        />
+
+        <link rel="icon" href="/favicon.ico" />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/favicon-32x32.png"
+        />
+
+        {/* add this — fixes Edge Tools warning */}
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/apple-touch-icon.png"
+        />
+      </head>
+
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <SonnerToaster />
-        {children}
+        <StoreHydrator />
+        <SessionRefresherProvider>
+          <StealthTriggerProvider>{children}</StealthTriggerProvider>
+        </SessionRefresherProvider>
       </body>
     </html>
   );
