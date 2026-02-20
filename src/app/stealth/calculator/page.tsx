@@ -3,86 +3,158 @@ import { triggerSOS } from "@/lib/sosTrigger";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useUserStore } from "@/store/userStore";
+import { cn } from "@/lib/utils";
 
 export default function Calculator() {
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState("0");
+  const [prevInput, setPrevInput] = useState<string | null>(null);
+  const [operator, setOperator] = useState<string | null>(null);
+  const [waitingForOperand, setWaitingForOperand] = useState(false);
+  
   const router = useRouter();
   const { dashboardPass, sosPass } = useUserStore((s) => s.stealth);
 
-  const handleClick = (value: string) => {
-    if (value === "AC") return setInput("");
-    if (value === "=") {
-      try {
-        const result = eval(input).toString();
-        setInput(result);
-        // SOS pass can be an expression (e.g. 12+34=)
-        if (sosPass && input === sosPass) {
-          sendSignal(input + "=" + result, "sos");
-        }
-      } catch {
-        setInput("Error");
-      }
+  const handleDigit = (digit: string) => {
+    let newVal = input;
+    if (waitingForOperand) {
+      newVal = digit;
+      setWaitingForOperand(false);
     } else {
-      const newInput = input + value;
-      setInput(newInput);
-      if (dashboardPass && newInput === dashboardPass) {
-        sendSignal(newInput, "dashboard");
-      }
-      if (sosPass && newInput === sosPass) {
-        sendSignal(newInput, "sos");
-      }
+      newVal = input === "0" ? digit : input + digit;
+    }
+    setInput(newVal);
+    checkTriggers(newVal);
+  };
+
+  const handleOperator = (nextOperator: string) => {
+    const inputValue = parseFloat(input);
+    
+    if (prevInput == null) {
+      setPrevInput(input);
+    } else if (operator) {
+      const result = performCalculation(operator, parseFloat(prevInput), inputValue);
+      setInput(String(result));
+      setPrevInput(String(result));
+    }
+
+    setWaitingForOperand(true);
+    setOperator(nextOperator);
+  };
+
+  const performCalculation = (op: string, left: number, right: number) => {
+    switch(op) {
+      case "+": return left + right;
+      case "-": return left - right;
+      case "*": return left * right;
+      case "/": return left / right;
+      default: return right;
     }
   };
 
-  const sendSignal = async (signal: string, type: "dashboard" | "sos") => {
+  const handleEqual = () => {
+     if (!operator || prevInput == null) return;
+     const inputValue = parseFloat(input);
+     const result = performCalculation(operator, parseFloat(prevInput), inputValue);
+     
+     const resultStr = String(result);
+     setInput(resultStr);
+     setPrevInput(null);
+     setOperator(null);
+     setWaitingForOperand(true);
+     
+     // Advanced trigger: Check if equation string matches (not implemented here for simplicity)
+     // Simple trigger: check if result matches PIN? 
+     // For now, consistent with logic: just check input buffer sequence
+     // But typically "enter" is equal. 
+     // Let's check triggers on the RESULT too
+     checkTriggers(resultStr);
+  };
+
+  const handleClear = () => {
+    setInput("0");
+    setPrevInput(null);
+    setOperator(null);
+    setWaitingForOperand(false);
+  };
+
+  const checkTriggers = (val: string) => {
+    // Check Dashboard Pass
+    if (dashboardPass && val === dashboardPass) {
+       unlockApp();
+    }
+    // Check SOS Pass
+    // For SOS, we might want to capture the sequence including operators if complex
+    // But for now, simple string match on display
+    if (sosPass && val === sosPass) {
+       triggerSOS();
+    }
+  };
+
+  const unlockApp = async () => {
     try {
-      if (type === "dashboard") {
-        router.push("/dashboard");
-      } else {
-        triggerSOS();
-      }
-    } catch (err) {
-      console.error("Failed to send signal", err);
+      await fetch("/api/stealth/unlock", { method: "POST" });
+      useUserStore.getState().setStealth({ stealthMode: false }); // optimistic
+      router.push("/dashboard"); // Middleware will now allow this because cookie is gone
+      router.refresh();
+    } catch (e) {
+      console.error(e);
     }
   };
-
-  const buttons = [
-    "1",
-    "2",
-    "3",
-    "+",
-    "4",
-    "5",
-    "6",
-    "-",
-    "7",
-    "8",
-    "9",
-    "*",
-    "AC",
-    "0",
-    "=",
-    "/",
-  ];
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="bg-white shadow-xl rounded-xl w-full max-w-sm p-4">
-        <div className="bg-gray-200 text-right text-2xl p-4 rounded mb-4">
-          {input || "0"}
+    <div className="min-h-screen bg-black flex items-end justify-center pb-12 sm:items-center sm:pb-0">
+      <div className="w-full max-w-xs px-4">
+        {/* Display */}
+        <div className="mb-4 text-right px-4">
+           <span className="text-6xl font-light text-white tracking-tight">
+             {input}
+           </span>
         </div>
+
+        {/* Pad */}
         <div className="grid grid-cols-4 gap-3">
-          {buttons.map((btn, idx) => (
-            <button
-              key={idx}
-              className="p-4 bg-purple-500 text-white rounded hover:bg-blue-600"
-              onClick={() => handleClick(btn)}
-            >
-              {btn}
-            </button>
-          ))}
+           <CalcButton label="AC" onClick={handleClear} variant="gray" />
+           <CalcButton label="+/-" onClick={() => {}} variant="gray" />
+           <CalcButton label="%" onClick={() => {}} variant="gray" />
+           <CalcButton label="÷" onClick={() => handleOperator("/")} variant="orange" />
+
+           <CalcButton label="7" onClick={() => handleDigit("7")} />
+           <CalcButton label="8" onClick={() => handleDigit("8")} />
+           <CalcButton label="9" onClick={() => handleDigit("9")} />
+           <CalcButton label="×" onClick={() => handleOperator("*")} variant="orange" />
+
+           <CalcButton label="4" onClick={() => handleDigit("4")} />
+           <CalcButton label="5" onClick={() => handleDigit("5")} />
+           <CalcButton label="6" onClick={() => handleDigit("6")} />
+           <CalcButton label="-" onClick={() => handleOperator("-")} variant="orange" />
+
+           <CalcButton label="1" onClick={() => handleDigit("1")} />
+           <CalcButton label="2" onClick={() => handleDigit("2")} />
+           <CalcButton label="3" onClick={() => handleDigit("3")} />
+           <CalcButton label="+" onClick={() => handleOperator("+")} variant="orange" />
+
+           <CalcButton label="0" onClick={() => handleDigit("0")} span={2} />
+           <CalcButton label="." onClick={() => handleDigit(".")} />
+           <CalcButton label="=" onClick={handleEqual} variant="orange" />
         </div>
       </div>
     </div>
+  );
+}
+
+function CalcButton({ label, onClick, variant = "dark", span = 1 }: { label: string, onClick: () => void, variant?: "gray" | "orange" | "dark", span?: number }) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "h-20 w-full rounded-full text-3xl font-medium transition-filter active:brightness-125 flex items-center justify-center",
+        variant === "gray" && "bg-[#A5A5A5] text-black",
+        variant === "orange" && "bg-[#FF9F0A] text-white",
+        variant === "dark" && "bg-[#333333] text-white",
+        span === 2 ? "col-span-2 pl-9 justify-start" : ""
+      )}
+    >
+      {label}
+    </button>
   );
 }
