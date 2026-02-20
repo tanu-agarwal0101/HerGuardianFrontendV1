@@ -1,169 +1,197 @@
-"use client";
-import Footer from "@/components/common/footer";
-import Header from "@/components/common/header";
-import { Card, CardTitle } from "@/components/ui/card";
-import { User } from "@/helpers/type";
-// import axiosInstance from "@/lib/axiosInstance";
-import { Users } from "@/lib/api";
-import { useUserStore } from "@/store/userStore";
-import CardContent from "@mui/material/CardContent";
-import Image from "next/image";
-import { useEffect, useState } from "react";
+"use client"
+import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import RequireAuth from "@/components/common/RequireAuth";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { LetterText, Mail, Pencil, PhoneCall, Plus } from "lucide-react";
-import { ShieldCheck, AlertTriangle } from "lucide-react"; // example icons
-import { format } from "date-fns";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Users as UsersApi } from "@/lib/api";
+import { User } from "@/helpers/type";
+import { Mail, Phone, MapPin, Shield, AlertTriangle, Clock, Edit2, Plus, Camera, Users } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { format } from "date-fns";
 
 export default function ProfilePage() {
-  // const user = useUserStore((state) => state.user);
-  // const [userNew, setUserNew] = useState<User | null>(null);
-  // console.log("User data:", user);
   const router = useRouter();
   const [profile, setProfile] = useState<User | null>(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const user = await Users.getProfile();
+        const user = await UsersApi.getProfile();
         setProfile(user as any);
       } catch (err) {
         console.error("Failed to load profile:", err);
       }
     };
-
     fetchProfile();
   }, []);
 
-  // console.log("User data after fetch:", userNew);
-
-  const combinedTimeline = [
-    ...(profile?.safetyTimers || []).map((timer) => ({
-      type: "timer",
-      id: timer.id,
-      date: timer.createdAt,
-      label: `Safety Timer (${timer.duration} min)`,
-      isActive: timer.isActive,
-    })),
-    ...(profile?.sosTriggers || []).map((sos) => ({
-      type: "sos",
-      id: sos.id,
-      date: sos.triggeredAt,
-      label: "SOS Triggered",
-      location: {
-        lat: 1,
-        lon: 1,
-      },
-      resolved: sos.resolved,
-    })),
-  ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const stats = [
+    { label: "Safety Score", value: "98/100", icon: Shield, color: "text-green-500" },
+    { label: "Circle Members", value: profile?.contacts?.length || 0, icon: Users, color: "text-blue-500" },
+    { label: "SOS Alerts", value: profile?.sosTriggers?.length || 0, icon: AlertTriangle, color: "text-red-500" },
+    { label: "Check-ins", value: "12", icon: MapPin, color: "text-purple-500" },
+  ];
 
   return (
-    <div className="">
-      <Header />
-      <div className="p-4 w-full flex flex-col justify-around items-center min-h-screen gap-10">
-        <Card className="w-full p-0 ">
-          <div className="w-full bg-purple-600 h-60 rounded-lg relative"></div>
-          <div className="absolute bottom-40 right-8 flex flex-col gap-2 items-start p-4">
-            <Image
-              src={profile?.profilePicture || "/img1.avif"}
-              alt="Profile Picture"
-              className="size-40 object-cover rounded-full"
-              width={100}
-              height={100}
-            />
-            <div className="flex flex-col gap-2">
-              <h1 className="font-semibold">
-                {profile?.firstName} {profile?.lastName}
-              </h1>
-              <p>Unknown Country</p>
-              <Button className="bg-white text-purple-600 border">
-                <Pencil />
-                Edit Profile
-              </Button>
-            </div>
-          </div>
-          <div className="w-full flex  justify-start gap-12">
-            <div className="w-60 p-4">
-              <h3 className="font-semibold">About Me</h3>
-              <p>
-                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Libero
-                dolorem ipsam odit eos harum, quia blanditiis ex architecto
-                rerum tenetur.
-              </p>
-              <h3 className="font-semibold mb-2">Contact Information</h3>
-              <p className="flex items-center gap-2">
-                <Mail /> {profile?.email}
-              </p>
-              <p className="flex items-center gap-2">
-                <PhoneCall /> {profile?.phoneNumber}
-              </p>
-            </div>
-            <div>
-              <h3 className="font-semibold">Emergency Contacts</h3>
-              <ul className="list-none pl-4">
-                {profile ? (
-                  profile.contacts?.map((contact, index) => (
-                    <li key={index} className="flex gap-2">
-                      {" "}
-                      {contact?.name}: {contact?.phoneNumber}
-                    </li>
-                  ))
-                ) : (
-                  <li>No contacts available</li>
-                )}
-                <li
-                  className="border p-1 w-fit"
-                  onClick={() => router.push("/actions/calls")}
-                >
-                  <Plus />
-                </li>
-              </ul>
-            </div>
-          </div>
-        </Card>
-        <div className="w-full flex flex-col gap-4 my-12">
-          <h2 className="font-bold text-2xl text-purple-800 text-center mb-12">
-            Safety History
-          </h2>
-          <Card className="p-4">
-            <div className="space-y-4 ">
-              {combinedTimeline.map((event) => (
-                <div
-                  key={event.id}
-                  className="flex items-center gap-4 p-4 border rounded-lg shadow-sm bg-white"
-                >
-                  <div className="text-purple-600">
-                    {event.type === "sos" ? (
-                      <AlertTriangle className="w-6 h-6" />
-                    ) : (
-                      <ShieldCheck className="w-6 h-6" />
-                    )}
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-semibold">{event.label}</span>
-                    <span className="text-gray-500 text-sm">
-                      {format(new Date(event.date), "PPpp")}
-                    </span>
-                    {event.type === "sos" && (
-                      <a
-                        href={`https://www.google.com/maps?q=blank,blank`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-500 underline text-sm"
-                      >
-                        View Location
-                      </a>
-                    )}
-                  </div>
+    <RequireAuth>
+      <DashboardLayout>
+        <div className="flex-1 space-y-6 p-4 md:p-8 pt-6">
+           {/* Header */}
+           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+               <div>
+                   <h2 className="text-3xl font-bold tracking-tight">Profile</h2>
+                   <p className="text-muted-foreground">Manage your personal information and safety settings.</p>
+               </div>
+               <Button onClick={() => {}}>
+                   <Edit2 className="mr-2 h-4 w-4" /> Edit Profile
+               </Button>
+           </div>
+
+           <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+                {/* Left Column: User Card & Contacts */}
+                <div className="md:col-span-4 space-y-6">
+                    <Card>
+                        <CardHeader className="relative pb-0">
+                           <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-t-xl" />
+                           <div className="relative pt-12 flex justify-center">
+                                <Avatar className="h-24 w-24 border-4 border-background shadow-xl">
+                                    <AvatarImage src={profile?.profilePicture || "/img1.avif"} alt="Profile" />
+                                    <AvatarFallback>TA</AvatarFallback>
+                                </Avatar>
+                                <Button size="icon" variant="secondary" className="absolute bottom-0 right-[35%] rounded-full h-8 w-8 shadow-sm">
+                                    <Camera className="h-4 w-4" />
+                                </Button>
+                           </div>
+                        </CardHeader>
+                        <CardContent className="text-center pt-4 pb-6">
+                            <h3 className="text-xl font-bold">{profile?.firstName} {profile?.lastName || "Tanu Agarwal"}</h3>
+                            <p className="text-muted-foreground text-sm flex items-center justify-center gap-1 mt-1">
+                                <MapPin className="h-3 w-3" /> India • Engineer
+                            </p>
+                            
+                            <div className="mt-6 flex justify-center gap-4">
+                                <div className="text-center">
+                                    <div className="text-2xl font-bold">24</div>
+                                    <div className="text-xs text-muted-foreground">Age</div>
+                                </div>
+                                <Separator orientation="vertical" className="h-10" />
+                                <div className="text-center">
+                                    <div className="text-2xl font-bold">A+</div>
+                                    <div className="text-xs text-muted-foreground">Blood</div>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="p-4">
+                        <CardHeader className="flex flex-row items-center justify-between">
+                             <CardTitle className="text-lg">Contact Info</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="flex items-center gap-3 text-sm">
+                                <Mail className="h-4 w-4 text-muted-foreground" />
+                                <span>{profile?.email || "tanu.ag976@gmail.com"}</span>
+                            </div>
+                            <div className="flex items-center gap-3 text-sm">
+                                <Phone className="h-4 w-4 text-muted-foreground" />
+                                <span>{profile?.phoneNumber || "+91 98765 43210"}</span>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="p-4">
+                         <CardHeader className="flex flex-row items-center justify-between">
+                             <CardTitle className="text-lg">Safety Circle</CardTitle>
+                             <Button variant="ghost" size="icon" onClick={() => router.push("/dashboard/actions/calls")}>
+                                 <Plus className="h-4 w-4" />
+                             </Button>
+                        </CardHeader>
+                        <CardContent>
+                             <div className="space-y-4">
+                                {profile?.contacts?.length ? (
+                                    profile.contacts.map((c, i) => (
+                                        <div key={i} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                                            <Avatar className="h-8 w-8">
+                                                <AvatarFallback>{c.name.charAt(0)}</AvatarFallback>
+                                            </Avatar>
+                                            <div className="flex-1 overflow-hidden">
+                                                <p className="text-sm font-medium truncate">{c.name}</p>
+                                                <p className="text-xs text-muted-foreground truncate">{c.phoneNumber}</p>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-muted-foreground text-center py-4">No contacts yet.</p>
+                                )}
+                             </div>
+                        </CardContent>
+                    </Card>
                 </div>
-              ))}
-            </div>
-          </Card>
+
+                {/* Right Column: Stats & Activity */}
+                <div className="md:col-span-8 space-y-6">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                         {stats.map((stat, i) => {
+                             const Icon = stat.icon;
+                             return (
+                             <Card key={i}>
+                                 <CardContent className="p-4 flex flex-col items-center justify-center text-center space-y-2">
+                                     <Icon className={`h-8 w-8 ${stat.color}`} />
+                                     <div className="text-2xl font-bold">{stat.value}</div>
+                                     <div className="text-xs text-muted-foreground">{stat.label}</div>
+                                 </CardContent>
+                             </Card>
+                             );
+                         })}
+                    </div>
+
+                    <Card className="p-4">
+                         <CardHeader>
+                             <CardTitle>Safety History</CardTitle>
+                             <CardDescription>Recent SOS triggers and safety timer activity.</CardDescription>
+                         </CardHeader>
+                         <CardContent>
+                            <div className="space-y-8">
+                                {[
+                                    ...(profile?.safetyTimers || []).map(t => ({...t, type: 'timer', date: t.createdAt})),
+                                    ...(profile?.sosTriggers || []).map(s => ({...s, type: 'sos', date: s.triggeredAt}))
+                                ]
+                                .sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                                .slice(0, 5)
+                                .map((item: any, i) => (
+                                    <div key={i} className="flex items-start gap-4">
+                                        <div className={`mt-1 h-2 w-2 rounded-full ${item.type === 'sos' ? 'bg-red-500' : 'bg-blue-500'}`} />
+                                        <div className="space-y-1">
+                                            <p className="text-sm font-medium leading-none">
+                                                {item.type === 'sos' ? "SOS Alert Triggered" : `Safety Timer (${item.duration}m)`}
+                                            </p>
+                                            <p className="text-xs text-muted-foreground">
+                                                {format(new Date(item.date), "PPP p")}
+                                            </p>
+                                        </div>
+                                        <div className="ml-auto font-medium text-sm">
+                                             {item.type === 'sos' ? (
+                                                 <Badge variant={item.resolved ? "secondary" : "destructive"}>{item.resolved ? "Resolved" : "Active"}</Badge>
+                                             ) : (
+                                                 <Badge variant="outline">{item.isActive ? "Running" : "Completed"}</Badge>
+                                             )}
+                                        </div>
+                                    </div>
+                                ))}
+                                {(!profile?.safetyTimers?.length && !profile?.sosTriggers?.length) && (
+                                    <p className="text-center text-muted-foreground py-8">No activity recorded.</p>
+                                )}
+                            </div>
+                         </CardContent>
+                    </Card>
+                </div>
+           </div>
         </div>
-        <Card>Settings</Card>
-      </div>
-      <Footer />
-    </div>
+      </DashboardLayout>
+    </RequireAuth>
   );
 }

@@ -279,12 +279,12 @@ export default function AddressForm({ onAdded }: AddressFormProps) {
                     {errors.street.message}
                   </p>
                 )}
-                {getValues().latitude && errors.latitude && (
+                {errors.latitude && (
                   <p className="text-red-600 text-sm mt-1">
                     {errors.latitude.message}
                   </p>
                 )}
-                {getValues().longitude && errors.longitude && (
+                {errors.longitude && (
                   <p className="text-red-600 text-sm mt-1">
                     {errors.longitude.message}
                   </p>
@@ -320,7 +320,7 @@ export default function AddressForm({ onAdded }: AddressFormProps) {
               {...register("latitude", { valueAsNumber: true })}
               readOnly
             />
-            {getValues().latitude && errors.latitude && (
+            {errors.latitude && (
               <p className="text-red-600 text-sm mt-1">
                 {errors.latitude.message}
               </p>
@@ -332,7 +332,7 @@ export default function AddressForm({ onAdded }: AddressFormProps) {
               {...register("longitude", { valueAsNumber: true })}
               readOnly
             />
-            {getValues().longitude && errors.longitude && (
+            {errors.longitude && (
               <p className="text-red-600 text-sm mt-1">
                 {errors.longitude.message}
               </p>

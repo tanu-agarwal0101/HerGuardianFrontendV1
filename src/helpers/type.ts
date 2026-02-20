@@ -35,6 +35,8 @@ export interface User {
   sosTriggers: SOSTrigger[];
   stealthType?: string;
   stealthMode?: boolean;
+  dashboardPass?: string;
+  sosPass?: string;
   createdAt: string;
   updatedAt: string;
 }

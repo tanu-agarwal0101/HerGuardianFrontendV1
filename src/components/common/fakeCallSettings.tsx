@@ -63,9 +63,9 @@ export default function FakeCallSettings({
 
       <button
         onClick={handleSubmit}
-        className="bg-blue-600 text-white px-4 py-2 rounded mt-4"
+        className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded mt-4 w-full"
       >
-        Save
+        Save Changes
       </button>
     </div>
   );

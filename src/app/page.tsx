@@ -17,6 +17,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { color } from "framer-motion";
+import { useUserStore } from "@/store/userStore";
 
 const cards = [
   {
@@ -101,19 +102,28 @@ const features = [
 ];
 
 export default function Home() {
+  const router = useRouter();
+  const user = useUserStore((state) => state.user);
+  const _hasHydrated = useUserStore((state) => state._hasHydrated);
+
   useEffect(() => {
-    if ("serviceWorker" in navigator) {
+    if (_hasHydrated && user) {
+      router.replace("/dashboard");
+    }
+  }, [user, _hasHydrated, router]);
+
+  useEffect(() => {
+    if (process.env.NODE_ENV === "development" && "serviceWorker" in navigator) {
       navigator.serviceWorker.getRegistrations().then((registrations) => {
         registrations.forEach((registration) => {
           registration.unregister().then(() => {
-            console.log("Service Worker unregistered:", registration);
+            console.log("Service Worker unregistered (dev):", registration);
           });
         });
       });
     }
   }, []);
 
-  const router = useRouter();
   return (
     <div>
       <section
