@@ -63,7 +63,7 @@ export default function Header() {
           setSmallMenuOpen={setSmallMenuOpen}
           onCloseMenu={() => setSmallMenuOpen(false)}
           isOpen={smallMenuOpen}
-          handleLogout={() => {}}
+          handleLogout={() => setShowLogoutDialog(true)}
         />
       )}
     </header>

@@ -2,7 +2,12 @@
 import { SOS } from "@/lib/api";
 import { toast } from "sonner";
 
+let isTriggering = false;
+
 export const triggerSOS = async () => {
+  if (isTriggering) return;
+  isTriggering = true;
+  
   let toastId: string | number | undefined;
   try {
     toastId = toast.loading("Triggering SOS...");
@@ -45,6 +50,11 @@ export const triggerSOS = async () => {
     }
   } finally {
     if (toastId !== undefined) toast.dismiss(toastId);
+    // Reset flag after a delay to prevent immediate re-trigger? or just immediately?
+    // Immediate is fine since pure function execution is supposedly atomic enough, 
+    // but async might overlap. Let's wait a bit or just reset.
+    // Resetting immediately allows next distinct trigger.
+    setTimeout(() => { isTriggering = false; }, 2000); 
   }
 };
 

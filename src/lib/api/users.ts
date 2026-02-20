@@ -10,6 +10,10 @@ export interface UserProfile {
   contacts?: any[];
   safetyTimers?: any[];
   sosTriggers?: any[];
+  stealthType?: string;
+  stealthMode?: boolean;
+  dashboardPass?: string;
+  sosPass?: string;
 }
 
 export async function getProfile(): Promise<UserProfile> {

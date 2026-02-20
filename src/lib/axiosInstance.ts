@@ -1,4 +1,5 @@
 import axios from "axios";
+import { notifyError, handleUnauthorizedSideEffects } from "./httpErrors";
 
 // In-memory access token cache populated after refresh/login responses
 let accessTokenCache: string | null = null;
@@ -21,6 +22,7 @@ const axiosInstance = axios.create({
     process.env.PUBLIC_API_URL ||
     "http://localhost:5000",
   withCredentials: true,
+  timeout: 15000, // 15s timeout to prevent hanging
 });
 
 // Attach Authorization header if we have a cached token
@@ -85,14 +87,24 @@ axiosInstance.interceptors.response.use(
         }
         processQueue(null, newAccessToken || null);
         return axiosInstance(originalRequest);
-      } catch (refreshErr) {
+      } catch (refreshErr: any) {
         processQueue(refreshErr, null);
+        if (refreshErr?.response?.status === 401) {
+          // Refresh is invalid; force sign-out UX
+          handleUnauthorizedSideEffects();
+        }
         return Promise.reject(refreshErr);
       } finally {
         isRefreshing = false;
       }
     }
 
+    // For other errors, surface a human-friendly toast
+    try {
+      if (error?.config?.suppressToast !== true) {
+        notifyError(error);
+      }
+    } catch {}
     return Promise.reject(error);
   }
 );
