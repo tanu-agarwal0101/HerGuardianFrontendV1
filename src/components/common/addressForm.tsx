@@ -3,9 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import * as z from "zod";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -18,7 +18,7 @@ const LocationMap = dynamic(() => import("./LocationMap"), { ssr: false });
 type AddressValues = z.infer<typeof addressSchema>;
 
 interface AddressFormProps {
-  onAdded?: (address: any) => void;
+  onAdded?: (address: import("@/helpers/type").Address) => void;
 }
 
 export default function AddressForm({ onAdded }: AddressFormProps) {
@@ -32,13 +32,12 @@ export default function AddressForm({ onAdded }: AddressFormProps) {
     handleSubmit,
     getValues,
     setValue,
-    watch,
     formState: { errors },
   } = useForm<z.infer<typeof addressSchema>>({
     resolver: zodResolver(addressSchema),
   });
 
-  const fetchCurrentLocation = () => {
+  const fetchCurrentLocation = useCallback(() => {
     setLoading(true);
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -58,7 +57,7 @@ export default function AddressForm({ onAdded }: AddressFormProps) {
       alert("Geolocation is not supported by this browser.");
     }
     setLoading(false);
-  };
+  }, [setValue]);
 
   const fetchCoordinatesFromAddress = async () => {
     const { street, city, state, country, zipCode } = getValues();
@@ -164,7 +163,7 @@ export default function AddressForm({ onAdded }: AddressFormProps) {
     // else {
     //   fetchCoordinatesFromAddress();
     // }
-  }, [useCurrentLocation]);
+  }, [useCurrentLocation, fetchCurrentLocation]);
 
   const saveAddress = async (data: AddressValues) => {
     try {
@@ -179,7 +178,7 @@ export default function AddressForm({ onAdded }: AddressFormProps) {
         country: data.country,
         zipCode: data.zipCode,
       });
-      const created = (res as any)?.data?.address;
+      const created = (res as { data?: { address?: import("@/helpers/type").Address } })?.data?.address;
       toast.success("Address added successfully!");
       if (created) {
         onAdded?.(created);

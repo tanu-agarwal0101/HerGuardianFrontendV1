@@ -6,13 +6,15 @@ export default function DebugAuthState() {
   const [visible, setVisible] = useState(false);
   const loadingUser = useUserStore((s) => s.loadingUser);
   const user = useUserStore((s) => s.user);
-  const authError = (useUserStore as any)((s: any) => s.authError);
+  const authError = useUserStore((s) => s.authError);
 
   useEffect(() => {
     try {
       const params = new URLSearchParams(window.location.search);
       if (params.get("debug") === "1") setVisible(true);
-    } catch (_) {}
+    } catch {
+      // ignore
+    }
   }, []);
 
   if (!visible) return null;

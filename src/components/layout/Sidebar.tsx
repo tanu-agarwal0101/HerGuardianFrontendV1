@@ -8,7 +8,6 @@ import {
   ScrollText,
   User,
   MessageCircle,
-  Settings,
   ShieldCheck,
   LogOut,
 } from "lucide-react";

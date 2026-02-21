@@ -3,8 +3,6 @@
 import { useState } from "react";
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"; // Need to ensure Sheet exists
-import { cn } from "@/lib/utils";
 
 // If Sheet doesn't exist, we fallback to a simple mobile drawer logic
 // But for now let's assume we can use a simple conditional rendering or standard div for mobile

@@ -6,13 +6,7 @@ import { Label } from "@/components/ui/label";
 import {
   ArrowLeft,
   Plus,
-  Bell,
-  LocateIcon,
-  ArrowRight,
-  Check,
-  Lock,
 } from "lucide-react";
-import { useState } from "react";
 import { toast } from "sonner";
 import { AnimatePresence, motion } from "motion/react";
 import { contactSchema } from "../../helpers/schema";

@@ -3,7 +3,7 @@ import { useState } from "react";
 export default function FakeCallSettings({
   onSave,
 }: {
-  onSave: (settings: any) => void;
+  onSave: (settings: { name: string; photo: string; ringtone: string; voice: string }) => void;
 }) {
   const [name, setName] = useState("");
   const [photo, setPhoto] = useState("/fake-photo.jpg");
@@ -56,9 +56,9 @@ export default function FakeCallSettings({
         onChange={(e) => setVoice(e.target.value)}
         title="Voice Script"
       >
-        <option value="/voice1.mp3">Mom: "Hey, where are you?"</option>
-        <option value="/voice2.mp3">Boss: "We need you back at work!"</option>
-        <option value="/voice3.mp3">Friend: "Let’s meet up now."</option>
+        <option value="/voice1.mp3">Mom: &quot;Hey, where are you?&quot;</option>
+        <option value="/voice2.mp3">Boss: &quot;We need you back at work!&quot;</option>
+        <option value="/voice3.mp3">Friend: &quot;Let’s meet up now.&quot;</option>
       </select>
 
       <button

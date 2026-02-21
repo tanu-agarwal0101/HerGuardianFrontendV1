@@ -2,22 +2,14 @@
 import { useUserStore } from "@/store/userStore";
 // components/LoginFormDialog.tsx
 // This is needed for client-side interactivity
-
-import { useState } from "react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-  DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useRouter } from "next/navigation";
-// import axiosInstance from "@/lib/axiosInstance";
 import { Users } from "@/lib/api";
 import { toast } from "sonner";
 
@@ -28,7 +20,6 @@ export function LogoutDialog({
   open: boolean;
   setOpen: (open: boolean) => void;
 }) {
-  const router = useRouter();
   const logoutStore = useUserStore((state) => state.logout);
   const handleSubmit = async () => {
     try {

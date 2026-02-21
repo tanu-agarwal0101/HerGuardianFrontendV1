@@ -22,7 +22,7 @@ export const UserBootstrapProvider: React.FC<{ children: React.ReactNode }> = ({
     if (!hasSessionCookie()) return;
     fetchedRef.current = true;
     Users.getProfile()
-      .then((u) => setUser(u as any))
+      .then((u) => setUser(u as unknown as import("@/helpers/type").User))
       .catch(() => {
         fetchedRef.current = false; // allow retry later
       });

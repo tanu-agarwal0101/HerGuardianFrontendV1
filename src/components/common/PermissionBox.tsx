@@ -5,15 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   ArrowLeft,
-  Plus,
   Bell,
-  LocateIcon,
   ArrowRight,
-  Check,
-  Lock,
 } from "lucide-react";
 import { motion } from "motion/react";
-import { useState } from "react";
 
 interface Props {
   prevStep: () => void;
@@ -58,8 +53,8 @@ const PermissionBox = ({ prevStep, nextStep }: Props) => {
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           <p>
-            HerGuardian needs certain permissions to keep you safe. Here's why
-            we need them and how they're used.
+            HerGuardian needs certain permissions to keep you safe. Here&apos;s why
+            we need them and how they&apos;re used.
           </p>
           {permissions.map((permission) => (
             <Card key={permission.id}>

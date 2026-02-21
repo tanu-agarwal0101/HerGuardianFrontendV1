@@ -6,10 +6,10 @@ import { AnimatePresence, motion } from "motion/react";
 
 
 export default function MobileDrawer({
-    setSmallMenuOpen, onCloseMenu,
+    onCloseMenu,
     isOpen, handleLogout
 }: {
-    setSmallMenuOpen: (open: boolean) => void;
+    setSmallMenuOpen?: (open: boolean) => void;
     onCloseMenu: () => void;
     isOpen: boolean;
     handleLogout: () => void;

@@ -1,4 +1,5 @@
 // components/FakeCall.tsx
+/* eslint-disable @next/next/no-img-element */
 import { useState, useEffect } from "react";
 import { Phone, PhoneOff } from "lucide-react";
 
@@ -31,7 +32,7 @@ export default function FakeCall({
       navigator.vibrate([500, 200, 500]);
     }
     return () => audio && audio.pause();
-  }, [answered]);
+  }, [answered, settings.ringtone]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -43,7 +44,7 @@ export default function FakeCall({
     }
 
     return () => clearInterval(interval);
-  }, [answered]);
+  }, [answered, settings.voice]);
 
   const formatTime = (secs: number) =>
     `${Math.floor(secs / 60)

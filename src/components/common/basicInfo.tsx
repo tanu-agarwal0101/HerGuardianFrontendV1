@@ -4,14 +4,11 @@ import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 // import axios from "axios";
 import { Users } from "@/lib/api";
-import { Form } from "../ui/form";
-import { on } from "events";
 import { useUserStore } from "@/store/userStore";
 
 const basicInfoSchema = z.object({

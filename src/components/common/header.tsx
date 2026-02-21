@@ -1,18 +1,12 @@
 "use client";
 import { CheckCircle, Menu, ShieldCheck, X } from "lucide-react";
+import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import axios from "axios";
-import { useRouter } from "next/navigation";
-import Dashboard from "./../../app/dashboard/page";
-import { useState } from "react";
-import { set } from "zod";
 import MobileDrawer from "./mobileDrawer";
-import { Badge } from "@/components/ui/badge";
 import { LogoutDialog } from "./logout";
 
 export default function Header() {
-  const router = useRouter();
   const [smallMenuOpen, setSmallMenuOpen] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   return (
