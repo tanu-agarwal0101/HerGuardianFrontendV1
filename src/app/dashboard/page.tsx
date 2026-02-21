@@ -1,11 +1,9 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { useUserStore } from "@/store/userStore";
-import { triggerSOS } from "@/lib/sosTrigger";
 import { HeroCard } from "@/components/dashboard/HeroCard";
 import { SosCard } from "@/components/dashboard/SosCard";
 import { SafetyTimerCard } from "@/components/dashboard/SafetyTimerCard";
-import { QuickActionsCard } from "@/components/dashboard/QuickActionsCard";
 import { ResourcesPanel } from "@/components/dashboard/ResourcesPanel";
 import { FakeCallCard } from "@/components/dashboard/FakeCallCard";
 import { SafetyCircleCard } from "@/components/dashboard/SafetyCircleCard";
@@ -13,33 +11,20 @@ import { motion } from "motion/react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { enableNotifications } from "@/lib/notificationsService";
+import { MapPin, Watch, Bell, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function Dashboard() {
   const { stealth } = useUserStore();
-  const [pinInput, setPinInput] = useState("");
   const [warning, setWarning] = useState("");
   const pinInputRef = useRef<HTMLInputElement>(null);
 
-  // PIN/keyword/gesture logic
   useEffect(() => {
     if (!stealth.stealthMode) return;
     if (!pinInputRef.current) return;
     pinInputRef.current.focus();
   }, [stealth.stealthMode]);
 
-  const handlePinInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPinInput(e.target.value);
-    // Dashboard pass triggers dashboard (noop here), sosPass triggers SOS
-    if (stealth.dashboardPass && e.target.value === stealth.dashboardPass) {
-      setWarning("Already on dashboard");
-    }
-    if (stealth.sosPass && e.target.value === stealth.sosPass) {
-      triggerSOS();
-      setPinInput("");
-    }
-  };
-
-  // Check rememberMe cookie (for stealth enforcement)
   useEffect(() => {
     if (typeof document !== "undefined") {
       const cookies = document.cookie.split(";").map((c) => c.trim());
@@ -54,22 +39,6 @@ export default function Dashboard() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 relative">
-      {/* {stealth.stealthMode && (
-        <div className="flex flex-col items-center mb-4">
-          <input
-            ref={pinInputRef}
-            type="password"
-            value={pinInput}
-            onChange={handlePinInput}
-            placeholder="Enter dashboard or SOS pass..."
-            className="border p-2 rounded text-center"
-            disabled={!!warning}
-          />
-          <div className="mt-2 text-gray-500 text-sm">
-            Type your dashboard pass (noop here), or SOS pass to trigger SOS.
-          </div>
-        </div>
-      )} */}
       {warning && (
         <div className="mb-4 rounded border border-yellow-300 bg-yellow-100 px-4 py-2 text-center text-sm text-yellow-800">
           {warning}
@@ -103,7 +72,7 @@ export default function Dashboard() {
              <SafetyTimerCard />
           </motion.div>
 
-          {/* Secondary Actions & Info */}
+          {/* Safety Circle + Resources */}
           <div className="space-y-6">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -121,65 +90,83 @@ export default function Dashboard() {
              </motion.div>
           </div>
 
+          {/* Address, Watch, FakeCall & Notifications */}
           <div className="space-y-6">
+             {/* Address Card */}
              <motion.div
-                 initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.2 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.2 }}
              >
-                 <QuickActionsCard />
+                <Link href="/dashboard/actions/location">
+                  <Card className="shadow-md hover:shadow-lg transition-all p-4 cursor-pointer group">
+                    <CardHeader className="flex flex-row items-center gap-3 p-0 pb-2">
+                      <div className="p-2 bg-primary/10 rounded-full text-primary">
+                        <MapPin className="h-5 w-5" />
+                      </div>
+                      <div className="flex-1">
+                        <CardTitle className="text-lg font-bold text-primary">Saved Addresses</CardTitle>
+                        <p className="text-sm text-muted-foreground">Home, work & safe zones.</p>
+                      </div>
+                      <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                    </CardHeader>
+                  </Card>
+                </Link>
              </motion.div>
-              <motion.div
-                 initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.3 }}
+
+             {/* Smart Watch Card */}
+             <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.25 }}
              >
-                 <FakeCallCard />
+                <Link href="/dashboard/actions/watch">
+                  <Card className="shadow-md hover:shadow-lg transition-all p-4 cursor-pointer group">
+                    <CardHeader className="flex flex-row items-center gap-3 p-0 pb-2">
+                      <div className="p-2 bg-primary/10 rounded-full text-primary">
+                        <Watch className="h-5 w-5" />
+                      </div>
+                      <div className="flex-1">
+                        <CardTitle className="text-lg font-bold text-primary">Smart Watch</CardTitle>
+                        <p className="text-sm text-muted-foreground">Connect your wearable device.</p>
+                      </div>
+                      <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                    </CardHeader>
+                  </Card>
+                </Link>
+             </motion.div>
+
+             {/* Fake Call */}
+             <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.3 }}
+             >
+                <FakeCallCard />
+             </motion.div>
+
+             {/* Enable Notifications */}
+             <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.35 }}
+             >
+                <Card className="shadow-md hover:shadow-lg transition-all p-4 cursor-pointer group" onClick={() => enableNotifications()}>
+                  <CardHeader className="flex flex-row items-center gap-3 p-0 pb-2">
+                    <div className="p-2 bg-primary/10 rounded-full text-primary">
+                      <Bell className="h-5 w-5" />
+                    </div>
+                    <div className="flex-1">
+                      <CardTitle className="text-lg font-bold text-primary">Enable Notifications</CardTitle>
+                      <p className="text-sm text-muted-foreground">Stay alerted with push notifications.</p>
+                    </div>
+                    <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                  </CardHeader>
+                </Card>
              </motion.div>
           </div>
-      </section>
-      <section className="mt-6">
-        <h2 className="text-xl font-semibold mb-2">Quick Actions</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          <Link href="/dashboard/chat">
-            <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer">
-              <CardHeader className="p-0 mb-2">
-                <CardTitle className="text-lg">Chatbot</CardTitle>
-              </CardHeader>
-              <CardContent className="p-0 text-sm text-gray-600">
-                Talk to HerGuardian in real time.
-              </CardContent>
-            </Card>
-          </Link>
-          <Link href="/dashboard/logs">
-            <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer">
-              <CardHeader className="p-0 mb-2">
-                <CardTitle className="text-lg">Logs & SOS History</CardTitle>
-              </CardHeader>
-              <CardContent className="p-0 text-sm text-gray-600">
-                Review recent SOS alerts and locations.
-              </CardContent>
-            </Card>
-          </Link>
-          <button onClick={() => enableNotifications()}>
-            <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer">
-              <CardHeader className="p-0 mb-2">
-                <CardTitle className="text-lg">Enable Notifications</CardTitle>
-              </CardHeader>
-              <CardContent className="p-0 text-sm text-gray-600">
-                Allow alerts and updates from HerGuardian.
-              </CardContent>
-            </Card>
-          </button>
-        </div>
       </section>
     </div>
   );
 }
 
-//  Tools You Could Use:
-// framer-motion → For smooth slide transitions
-
-// useRef + scrollIntoView() → For native scroll
-
-// Tailwind utilities like overflow-x-scroll, snap-x, snap-start → For scroll snapping

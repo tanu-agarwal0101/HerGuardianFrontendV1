@@ -6,21 +6,20 @@ import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
-import { Play, Pause, StopCircle } from "lucide-react";
+import { Play, StopCircle, ArrowLeft } from "lucide-react";
 import CircularProgress from "@mui/material/CircularProgress";
-// import axiosInstance from "@/lib/axiosInstance";
 import { Timer } from "@/lib/api";
 import { getCurrentLocation, logLocation } from "@/lib/locationService";
+import { useRouter } from "next/navigation";
 
 export default function SafetyTimer() {
+  const router = useRouter();
   const [duration, setDuration] = useState(30);
   const [shareLocation, setShareLocation] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [timerActive, setTimerActive] = useState(false);
   const [progress, setProgress] = useState(100);
   const [loading, setLoading] = useState(false);
-  const [latitude, setLatitude] = useState<number>(0);
-  const [longitude, setLongitude] = useState<number>(0);
   const [currentTimerId, setCurrentTimerId] = useState<string | null>(null);
 
   const startTimer = async () => {
@@ -30,10 +29,7 @@ export default function SafetyTimer() {
 
       if (shareLocation) {
         loc = await getCurrentLocation();
-        if (loc) {
-          setLatitude(loc.latitude);
-          setLongitude(loc.longitude);
-        }
+        loc = await getCurrentLocation();
       }
 
       const response = await Timer.start({
@@ -105,7 +101,7 @@ export default function SafetyTimer() {
   }, [timerActive]);
 
   useEffect(() => {
-    let interval: any;
+    let interval: NodeJS.Timeout | undefined;
     if (countdown && countdown > 0) {
       interval = setInterval(() => {
         setCountdown((prev) => (prev ? prev - 1 : 0));
@@ -168,138 +164,124 @@ export default function SafetyTimer() {
     const s = secs % 60;
     return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <Card className="m-4 p-6 lg:w-200  w-full flex justify-center">
-        <CardTitle className="flex flex-col gap-8">
-          <h1 className="text-3xl text-purple-500 font-bold text-center">
-            Safety Timer
-          </h1>
-          <p className="text-gray-600">Set a timer for check-ins</p>
-        </CardTitle>
 
-        <div className="mt-4">
-          <Label>Timer Duration (minutes)</Label>
-          <div className="flex items-center gap-3 mt-1">
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[80vh] p-4 relative">
+      <Button 
+        variant="ghost" 
+        onClick={() => router.push("/dashboard/actions")}
+        className="absolute top-0 left-4 flex items-center gap-2 text-primary hover:bg-primary/10"
+      >
+        <ArrowLeft size={18} />
+        Back to Actions
+      </Button>
+
+      <Card className="m-4 p-6 lg:w-[600px] w-full shadow-lg border-primary/10">
+        <CardHeader className="text-center">
+          <CardTitle className="text-3xl text-primary font-bold">
+            Safety Timer
+          </CardTitle>
+          <p className="text-gray-500 mt-2">Set a timer for automatic check-ins</p>
+        </CardHeader>
+
+        <CardContent className="space-y-6">
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <Label className="font-medium">Duration</Label>
+              <span className="text-primary font-bold text-lg">{duration} min</span>
+            </div>
             <Input
               type="range"
               min="1"
               max="240"
-              step="5"
+              step="1"
               value={duration}
               onChange={(e) => setDuration(parseInt(e.target.value))}
-              className="accent-purple-500"
+              className="accent-primary cursor-pointer"
+              disabled={timerActive}
             />
-            <span className="font-bold">{duration} min</span>
           </div>
-        </div>
 
-        <div className="flex flex-wrap items-center justify-between my-4 gap-4">
-          <div className="flex items-center">
+          <div className="flex items-center justify-between p-4 bg-accent/30 rounded-xl">
+            <div className="flex flex-col">
+              <span className="font-medium">Share Location</span>
+              <span className="text-xs text-gray-500">Attach location to the alert</span>
+            </div>
             <Switch
               checked={shareLocation}
               onCheckedChange={() => setShareLocation(!shareLocation)}
+              disabled={timerActive}
             />
-            <span className="ml-2 text-sm text-gray-700">
-              Share location during timer
-            </span>
           </div>
-          {!timerActive && (
+
+          {!timerActive ? (
             <Button
               onClick={startTimer}
-              className="bg-purple-600 text-white flex items-center justify-center"
+              className="w-full py-6 text-lg rounded-xl shadow-md transition-all active:scale-95"
               disabled={loading}
             >
               {loading ? (
                 <>
-                  <CircularProgress
-                    size={20}
-                    color="inherit"
-                    className="mr-2"
-                  />
+                  <CircularProgress size={20} color="inherit" className="mr-2" />
                   Starting...
                 </>
               ) : (
                 <>
-                  <Play className="mr-1" size={16} />
-                  Start Timer
+                  <Play className="mr-2" size={20} />
+                  Start Safety Timer
                 </>
               )}
             </Button>
-          )}
-        </div>
-
-        {/*  Time Left: {formatTime(countdown)} */}
-        {timerActive && countdown !== null && (
-          <div className="bg-gradient-to-r from-green-300 via-cyan-500 to-purple-500 w-full h-100 my-8 flex items-center justify-center gap-4 flex-col">
-            <Card className="p-4 flex flex-col items-center justify-center">
-              <div className="relative w-40 h-40 flex items-center justify-center">
-                <svg className="transform -rotate-90" width="160" height="160">
+          ) : (
+            <div className="flex flex-col items-center gap-6 py-4">
+              <div className="relative w-48 h-48 flex items-center justify-center">
+                <svg className="transform -rotate-90" width="192" height="192">
                   <defs>
-                    <linearGradient
-                      id="gradientRing"
-                      x1="0%"
-                      y1="0%"
-                      x2="100%"
-                      y2="0%"
-                    >
-                      <stop offset="0%" stopColor="#00ff95" />
-                      <stop offset="50%" stopColor="#00e5ff" />
-                      <stop offset="100%" stopColor="#a855f7" />
+                    <linearGradient id="timerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#8b5cf6" />
+                      <stop offset="100%" stopColor="#d946ef" />
                     </linearGradient>
                   </defs>
+                  <circle cx="96" cy="96" r="86" stroke="#f3f4f6" strokeWidth="12" fill="none" />
                   <circle
-                    cx="80"
-                    cy="80"
-                    r="70"
-                    stroke="#e5e7eb"
-                    strokeWidth="8"
-                    fill="none"
-                  />
-                  <circle
-                    cx="80"
-                    cy="80"
-                    r="70"
-                    stroke={
-                      countdown !== null && countdown <= 60
-                        ? "red"
-                        : "url(#gradientRing)"
-                    }
-                    strokeWidth="8"
-                    strokeDasharray={440}
-                    strokeDashoffset={`${440 * (1 - progress / 100)}`}
+                    cx="96"
+                    cy="96"
+                    r="86"
+                    stroke={countdown !== null && countdown <= 60 ? "#ef4444" : "url(#timerGradient)"}
+                    strokeWidth="12"
+                    strokeDasharray={540}
+                    strokeDashoffset={`${540 * (1 - progress / 100)}`}
                     strokeLinecap="round"
                     fill="none"
-                    className={`transition-all duration-300 ${
-                      countdown !== null && countdown <= 60
-                        ? "animate-pulse"
-                        : ""
-                    }`}
+                    className="transition-all duration-1000 ease-linear"
                   />
                 </svg>
-                <div className="absolute text-xl font-bold text-gray-800">
-                  {formatTime(countdown ?? 0)}
+                <div className="absolute flex flex-col items-center">
+                  <span className="text-3xl font-bold tracking-wider tabular-nums">
+                    {formatTime(countdown ?? 0)}
+                  </span>
+                  <span className="text-[10px] uppercase text-gray-400 font-bold tracking-widest mt-1">
+                    Remaining
+                  </span>
                 </div>
               </div>
 
-              <div>
+              <div className="text-center">
+                <p className="text-sm text-gray-500 mb-1">
+                  Active for {Math.floor((duration * 60 - (countdown || 0)) / 60)}m {Math.floor((duration * 60 - (countdown || 0)) % 60)}s
+                </p>
                 <Button
                   onClick={cancelTimer}
                   variant="destructive"
-                  className="bg-purple-800 p-6"
+                  className="px-8 rounded-full shadow-lg"
                 >
-                  <StopCircle className="mr-1" size={16} />
-                  Cancel Timer
+                  <StopCircle className="mr-2" size={18} />
+                  Stop Timer
                 </Button>
               </div>
-            </Card>
-            {countdown !== null && (
-              <p className="text-md font-semibold text-white mt-2">
-                {Math.floor((duration * 60 - countdown) / 60)} minutes passed
-              </p>
-            )}
-          </div>
-        )}
+            </div>
+          )}
+        </CardContent>
       </Card>
     </div>
   );

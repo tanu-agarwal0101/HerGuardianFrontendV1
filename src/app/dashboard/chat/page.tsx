@@ -1,12 +1,12 @@
 "use client";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 // import RequireAuth from "@/components/common/RequireAuth"; // Handled by layout
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { notifyError } from "@/lib/httpErrors";
 // import { io, Socket } from "socket.io-client";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Bot, User, Sparkles, MoreHorizontal } from "lucide-react";
+import { Send, Bot, User, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useChatSocket } from "@/hooks/useChatSocket";
 

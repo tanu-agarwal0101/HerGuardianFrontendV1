@@ -39,7 +39,7 @@ export default function CallsPage() {
   };
 
   const handleCreate = () => {
-    setNewContact({ name: "", phoneNumber: "", relationship: "" } as any);
+    setNewContact({ name: "", phoneNumber: "", relationship: "" });
     setEditContact(null);
   };
 

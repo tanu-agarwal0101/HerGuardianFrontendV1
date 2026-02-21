@@ -66,7 +66,7 @@ export default function LocationClient() {
         addressId,
         ...editedData,
         ...(coords || {}),
-      } as any);
+      } as Parameters<typeof AddressApi.update>[0]);
       setEditAddressId(null);
       setEditedData({});
       handleGetLocations();
