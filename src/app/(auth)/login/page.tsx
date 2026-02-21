@@ -13,9 +13,8 @@ import { Separator } from "@/components/ui/separator";
 // import { zodResolver } from "@hookform/resolvers/zod";
 // import axios from "axios";
 import { Auth, Users } from "@/lib/api";
-import { notifyError } from "@/lib/httpErrors";
 import { useUserStore } from "@/store/userStore";
-import { ArrowBigRight, ArrowLeft, Globe } from "lucide-react";
+import { ArrowLeft, Globe } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -60,7 +59,7 @@ export default function LoginPage() {
     const hasSession = /(?:^|; )(accessToken|refreshToken)=/.test(cookies);
     if (hasSession) router.replace("/dashboard");
   }, [router]);
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: z.infer<typeof loginSchema>) => {
     setIsSubmitting(true);
     try {
       // Call login API
@@ -71,11 +70,13 @@ export default function LoginPage() {
       } else {
         try {
           const profile = await Users.getProfile();
-          setUser(profile as any);
+          setUser(profile as unknown as import("@/helpers/type").User);
         } catch {}
       }
-      // If stealth onboarding needed, show dialog
+      // STEALTH ONBOARDING: TEMPORARILY DISABLED (feature paused)
+      // Preserved for when stealth is re-enabled. Remove `false &&` to restore.
       if (
+        false &&
         response.data.user &&
         !response.data.user.stealthMode &&
         !response.data.user.stealthOnboardingSkipped
@@ -89,11 +90,13 @@ export default function LoginPage() {
         }
         setShowStealthDialog(true);
       } else {
-        // Redirect to dashboard or stealth
         router.push("/dashboard");
       }
-    } catch (err) {
-      console.error("Login failed", err);
+    } catch (error: any) {
+      console.error("Login failed", error);
+      if (error?.response?.data?.message) {
+         setRememberWarning(error.response.data.message);
+      }
       // notifyError(err); // Handled by interceptor
     } finally {
       setIsSubmitting(false);
@@ -185,6 +188,14 @@ export default function LoginPage() {
                     type="password"
                     {...register("password")}
                   />
+                </div>
+                <div className="w-full flex justify-end px-4 mt-1 mb-2">
+                  <Link
+                    href="/forgot-password"
+                    className="text-sm text-purple-600 hover:underline"
+                  >
+                    Forgot Password?
+                  </Link>
                 </div>
                 <div className="flex items-center gap-2 my-2 w-full">
                   <input

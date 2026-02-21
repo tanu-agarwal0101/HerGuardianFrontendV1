@@ -30,10 +30,10 @@ const registerSchema = z
     email: z.string().email({ message: "Invalid email address" }),
     password: z
       .string()
-      .min(4, { message: "Password must be at least 4 characters long" }),
+      .min(4, { message: "Password must be at least 8 characters long" }),
     confirmPassword: z
       .string()
-      .min(4, { message: "Password must be at least 4 characters long" }),
+      .min(4, { message: "Password must be at least 8 characters long" }),
     rememberMe: z.boolean(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -88,13 +88,14 @@ export default function RegistrationForm() {
       if (res.status === 201) {
         try {
           const profile = await Users.getProfile();
-          setUser(profile as any);
+          setUser(profile as unknown as import("@/helpers/type").User);
         } catch {}
         toast.success("Registration successful! Welcome to HerGuardian.");
         router.push("/onboarding");
       }
-    } catch (error: any) {
-      const status = error?.response?.status;
+    } catch (error: unknown) {
+      const err = error as { response?: { status?: number } };
+      const status = err?.response?.status;
       if (status === 409) {
         toast.error(
           "An account with this email already exists. Try logging in instead."
