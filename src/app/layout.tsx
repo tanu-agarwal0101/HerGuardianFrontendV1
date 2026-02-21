@@ -6,7 +6,6 @@ import "./globals.css";
 import "leaflet/dist/leaflet.css";
 import { SonnerToaster } from "@/components/common/SonnerToaster";
 
-import { StealthTriggerProvider } from "@/components/common/StealthTriggerProvider";
 import { SessionRefresherProvider } from "@/components/SessionRefresherProvider";
 import StoreHydrator from "@/components/StoreHydrator";
 
@@ -72,7 +71,9 @@ export default function RootLayout({
         <SonnerToaster />
         <StoreHydrator />
         <SessionRefresherProvider>
-          <StealthTriggerProvider>{children}</StealthTriggerProvider>
+          {/* StealthTriggerProvider removed temporarily — stealth feature paused */}
+          {/* <StealthTriggerProvider>{children}</StealthTriggerProvider> */}
+          {children}
         </SessionRefresherProvider>
       </body>
     </html>

@@ -10,13 +10,11 @@ import {
   Clock1,
   Locate,
   Lock,
-  Shield,
   ShieldAlert,
   ShieldHalf,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { color } from "framer-motion";
 import { useUserStore } from "@/store/userStore";
 
 const cards = [
@@ -246,11 +244,12 @@ export default function Home() {
             intuitive safety companion possible.
           </p>
         </div>
-        <div className="right flex justify-center items-center md:w-full sm:w-full lg:w-1/2">
-          <img
+        <div className="right flex justify-center items-center md:w-full sm:w-full lg:w-1/2 relative h-100">
+          <Image
             src="/img1.avif"
             alt="image description"
-            className="border rounded-2xl lg:h-100 md:w-150 h-100 w-full"
+            fill
+            className="border rounded-2xl object-cover"
           />
         </div>
       </section>

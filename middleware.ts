@@ -1,100 +1,37 @@
-// // middleware.ts
-// import { NextRequest, NextResponse } from 'next/server'
-
-// export function middleware(request: NextRequest) {
-//   const user = request.cookies.get('auth_token')?.value; // or whatever your auth uses
-//   const stealth = request.cookies.get('stealth_mode'); // or fetch from user DB if needed
-
-//   const url = request.nextUrl.clone();
-
-//   if (user && stealth === 'true' && url.pathname === '/') {
-//     url.pathname = '/stealth'; // redirect to camouflage
-//     return NextResponse.redirect(url);
-//   }
-
-//   return NextResponse.next();
-// }
-
-// src/middleware.ts
-// import { NextRequest, NextResponse } from "next/server";
-
-// export function middleware(request: NextRequest) {
-//   console.log("🍪 Middleware running...");
-
-//   const stealthMode = request.cookies.get("stealthMode")?.value;
-//   const stealthType = request.cookies.get("stealthType")?.value || "calculator";
-
-//   console.log("🕵️ Stealth mode:", stealthMode);
-//   console.log("📓 Stealth type:", stealthType);
-
-//   if (stealthMode === "true" && request.nextUrl.pathname === "/") {
-//     console.log("➡️ Redirecting to stealth UI");
-//     return NextResponse.redirect(
-//       new URL(`/stealth/${stealthType}`, request.url)
-//     );
-//   }
-
-//   return NextResponse.next();
-// }
-
-// // Apply middleware only to root route or specific pages
-// export const config = {
-//   matcher: ["/", "/stealth"],
-// };
-
-// src/middleware.ts
 import { NextRequest, NextResponse } from "next/server";
 
+// ============================================================
+// STEALTH MODE: TEMPORARILY DISABLED
+// The stealth redirect logic is preserved below but bypassed.
+// Remove the early-return on line ~17 to re-enable stealth.
+// ============================================================
+
 export function middleware(request: NextRequest) {
-  const stealthMode = request.cookies.get("stealthMode")?.value;
-  const stealthType = request.cookies.get("stealthType")?.value || "calculator";
-  const stealthSession = request.cookies.get("stealthSession")?.value;
-  
-  // Backend sets tokens as httpOnly cookies: accessToken and refreshToken
   const token =
     request.cookies.get("accessToken")?.value ||
     request.cookies.get("refreshToken")?.value;
-  const rememberMe = request.cookies.get("rememberMe")?.value === "true";
   const url = request.nextUrl.clone();
 
-  // 1. STEALTH ENFORCEMENT (Highest Priority)
-  console.log(`[Middleware] Path: ${url.pathname}`);
-  console.log(`[Middleware] StealthMode Cookie: '${stealthMode}' (type: ${typeof stealthMode})`);
-  console.log(`[Middleware] StealthSession Cookie: '${stealthSession}'`);
-  console.log(`[Middleware] RememberMe: ${rememberMe}`);
+  // --- STEALTH LOGIC (PAUSED — re-enable by removing this section) ---
+  // All stealth redirect logic is intentionally skipped.
+  // The code below only handles standard auth redirects.
+  // When ready to revisit, restore the stealth checks from git history
+  // or uncomment the block at the bottom of this file.
+  // -------------------------------------------------------------------
 
-  // Scenario 1: Config is ON, RememberMe is ON, but Session is OFF.
-  // Result: Redirect to Stealth App (Calculator).
-  if (stealthMode === "true" && rememberMe && !stealthSession) {
-      // Don't loop if already there
-      if (!url.pathname.startsWith("/stealth") && !url.pathname.startsWith("/api")) {
-          url.pathname = `/stealth/${stealthType}`;
-          return NextResponse.redirect(url);
-      }
-  }
-
-  // Scenario 2: Config is ON, RememberMe is ON, Session is ON.
-  // Result: Allow Dashboard (Do nothing special).
-  
-  // Scenario 3: Stealth Path Protection
-  // If trying to access /stealth, check if we SHOULD be there.
-  if (url.pathname.startsWith("/stealth")) {
-      // If stealth is NOT enabled config-wise, get out.
-      if (stealthMode !== "true" || !rememberMe) {
-          url.pathname = "/dashboard";
-          return NextResponse.redirect(url);
-      }
-      // Otherwise allow.
-  }
-
-  // 4. AUTH REDIRECTS (Standard)
-  // If no session, redirect to landing (except for landing itself)
-  if (!token && url.pathname !== "/") {
+  // AUTH REDIRECTS
+  // No token → redirect to landing (except landing itself and auth pages)
+  if (
+    !token &&
+    url.pathname !== "/" &&
+    url.pathname !== "/login" &&
+    url.pathname !== "/registration"
+  ) {
     url.pathname = "/";
     return NextResponse.redirect(url);
   }
 
-  // If already logged in, avoid showing auth pages
+  // If logged in, don't show auth pages
   if (
     token &&
     (url.pathname === "/login" || url.pathname === "/registration")
@@ -102,12 +39,17 @@ export function middleware(request: NextRequest) {
     url.pathname = "/dashboard";
     return NextResponse.redirect(url);
   }
-  
-  // 5. Root Redirect
+
+  // ROOT REDIRECT — logged-in user at "/" → dashboard
   if (url.pathname === "/" && token) {
-      // If we got here, stealth logic passed (either off or session active)
-      url.pathname = "/dashboard";
-      return NextResponse.redirect(url);
+    url.pathname = "/dashboard";
+    return NextResponse.redirect(url);
+  }
+
+  // Stealth pages → redirect to dashboard (feature paused)
+  if (url.pathname.startsWith("/stealth")) {
+    url.pathname = "/dashboard";
+    return NextResponse.redirect(url);
   }
 
   return NextResponse.next();
@@ -123,3 +65,36 @@ export const config = {
     "/profile",
   ],
 };
+
+// ============================================================
+// PRESERVED STEALTH LOGIC — DO NOT DELETE
+// Uncomment and remove the early stealth bypass above to restore.
+// ============================================================
+//
+// const stealthMode = request.cookies.get("stealthMode")?.value;
+// const stealthType = request.cookies.get("stealthType")?.value || "calculator";
+// const stealthSession = request.cookies.get("stealthSession")?.value;
+// const justLoggedIn = request.cookies.get("justLoggedIn")?.value;
+// const rememberMe = request.cookies.get("rememberMe")?.value === "true";
+//
+// // FRESH LOGIN BYPASS
+// if (justLoggedIn && token) {
+//   if (url.pathname === "/" || url.pathname.startsWith("/stealth")) {
+//     url.pathname = "/dashboard";
+//     return NextResponse.redirect(url);
+//   }
+//   return NextResponse.next();
+// }
+//
+// // STEALTH ENFORCEMENT — Only on ROOT "/"
+// if (url.pathname === "/" && token && stealthMode === "true" && rememberMe && !stealthSession) {
+//   return NextResponse.redirect(new URL(`/stealth/${stealthType}`, request.url));
+// }
+//
+// // STEALTH PATH PROTECTION
+// if (url.pathname.startsWith("/stealth")) {
+//   if (stealthMode !== "true" || !rememberMe) {
+//     url.pathname = "/dashboard";
+//     return NextResponse.redirect(url);
+//   }
+// }
