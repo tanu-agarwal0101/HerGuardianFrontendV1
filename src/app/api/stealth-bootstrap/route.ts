@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
       stealthMode = !!data?.stealth?.stealthMode;
       stealthType = data?.stealth?.stealthType || "calculator";
     }
-  } catch (e) {
+  } catch {
     // ignore network errors; we'll fall back to dashboard redirect
   }
 

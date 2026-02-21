@@ -105,8 +105,8 @@ export function FakeCallCard() {
       {openSettings && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 p-4">
           <Card className="w-full max-w-md">
-             <FakeCallSettings
-                onSave={(s: any) => {
+              <FakeCallSettings
+                onSave={(s: Settings) => {
                 setSettings(s);
                 setOpenSettings(false);
                 }}

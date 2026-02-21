@@ -53,10 +53,10 @@ export function QuickActionsCard() {
             className="flex flex-col items-center justify-center gap-2 border rounded-xl p-4 hover:bg-accent/50 hover:border-primary/30 transition-all cursor-pointer text-center"
             onClick={() => {
                 const routes: Record<number, string> = {
-                    1: "/dashboard", // Quick Timer
-                    2: "/dashboard/actions/check-in",
+                    1: "/dashboard/actions/timer", 
+                    2: "/dashboard/actions/location",
                     3: "/dashboard/actions/calls",
-                    4: "/dashboard/actions/location"
+                    4: "/dashboard/actions/watch"
                 };
                 if(routes[tool.id]) router.push(routes[tool.id]);
             }}

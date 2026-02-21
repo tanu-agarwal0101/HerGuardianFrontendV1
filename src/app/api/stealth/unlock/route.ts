@@ -14,26 +14,31 @@ export async function POST(request: NextRequest) {
     // But current backend returns plain text dashboardPass in getStealth (as corrected earlier).
     // So we fetch settings and compare here.
     
-    const res = await fetch(`${apiBase}/users/stealth-settings`, {
-        headers: { Cookie: `accessToken=${token}` }
+    const res = await fetch(`${apiBase}/users/verify-stealth-pin`, {
+        method: "POST",
+        headers: { 
+            "Content-Type": "application/json",
+            Cookie: `accessToken=${token}` 
+        },
+        body: JSON.stringify({ pin })
     });
 
     if (!res.ok) {
-        return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+        return NextResponse.json({ success: false, message: "Unauthorized or Invalid PIN" }, { status: 401 });
     }
 
     const data = await res.json();
-    const correctPin = data.stealth?.dashboardPass;
 
-    if (pin === correctPin) {
-        const response = NextResponse.json({ success: true });
-        // Set SESSION cookie (no maxAge = session)
-        response.cookies.set("stealthSession", "active", {
-            path: "/",
-            sameSite: "lax",
-            httpOnly: false, // Client can see it to know state
-            secure: process.env.NODE_ENV === "production",
-        });
+    if (data.success) {
+        const response = NextResponse.json({ success: true, type: data.type });
+        if (data.type === 'dashboard') {
+            response.cookies.set("stealthSession", "active", {
+                path: "/",
+                sameSite: "lax",
+                httpOnly: false,
+                secure: process.env.NODE_ENV === "production",
+            });
+        }
         return response;
     } else {
         return NextResponse.json({ success: false, message: "Invalid PIN" }, { status: 401 });

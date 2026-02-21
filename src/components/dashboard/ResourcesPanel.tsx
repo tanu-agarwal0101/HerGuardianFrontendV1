@@ -1,6 +1,6 @@
 "use client";
 import React, {useState}from "react";
-import { PhoneCall, MessageCircle } from "lucide-react";
+import { PhoneCall } from "lucide-react";
 import {
   Dialog,
   DialogTrigger,
@@ -11,10 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useRouter } from "next/navigation";
-
 export function ResourcesPanel() {
-  const router = useRouter();
   const [openPoliceDialog, setOpenPoliceDialog] = useState(false);
   const [openWomenDialog, setOpenWomenDialog] = useState(false);
   return (
@@ -104,7 +101,7 @@ export function ResourcesPanel() {
     //       <span className="capitalize text-sm">Support Chat</span>
     //       <button
     //         aria-label="Open support chat"
-    //         onClick={() => router.push("/actions/support-chat")}
+    //         onClick={() => router.push("/dashboard/actions/support-chat")}
     //         className="text-purple-600 hover:text-purple-800"
     //       >
     //         <MessageCircle />
@@ -146,7 +143,7 @@ export function ResourcesPanel() {
 
          {/* Women's Helpline */}
          <div className="flex items-center justify-between p-3 border border-border/50 bg-muted/10 rounded-lg">
-             <span className="font-medium text-sm">Women's Helpline (1090)</span>
+             <span className="font-medium text-sm">Women&apos;s Helpline (1090)</span>
             <Dialog open={openWomenDialog} onOpenChange={setOpenWomenDialog}>
                 <DialogTrigger asChild>
                     <Button variant="ghost" size="icon" className="text-primary bg-primary/10 hover:bg-primary hover:text-white" onClick={() => setOpenWomenDialog(true)}>
@@ -155,9 +152,9 @@ export function ResourcesPanel() {
                 </DialogTrigger>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Call Women's Helpline</DialogTitle>
+                        <DialogTitle>Call Women&apos;s Helpline</DialogTitle>
                     </DialogHeader>
-                     <p className="py-4">Do you want to call the Women's Helpline?</p>
+                     <p className="py-4">Do you want to call the Women&apos;s Helpline?</p>
                     <DialogFooter>
                         <Button variant="ghost" onClick={() => setOpenWomenDialog(false)}>Cancel</Button>
                         <Button onClick={() => { window.location.href = "tel:1090"; setOpenWomenDialog(false); }}>Call</Button>
@@ -169,7 +166,7 @@ export function ResourcesPanel() {
          {/* Support Chat */}
          {/* <div className="flex items-center justify-between p-3 border border-border/50 bg-muted/10 rounded-lg">
              <span className="font-medium text-sm">Anonymous Support Chat</span>
-             <Button variant="ghost" size="icon" className="text-primary bg-primary/10 hover:bg-primary hover:text-white" onClick={() => router.push("/actions/support-chat")}>
+             <Button variant="ghost" size="icon" className="text-primary bg-primary/10 hover:bg-primary hover:text-white" onClick={() => router.push("/dashboard/actions/support-chat")}>
                 <MessageCircle className="h-4 w-4" />
              </Button>
          </div> */}

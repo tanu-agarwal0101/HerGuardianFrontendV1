@@ -23,7 +23,6 @@ export default function Calculator() {
       newVal = input === "0" ? digit : input + digit;
     }
     setInput(newVal);
-    checkTriggers(newVal);
   };
 
   const handleOperator = (nextOperator: string) => {
@@ -51,7 +50,12 @@ export default function Calculator() {
     }
   };
 
-  const handleEqual = () => {
+  const handleEqual = async () => {
+     if (input && input.length >= 4) {
+        const isTrigger = await checkTriggers(input);
+        if (isTrigger) return;
+     }
+
      if (!operator || prevInput == null) return;
      const inputValue = parseFloat(input);
      const result = performCalculation(operator, parseFloat(prevInput), inputValue);
@@ -61,13 +65,6 @@ export default function Calculator() {
      setPrevInput(null);
      setOperator(null);
      setWaitingForOperand(true);
-     
-     // Advanced trigger: Check if equation string matches (not implemented here for simplicity)
-     // Simple trigger: check if result matches PIN? 
-     // For now, consistent with logic: just check input buffer sequence
-     // But typically "enter" is equal. 
-     // Let's check triggers on the RESULT too
-     checkTriggers(resultStr);
   };
 
   const handleClear = () => {
@@ -77,17 +74,33 @@ export default function Calculator() {
     setWaitingForOperand(false);
   };
 
-  const checkTriggers = (val: string) => {
-    // Check Dashboard Pass
-    if (dashboardPass && val === dashboardPass) {
-       unlockApp();
+  const checkTriggers = async (val: string): Promise<boolean> => {
+    try {
+      const res = await fetch("/api/stealth/unlock", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pin: val }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          if (data.type === "dashboard") {
+            await unlockApp();
+            return true;
+          } else if (data.type === "sos") {
+            triggerSOS();
+            setInput("0");
+            setPrevInput(null);
+            setOperator(null);
+            setWaitingForOperand(false);
+            return true;
+          }
+        }
+      }
+    } catch (e) {
+      console.error(e);
     }
-    // Check SOS Pass
-    // For SOS, we might want to capture the sequence including operators if complex
-    // But for now, simple string match on display
-    if (sosPass && val === sosPass) {
-       triggerSOS();
-    }
+    return false;
   };
 
   const unlockApp = async () => {

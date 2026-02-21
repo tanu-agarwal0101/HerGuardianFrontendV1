@@ -26,7 +26,7 @@ export function SafetyTimerCard() {
             
              <Button
               className="w-40 h-40 rounded-full text-xl font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl hover:shadow-2xl hover:scale-105 transition-all z-10 border-4 border-background"
-              onClick={() => router.push("/actions/timer")}
+              onClick={() => router.push("/dashboard/actions/timer")}
             >
               START
             </Button>

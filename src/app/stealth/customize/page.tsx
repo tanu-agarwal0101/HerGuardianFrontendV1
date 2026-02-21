@@ -2,13 +2,13 @@
 import { toast } from "sonner";
 import Header from "@/components/common/header";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useState, useEffect } from "react";
 import { useUserStore } from "@/store/userStore";
-import { Calculator, Eye, EyeOff, Lock, NotebookPen, ShieldAlert } from "lucide-react";
+import { Calculator, Eye, Lock, NotebookPen, ShieldAlert } from "lucide-react";
 import Footer from "@/components/common/footer";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -46,7 +46,7 @@ export default function CustomizeStealthPage() {
     if (!userStealth.stealthType && !userStealth.stealthMode) {
       loadStealth();
     }
-  }, []);
+  }, [loadStealth, userStealth.stealthType, userStealth.stealthMode]);
 
   const onSubmit = async () => {
     if (
@@ -66,7 +66,7 @@ export default function CustomizeStealthPage() {
       });
       toast.success("Stealth settings saved");
       router.push("/dashboard");
-    } catch (e) {
+    } catch {
       toast.error("Failed to save settings");
     } finally {
       setSaving(false);

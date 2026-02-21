@@ -1,14 +1,12 @@
 "use client";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Settings, Play, Shield } from "lucide-react";
-import { useRouter } from "next/navigation";
 import React from "react";
 import { useUserStore } from "@/store/userStore";
 
 export function HeroCard() {
   const user = useUserStore((s) => s.user);
-  const router = useRouter();
   
   return (
     <section className="w-full">
@@ -37,11 +35,11 @@ export function HeroCard() {
                     </Button>
                     <Button
                         variant="ghost"
-                        className="gap-2 text-primary-foreground hover:bg-white/20 hover:text-white"
-                        onClick={() => router.push("/stealth/customize")}
+                        className="gap-2 text-primary-foreground hover:bg-white/20 hover:text-white opacity-60 cursor-not-allowed"
+                        disabled
                     >
                         <Settings className="w-4 h-4" /> 
-                        Customize Stealth Mode
+                        Stealth Mode — Coming Soon
                     </Button>
                 </div>
             </div>

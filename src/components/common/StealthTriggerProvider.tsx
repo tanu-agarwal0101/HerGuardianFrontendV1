@@ -104,6 +104,6 @@ export function StealthTriggerProvider({
       window.removeEventListener("keydown", onKeyDown);
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [stealth?.dashboardPass, stealth?.sosPass, setStealth]);
+  }, [stealth?.dashboardPass, stealth?.sosPass, stealth?.stealthType, setStealth]);
   return <>{children}</>;
 }

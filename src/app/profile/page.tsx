@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Users as UsersApi } from "@/lib/api";
 import { User } from "@/helpers/type";
-import { Mail, Phone, MapPin, Shield, AlertTriangle, Clock, Edit2, Plus, Camera, Users } from "lucide-react";
+import { Mail, Phone, MapPin, Shield, AlertTriangle, Edit2, Plus, Camera, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
@@ -21,7 +21,7 @@ export default function ProfilePage() {
     const fetchProfile = async () => {
       try {
         const user = await UsersApi.getProfile();
-        setProfile(user as any);
+        setProfile(user as unknown as User);
       } catch (err) {
         console.error("Failed to load profile:", err);
       }
@@ -162,7 +162,7 @@ export default function ProfilePage() {
                                 ]
                                 .sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                                 .slice(0, 5)
-                                .map((item: any, i) => (
+                                .map((item: { type: string, date: string, duration?: number, resolved?: boolean, isActive?: boolean }, i) => (
                                     <div key={i} className="flex items-start gap-4">
                                         <div className={`mt-1 h-2 w-2 rounded-full ${item.type === 'sos' ? 'bg-red-500' : 'bg-blue-500'}`} />
                                         <div className="space-y-1">

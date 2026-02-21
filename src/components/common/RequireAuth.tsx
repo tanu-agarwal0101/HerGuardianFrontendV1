@@ -14,7 +14,7 @@ export default function RequireAuth({
   const router = useRouter();
   const user = useUserStore((s) => s.user);
   const loadingUser = useUserStore((s) => s.loadingUser);
-  const authError = useUserStore((s) => (s as any).authError as string | null);
+  const authError = useUserStore((s) => s.authError as string | null);
 
 
 
@@ -34,28 +34,18 @@ export default function RequireAuth({
       toast.error(authError || "Please sign in to continue.");
       router.replace("/");
     }
-    // Stealth Check: If stealth is on, ensure we have a session
-    if (user) {
-        const stealth = useUserStore.getState().stealth; // Access direct state to avoid hook dep loops if needed
-        // We can also use the hook if we simply add it to the component
-        // But let's check document.cookie directly for speed
-        // Check BOTH store preference AND user profile to be robust against stale state
-        const isStealthEnabled = stealth.stealthMode || !!user.stealthMode;
-        
-        console.log("RequireAuth Debug:", { 
-            storeStealth: stealth.stealthMode, 
-            userStealth: user.stealthMode, 
-            isStealthEnabled 
-        });
+    // STEALTH CHECK: TEMPORARILY DISABLED (feature paused)
+    // Preserved for when stealth is re-enabled. Remove `false &&` to restore.
+    if (false && user) {
+        const stealth = useUserStore.getState().stealth;
+        const isStealthEnabled = stealth.stealthMode || !!user?.stealthMode;
 
         if (isStealthEnabled) {
-             // Use Regex for robust cookie check
              const hasSession = /(?:^|; )stealthSession=([^;]*)/.test(document.cookie);
              if (!hasSession) {
-                 // Locked!
-                 const target = stealth.stealthType || user.stealthType || "calculator";
-                 router.replace(`/stealth/${target}`);
-                 return;
+                  const target = stealth.stealthType || user?.stealthType || "calculator";
+                  router.replace(`/stealth/${target}`);
+                  return;
              }
         }
     }
@@ -63,29 +53,29 @@ export default function RequireAuth({
     // if user exists, render children
     
     // Add pageshow listener for BFCache (restore from history)
+    // STEALTH BFCache CHECK: TEMPORARILY DISABLED (feature paused)
+    // Preserved for when stealth is re-enabled. Remove `false &&` to restore.
     const onPageShow = (event: PageTransitionEvent) => {
-        if (event.persisted) {
-             // Force re-check logic
+        if (false && event.persisted) {
              const stealth = useUserStore.getState().stealth;
              const isStealthEnabled = stealth.stealthMode || !!user?.stealthMode;
              if (isStealthEnabled) {
-                 const hasSession = /(?:^|; )stealthSession=([^;]*)/.test(document.cookie);
-                 if (!hasSession) {
-                     const target = stealth.stealthType || user?.stealthType || "calculator";
-                     router.replace(`/stealth/${target}`);
-                 }
+                  const hasSession = /(?:^|; )stealthSession=([^;]*)/.test(document.cookie);
+                  if (!hasSession) {
+                      const target = stealth.stealthType || user?.stealthType || "calculator";
+                      router.replace(`/stealth/${target}`);
+                  }
              }
         }
     };
     window.addEventListener("pageshow", onPageShow);
     return () => window.removeEventListener("pageshow", onPageShow);
 
-  }, [loadingUser, user, authError, router]);
+  }, [loadingUser, user, authError, router, _hasHydrated]);
 
   // While loading AND no user, show loading UI
   // If we have a user (e.g. from login or cache), show the app while revalidating in background
   if ((!_hasHydrated || loadingUser) && !user) {
-      console.log("RequireAuth: Stuck loading:", { _hasHydrated, loadingUser });
       return (
            <div className="flex items-center justify-center min-h-screen">
                <div className="text-center">
