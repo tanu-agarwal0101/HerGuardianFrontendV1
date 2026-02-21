@@ -77,7 +77,7 @@ export const useUserStore = create<UserState>()(
             stealth: { ...get().stealth, ...settings },
             loadingStealth: false,
           });
-        } catch (e) {
+        } catch {
           set({ loadingStealth: false });
         }
       },
@@ -106,17 +106,18 @@ export const useUserStore = create<UserState>()(
           };
 
           set({ 
-              user: profile as any, 
+              user: profile as unknown as User,
               stealth: { ...get().stealth, ...stealthUpdates },
               authError: null 
           });
         } catch (e) {
           // Capture and expose error for UI
           try {
-            const status = (e as any)?.response?.status;
+            const err = e as { response?: { status?: number, data?: { message?: string } }, message?: string };
+            const status = err?.response?.status;
             const msg =
-              (e as any)?.response?.data?.message ||
-              (e as any)?.message ||
+              err?.response?.data?.message ||
+              err?.message ||
               "Failed to hydrate user";
             // If server unavailable, provide clear message
             if (status === 503) {
@@ -129,7 +130,7 @@ export const useUserStore = create<UserState>()(
               set({ authError: String(msg) });
             }
             console.error("hydrateUser error:", e);
-          } catch (_err) {
+          } catch {
             set({ authError: "Failed to hydrate user" });
           }
         } finally {

@@ -1,4 +1,3 @@
-import { User } from './type';
 export const UserMock = {
   "id": "user123",
   "email": "jane.doe@example.com",

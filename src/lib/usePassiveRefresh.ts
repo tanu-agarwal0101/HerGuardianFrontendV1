@@ -30,7 +30,7 @@ export function usePassiveRefresh(enabled: boolean) {
     timerRef.current = window.setTimeout(async () => {
       try {
         await axiosInstance.post("/users/refresh-token");
-      } catch (e) {
+      } catch {
         // Ignore; 401 will cascade normal logout or retry via interceptor
       } finally {
         schedule(); // reschedule next cycle

@@ -1,4 +1,5 @@
 import axiosInstance from "../axiosInstance";
+import { Contact, SafetyTimer, SOSTrigger } from "@/helpers/type";
 
 export interface UserProfile {
   id: string;
@@ -7,9 +8,9 @@ export interface UserProfile {
   email: string;
   phoneNumber?: string;
   profilePicture?: string;
-  contacts?: any[];
-  safetyTimers?: any[];
-  sosTriggers?: any[];
+  contacts?: Contact[];
+  safetyTimers?: SafetyTimer[];
+  sosTriggers?: SOSTrigger[];
   stealthType?: string;
   stealthMode?: boolean;
   dashboardPass?: string;

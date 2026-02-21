@@ -23,7 +23,7 @@ export async function getSettings() {
 }
 
 export async function updateSettings(payload: Partial<StealthSettings>) {
-  let toSend = { ...payload };
+  const toSend = { ...payload };
   if (payload.stealthPin) {
     toSend.stealthPin = await hashPin(payload.stealthPin);
   }

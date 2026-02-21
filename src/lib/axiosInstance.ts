@@ -6,9 +6,9 @@ let accessTokenCache: string | null = null;
 let accessTokenExpiryEpoch = 0; // ms epoch
 
 let isRefreshing = false;
-let failedQueue: any[] = [];
+let failedQueue: { resolve: (val: string | null) => void, reject: (err: unknown) => void }[] = [];
 
-const processQueue = (error: any, token: string | null = null) => {
+const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue.forEach((prom) => {
     if (error) prom.reject(error);
     else prom.resolve(token);
@@ -87,9 +87,9 @@ axiosInstance.interceptors.response.use(
         }
         processQueue(null, newAccessToken || null);
         return axiosInstance(originalRequest);
-      } catch (refreshErr: any) {
+      } catch (refreshErr) {
         processQueue(refreshErr, null);
-        if (refreshErr?.response?.status === 401) {
+        if ((refreshErr as { response?: { status?: number } })?.response?.status === 401) {
           // Refresh is invalid; force sign-out UX
           handleUnauthorizedSideEffects();
         }

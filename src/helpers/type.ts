@@ -35,6 +35,7 @@ export interface User {
   sosTriggers: SOSTrigger[];
   stealthType?: string;
   stealthMode?: boolean;
+  stealthOnboardingSkipped?: boolean;
   dashboardPass?: string;
   sosPass?: string;
   createdAt: string;
@@ -59,4 +60,12 @@ export interface SafetyTimer {
   createdAt: string;
   updatedAt: string;
   sharedLocation: boolean;
+}
+
+export interface Message {
+  id: string;
+  senderId: string;
+  receiverId: string;
+  message: string;
+  createdAt: string;
 }

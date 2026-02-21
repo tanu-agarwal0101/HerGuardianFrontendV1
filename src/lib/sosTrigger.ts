@@ -37,9 +37,9 @@ export const triggerSOS = async () => {
     };
     await SOS.trigger(payload);
     toast.success("SOS triggered successfully!");
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error triggering SOS:", error);
-    if (error?.response?.status === 429) {
+    if ((error as { response?: { status?: number } })?.response?.status === 429) {
       toast.error(
         "You are triggering SOS too quickly. Please wait and try again."
       );

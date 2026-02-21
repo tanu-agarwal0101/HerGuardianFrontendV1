@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState, useMemo } from "react";
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { io, Socket } from "socket.io-client";
-import { notifyError } from "@/lib/httpErrors";
+import { Message } from "@/helpers/type";
 
 export const useChatSocket = () => {
-  const [connecting, setConnecting] = useState(true);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isConnected, setIsConnected] = useState(false);
   const socketRef = useRef<Socket | null>(null);
 
   const baseUrl = useMemo(() => {
@@ -15,43 +16,64 @@ export const useChatSocket = () => {
   }, []);
 
   useEffect(() => {
-    let active = true;
-    setConnecting(true);
     const s = io(baseUrl, {
       withCredentials: true,
       transports: ["websocket", "polling"],
     });
     socketRef.current = s;
 
-    const onConnect = () => {
-      if (!active) return;
-      setConnecting(false);
-    };
-
-    const onConnectError = (err: any) => {
-      console.error("Socket connection error:", err);
-      // notifyError(err); // Optional: suppress if polling fallback is expected
-      setConnecting(false);
-    };
+    s.on("connect", () => setIsConnected(true));
+    s.on("disconnect", () => setIsConnected(false));
     
-    const onError = (err: any) => {
-        console.error("Socket error:", err);
-    };
+    s.on("receive_message", (message: Message) => {
+      setMessages((prev) => [...prev, message]);
+    });
 
-    s.on("connect", onConnect);
-    s.on("connect_error", onConnectError);
-    s.on("error", onError);
+    s.on("botReply", (reply: string) => {
+        setMessages((prev) => [
+            ...prev,
+            {
+                id: `bot-${Date.now()}`,
+                senderId: "support-bot",
+                receiverId: "user",
+                message: reply,
+                createdAt: new Date().toISOString()
+            } as Message
+        ]);
+    });
 
     return () => {
-      active = false;
-      try {
-        s.off("connect", onConnect);
-        s.off("connect_error", onConnectError);
-        s.off("error", onError);
-        s.disconnect();
-      } catch {}
+      s.disconnect();
     };
   }, [baseUrl]);
 
-  return { socket: socketRef.current, connecting };
+  const joinRoom = useCallback((userId: string) => {
+    socketRef.current?.emit("join", userId);
+  }, []);
+
+  const sendMessage = useCallback((payload: Pick<Message, 'senderId' | 'receiverId' | 'message'>) => {
+    if (socketRef.current) {
+      // Optimistically add user message if it's for the support bot
+      const userMsg = {
+        id: `user-${Date.now()}`,
+        senderId: payload.senderId,
+        receiverId: payload.receiverId,
+        message: payload.message,
+        createdAt: new Date().toISOString()
+      };
+      setMessages((prev) => [...prev, userMsg as Message]);
+      
+      // Emit to backend
+      socketRef.current.emit("userMessage", payload.message);
+    }
+  }, []);
+
+  return { 
+    socket: socketRef.current, 
+    isConnected, 
+    connecting: !isConnected,
+    messages, 
+    sendMessage, 
+    joinRoom 
+  };
 };
