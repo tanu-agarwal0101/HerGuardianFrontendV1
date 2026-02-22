@@ -9,10 +9,10 @@ import { FakeCallCard } from "@/components/dashboard/FakeCallCard";
 import { SafetyCircleCard } from "@/components/dashboard/SafetyCircleCard";
 import { motion } from "motion/react";
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { enableNotifications } from "@/lib/notificationsService";
 import { MapPin, Watch, Bell, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+
 
 export default function Dashboard() {
   const { stealth } = useUserStore();

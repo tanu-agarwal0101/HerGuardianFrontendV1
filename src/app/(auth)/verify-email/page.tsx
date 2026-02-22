@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Auth } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,9 +27,10 @@ function VerifyEmailInner() {
         await Auth.verifyEmail(token);
         setStatus("success");
         setMessage("Your email has been successfully verified! You can now log in.");
-      } catch (err: any) {
+      } catch (err: unknown) {
         setStatus("error");
-        setMessage(err.response?.data?.message || "Failed to verify email. The link may be invalid or expired.");
+        const axiosErr = err as { response?: { data?: { message?: string } } };
+        setMessage(axiosErr.response?.data?.message || "Failed to verify email. The link may be invalid or expired.");
       }
     };
 

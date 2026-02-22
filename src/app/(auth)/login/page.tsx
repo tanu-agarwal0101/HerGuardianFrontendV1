@@ -92,10 +92,11 @@ export default function LoginPage() {
       } else {
         router.push("/dashboard");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Login failed", error);
-      if (error?.response?.data?.message) {
-         setRememberWarning(error.response.data.message);
+      const axiosErr = error as { response?: { data?: { message?: string } } };
+      if (axiosErr?.response?.data?.message) {
+         setRememberWarning(axiosErr.response.data.message);
       }
       // notifyError(err); // Handled by interceptor
     } finally {

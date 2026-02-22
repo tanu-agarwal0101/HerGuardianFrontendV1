@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PhoneCall, Lock, Plus, Users } from "lucide-react";
+import { PhoneCall, Plus, Users } from "lucide-react";
 import {
   Dialog,
   DialogTrigger,

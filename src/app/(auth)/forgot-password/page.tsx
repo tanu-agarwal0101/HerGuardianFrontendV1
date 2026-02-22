@@ -29,8 +29,9 @@ export default function ForgotPasswordPage() {
       await Auth.forgotPassword(data.email);
       setSuccess(true);
       toast.success("Reset link sent!");
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to send reset link");
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { message?: string } } };
+      toast.error(axiosErr.response?.data?.message || "Failed to send reset link");
     }
   };
 

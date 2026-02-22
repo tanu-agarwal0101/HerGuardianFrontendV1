@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Auth } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -58,8 +58,9 @@ function ResetPasswordInner() {
       await Auth.resetPassword(token, data.newPassword);
       setSuccess(true);
       toast.success("Password reset successfully!");
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to reset password. The link may be invalid or expired.");
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { message?: string } } };
+      toast.error(axiosErr.response?.data?.message || "Failed to reset password. The link may be invalid or expired.");
     }
   };
 

@@ -10,9 +10,9 @@ export default function Calculator() {
   const [prevInput, setPrevInput] = useState<string | null>(null);
   const [operator, setOperator] = useState<string | null>(null);
   const [waitingForOperand, setWaitingForOperand] = useState(false);
-  
   const router = useRouter();
-  const { dashboardPass, sosPass } = useUserStore((s) => s.stealth);
+  
+  useUserStore((s) => s.stealth);
 
   const handleDigit = (digit: string) => {
     let newVal = input;
