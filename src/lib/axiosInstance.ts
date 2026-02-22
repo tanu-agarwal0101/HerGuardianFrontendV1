@@ -22,7 +22,7 @@ const axiosInstance = axios.create({
     process.env.PUBLIC_API_URL ||
     "http://localhost:5000",
   withCredentials: true,
-  timeout: 15000, // 15s timeout to prevent hanging
+  timeout: 60000, // 60s timeout to handle Render cold starts
 });
 
 // Attach Authorization header if we have a cached token
