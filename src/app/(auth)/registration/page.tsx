@@ -16,7 +16,7 @@ import Link from "next/link";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 // import axios from "axios";
-import { Auth, Users } from "@/lib/api";
+import { Auth } from "@/lib/api";
 import { useUserStore } from "@/store/userStore";
 // No local rememberMe state; using RHF directly.
 import { toast } from "sonner";
@@ -47,7 +47,6 @@ type RegisterValues = z.infer<typeof registerSchema>;
 
 export default function RegistrationForm() {
   const router = useRouter();
-  const setUser = useUserStore((s) => s.setUser);
   // If already logged in, attempt to hydrate user from httpOnly cookies and skip auth page
   const loadingUser = useUserStore((s) => s.loadingUser);
   const user = useUserStore((s) => s.user);
@@ -99,7 +98,6 @@ export default function RegistrationForm() {
           "An account with this email already exists. Try logging in instead."
         );
       } else {
-        console.error("Registration error:", error);
         toast.error("Registration failed. Please try again.");
       }
     } finally {

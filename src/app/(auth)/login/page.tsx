@@ -93,7 +93,6 @@ export default function LoginPage() {
         router.push("/dashboard");
       }
     } catch (error: unknown) {
-      console.error("Login failed", error);
       const axiosErr = error as { response?: { status?: number, data?: { message?: string, isVerified?: boolean } } };
       
       const isUnverified = 

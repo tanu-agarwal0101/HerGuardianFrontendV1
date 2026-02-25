@@ -129,7 +129,6 @@ export const useUserStore = create<UserState>()(
             } else {
               set({ authError: String(msg) });
             }
-            console.error("hydrateUser error:", e);
           } catch {
             set({ authError: "Failed to hydrate user" });
           }

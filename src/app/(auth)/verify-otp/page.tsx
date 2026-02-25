@@ -81,6 +81,7 @@ function VerifyOtpInner() {
     if (otp.length === 6) {
       handleVerify(otp);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [otp]);
 
   if (!email) {
@@ -134,7 +135,7 @@ function VerifyOtpInner() {
         </Button>
 
         <div className="text-center mt-4">
-          <p className="text-sm text-gray-500 mb-2">Didn't receive a code?</p>
+          <p className="text-sm text-gray-500 mb-2">Didn&apos;t receive a code?</p>
           <Button
             variant="outline"
             disabled={countdown > 0 || isResending}
