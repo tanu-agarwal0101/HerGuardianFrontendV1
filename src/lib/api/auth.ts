@@ -28,8 +28,8 @@ export async function refresh() {
   return axiosInstance.post("/users/refresh-token", {});
 }
 
-export async function verifyEmail(token: string) {
-  return axiosInstance.post("/users/verify-email", { token });
+export async function verifyEmail(email: string, otp: string) {
+  return axiosInstance.post("/users/verify-email", { email, otp });
 }
 
 export async function forgotPassword(email: string) {

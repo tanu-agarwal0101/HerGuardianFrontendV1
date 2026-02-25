@@ -8,12 +8,15 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
+import { useUserStore } from "@/store/userStore";
+import { useRouter } from "next/navigation";
 
 function VerifyEmailInner() {
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const [message, setMessage] = useState("Verifying your email...");
   const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+  const router = useRouter();
+  const setUser = useUserStore((s) => s.setUser);
 
   useEffect(() => {
     if (!token) {
@@ -24,9 +27,20 @@ function VerifyEmailInner() {
 
     const verifyToken = async () => {
       try {
-        await Auth.verifyEmail(token);
+        const response = await Auth.verifyEmail(token);
         setStatus("success");
-        setMessage("Your email has been successfully verified! You can now log in.");
+        setMessage("Email verified! Redirecting you to onboarding...");
+        
+        // Auto-login: Hydrate the user from the backend response
+        if (response.data && response.data.user) {
+          setUser(response.data.user);
+        }
+
+        // Redirect directly to onboarding after a short delay
+        setTimeout(() => {
+          router.push("/onboarding");
+        }, 1500);
+
       } catch (err: unknown) {
         setStatus("error");
         const axiosErr = err as { response?: { data?: { message?: string } } };
@@ -58,11 +72,9 @@ function VerifyEmailInner() {
         
         <div className="pt-4 flex flex-col gap-3">
             {status === "success" && (
-                <Link href="/login" className="w-full">
-                <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-full py-6 text-lg">
-                    Continue to Login
+                <Button disabled className="w-full bg-purple-600/50 text-white rounded-full py-6 text-lg">
+                    Redirecting...
                 </Button>
-                </Link>
             )}
             
             {status === "error" && (

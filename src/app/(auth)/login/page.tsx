@@ -94,11 +94,21 @@ export default function LoginPage() {
       }
     } catch (error: unknown) {
       console.error("Login failed", error);
-      const axiosErr = error as { response?: { data?: { message?: string } } };
+      const axiosErr = error as { response?: { status?: number, data?: { message?: string, isVerified?: boolean } } };
+      
+      const isUnverified = 
+        axiosErr?.response?.status === 403 && 
+        (axiosErr.response.data?.isVerified === false || axiosErr.response.data?.message?.toLowerCase().includes("verify"));
+
+      // If user is unverified, push them to the OTP page instantly
+      if (isUnverified) {
+         router.push(`/verify-otp?email=${encodeURIComponent(data.email)}`);
+         return;
+      }
+
       if (axiosErr?.response?.data?.message) {
          setRememberWarning(axiosErr.response.data.message);
       }
-      // notifyError(err); // Handled by interceptor
     } finally {
       setIsSubmitting(false);
     }

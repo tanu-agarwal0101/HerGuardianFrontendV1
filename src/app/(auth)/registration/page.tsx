@@ -77,6 +77,8 @@ export default function RegistrationForm() {
   } = form;
 
   const onSubmit = async (data: RegisterValues) => {
+    // FIX: Manually set loading to true (RHF isSubmitting sometimes hangs if unmounted)
+    useUserStore.setState({ loadingUser: true });
     try {
       const res = await Auth.register({
         // firstName: "", // not collected yet
@@ -86,12 +88,8 @@ export default function RegistrationForm() {
         rememberMe: data.rememberMe,
       });
       if (res.status === 201) {
-        try {
-          const profile = await Users.getProfile();
-          setUser(profile as unknown as import("@/helpers/type").User);
-        } catch {}
-        toast.success("Registration successful! Welcome to HerGuardian.");
-        router.push("/onboarding");
+        toast.success("Verify Email");
+        router.push(`/verify-otp?email=${encodeURIComponent(data.email)}`);
       }
     } catch (error: unknown) {
       const err = error as { response?: { status?: number } };
@@ -104,6 +102,9 @@ export default function RegistrationForm() {
         console.error("Registration error:", error);
         toast.error("Registration failed. Please try again.");
       }
+    } finally {
+      // FIX: Never leave the button spinning indefinitely
+      useUserStore.setState({ loadingUser: false });
     }
   };
   return (
