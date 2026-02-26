@@ -42,7 +42,6 @@ export const useUserStore = create<UserState>()(
       _hasHydrated: false,
 
       setUser: (user) => {
-          console.log("Store: setUser called with:", user);
           // Auto-sync stealth state when user is set (e.g. login)
           const stealthUpdates = {
               stealthMode: user.stealthMode ?? false,
@@ -50,7 +49,6 @@ export const useUserStore = create<UserState>()(
               dashboardPass: user.dashboardPass ?? null,
               sosPass: user.sosPass ?? null,
           };
-          console.log("Store: Syncing stealth state:", stealthUpdates);
           set({ 
               user, 
               stealth: { ...get().stealth, ...stealthUpdates } 
@@ -91,11 +89,11 @@ export const useUserStore = create<UserState>()(
       hydrateUser: async () => {
         if (typeof window === "undefined") return;
         if (get().user || get().loadingUser) return;
+        if (typeof document !== "undefined" && !/(?:^|; )isAuthenticated=true/.test(document.cookie)) return;
         try {
           set({ loadingUser: true, authError: null });
           const { Users } = await import("@/lib/api");
           const profile = await Users.getProfile();
-          console.log("Store: hydrateUser fetched profile:", profile);
           
           // Sync stealth state from profile
           const stealthUpdates = {

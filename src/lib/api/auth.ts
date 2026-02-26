@@ -13,7 +13,10 @@ export async function register(payload: {
   phoneNumber?: string;
   rememberMe?: boolean;
 }) {
-  return axiosInstance.post("/users/register", payload);
+  return axiosInstance.post("/users/register", payload, {
+    // @ts-expect-error Custom config used by global interceptor
+    suppressToast: true,
+  });
 }
 
 export async function login(payload: {

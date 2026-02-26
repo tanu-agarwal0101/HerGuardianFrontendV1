@@ -18,7 +18,10 @@ export interface UserProfile {
 }
 
 export async function getProfile(): Promise<UserProfile> {
-  const { data } = await axiosInstance.get("/users/profile");
+  const { data } = await axiosInstance.get("/users/profile", {
+    // @ts-expect-error Custom config used by global interceptor
+    suppressToast: true,
+  });
   return data.user;
 }
 

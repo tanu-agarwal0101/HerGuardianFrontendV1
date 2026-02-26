@@ -5,8 +5,7 @@ import { Users } from "@/lib/api";
 
 function hasSessionCookie() {
   if (typeof document === "undefined") return false;
-  const c = document.cookie;
-  return /(?:^|; )(accessToken|refreshToken)=/.test(c);
+  return /(?:^|; )isAuthenticated=true/.test(document.cookie);
 }
 
 export const UserBootstrapProvider: React.FC<{ children: React.ReactNode }> = ({

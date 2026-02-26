@@ -89,7 +89,8 @@ axiosInstance.interceptors.response.use(
         return axiosInstance(originalRequest);
       } catch (refreshErr) {
         processQueue(refreshErr, null);
-        if ((refreshErr as { response?: { status?: number } })?.response?.status === 401) {
+        const status = (refreshErr as { response?: { status?: number } })?.response?.status;
+        if (status === 401 || status === 403 || status === 404) {
           // Refresh is invalid; force sign-out UX
           handleUnauthorizedSideEffects();
         }
