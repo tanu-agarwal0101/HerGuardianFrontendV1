@@ -188,7 +188,6 @@ export default function AddressForm({ onAdded }: AddressFormProps) {
       }
     } catch (error) {
       console.error("Error submitting location:", error);
-      toast.error("Failed to add address. Please try again.");
     }
   };
   const onSubmit = async () => {

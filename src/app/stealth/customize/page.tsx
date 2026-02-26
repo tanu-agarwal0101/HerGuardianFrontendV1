@@ -67,7 +67,7 @@ export default function CustomizeStealthPage() {
       toast.success("Stealth settings saved");
       router.push("/dashboard");
     } catch {
-      toast.error("Failed to save settings");
+      // Error handled by global interceptor
     } finally {
       setSaving(false);
     }

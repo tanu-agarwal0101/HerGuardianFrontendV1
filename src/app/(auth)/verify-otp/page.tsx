@@ -70,8 +70,7 @@ function VerifyOtpInner() {
       toast.success("Verification code resent! Please check your inbox.");
       setCountdown(60); // Reset timer
     } catch (err: unknown) {
-      const axiosErr = err as { response?: { data?: { message?: string } } };
-      toast.error(axiosErr.response?.data?.message || "Failed to resend code.");
+      // Handled by global interceptor
     } finally {
       setIsResending(false);
     }

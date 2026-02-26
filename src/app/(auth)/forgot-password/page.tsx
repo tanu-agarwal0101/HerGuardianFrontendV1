@@ -30,8 +30,7 @@ export default function ForgotPasswordPage() {
       setSuccess(true);
       toast.success("Reset link sent!");
     } catch (err: unknown) {
-      const axiosErr = err as { response?: { data?: { message?: string } } };
-      toast.error(axiosErr.response?.data?.message || "Failed to send reset link");
+      // Error handled by global interceptor
     }
   };
 

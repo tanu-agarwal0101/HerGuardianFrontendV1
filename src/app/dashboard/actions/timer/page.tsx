@@ -56,7 +56,6 @@ export default function SafetyTimer() {
       setTimerActive(true);
     } catch (e) {
       console.error("Failed to start timer:", e);
-      toast.error("Failed to start timer. Please try again.");
     } finally {
       setLoading(false);
     }

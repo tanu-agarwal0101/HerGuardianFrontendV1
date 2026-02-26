@@ -221,7 +221,6 @@ export default function CallsPage() {
          {!loading && contacts.length === 0 && !newContact && (
             <div className="col-span-full text-center py-10 text-muted-foreground bg-muted/20 rounded-lg border border-dashed">
                 <p>No contacts added yet. Add trusted contacts to alert them in emergencies.</p>
-                <Button variant="link" onClick={handleCreate}>Add your first contact</Button>
             </div>
         )}
       </div>

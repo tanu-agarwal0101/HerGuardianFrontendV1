@@ -97,8 +97,6 @@ export default function RegistrationForm() {
         toast.error(
           "An account with this email already exists. Try logging in instead."
         );
-      } else {
-        toast.error("Registration failed. Please try again.");
       }
     } finally {
       // FIX: Never leave the button spinning indefinitely

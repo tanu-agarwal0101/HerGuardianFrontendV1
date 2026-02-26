@@ -43,7 +43,6 @@ export function LogoutDialog({
       }
     } catch (error) {
       console.error("Logout failed:", error);
-      toast.error("Logout failed. Please try again.");
     }
     // Backup cleanup
     logoutStore();

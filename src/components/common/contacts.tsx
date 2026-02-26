@@ -51,7 +51,6 @@ const Contacts = ({ nextStep, prevStep }: Props) => {
   });
 
   const onSubmit = async (data: ContactValues) => {
-    console.log(data);
     try {
       await ContactsApi.createBulk({
         emergencyContacts: data.emergencyContacts,
@@ -60,7 +59,6 @@ const Contacts = ({ nextStep, prevStep }: Props) => {
       nextStep();
     } catch (error) {
       console.error("Error submitting contacts:", error);
-      toast.error("Failed to add contacts. Please try again.");
     }
     // api call
   };
