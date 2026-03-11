@@ -98,7 +98,7 @@ export default function Dashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.2 }}
              >
-                <Link href="/dashboard/actions/location">
+                <Link href="/dashboard/location">
                   <Card className="shadow-md hover:shadow-lg transition-all p-4 cursor-pointer group">
                     <CardHeader className="flex flex-row items-center gap-3 p-0 pb-2">
                       <div className="p-2 bg-primary/10 rounded-full text-primary">
@@ -120,7 +120,7 @@ export default function Dashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.25 }}
              >
-                <Link href="/dashboard/actions/watch">
+                <Link href="/dashboard/watch">
                   <Card className="shadow-md hover:shadow-lg transition-all p-4 cursor-pointer group">
                     <CardHeader className="flex flex-row items-center gap-3 p-0 pb-2">
                       <div className="p-2 bg-primary/10 rounded-full text-primary">

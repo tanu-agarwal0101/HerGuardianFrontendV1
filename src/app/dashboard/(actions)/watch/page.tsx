@@ -44,7 +44,7 @@ export default function SmartWatchComingSoon() {
           </div>
 
           <Button 
-            onClick={() => router.push("/dashboard/actions")}
+            onClick={() => router.push("/dashboard")}
             className="w-full mt-8 py-6 rounded-xl shadow-lg hover:scale-105 transition-transform"
           >
             Stay Tuned

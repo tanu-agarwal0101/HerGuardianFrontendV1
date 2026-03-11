@@ -166,7 +166,7 @@ export function ResourcesPanel() {
          {/* Support Chat */}
          {/* <div className="flex items-center justify-between p-3 border border-border/50 bg-muted/10 rounded-lg">
              <span className="font-medium text-sm">Anonymous Support Chat</span>
-             <Button variant="ghost" size="icon" className="text-primary bg-primary/10 hover:bg-primary hover:text-white" onClick={() => router.push("/dashboard/actions/support-chat")}>
+             <Button variant="ghost" size="icon" className="text-primary bg-primary/10 hover:bg-primary hover:text-white" onClick={() => router.push("/dashboard/support-chat")}>
                 <MessageCircle className="h-4 w-4" />
              </Button>
          </div> */}

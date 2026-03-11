@@ -40,7 +40,7 @@ export function SafetyCircleCard() {
           <CardTitle className="text-xl font-bold text-primary">
             My Safety Circle
           </CardTitle>
-          <Button variant="ghost" size="sm" className="text-primary gap-1" onClick={() => router.push("/dashboard/actions/calls")}>
+          <Button variant="ghost" size="sm" className="text-primary gap-1" onClick={() => router.push("/dashboard/calls")}>
             <Plus className="h-4 w-4" /> Add
           </Button>
         </div>
@@ -52,7 +52,7 @@ export function SafetyCircleCard() {
             <p className="text-muted-foreground text-center">
               No contacts added yet
             </p>
-            <Button variant="outline" onClick={() => router.push("/dashboard/actions/calls")}>
+            <Button variant="outline" onClick={() => router.push("/dashboard/calls")}>
               Add Trusted Contact
             </Button>
           </div>
@@ -102,7 +102,7 @@ export function SafetyCircleCard() {
               variant="outline"
               size="sm"
               className="mt-2 gap-2 self-center"
-              onClick={() => router.push("/dashboard/actions/calls")}
+              onClick={() => router.push("/dashboard/calls")}
             >
               <Users className="h-4 w-4" /> Manage Contacts
             </Button>

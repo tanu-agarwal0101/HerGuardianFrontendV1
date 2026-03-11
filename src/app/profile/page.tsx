@@ -181,7 +181,7 @@ export default function ProfilePage() {
                     <Card className="p-4">
                          <CardHeader className="flex flex-row items-center justify-between">
                              <CardTitle className="text-lg">Safety Circle</CardTitle>
-                             <Button variant="ghost" size="icon" onClick={() => router.push("/dashboard/actions/calls")}>
+                             <Button variant="ghost" size="icon" onClick={() => router.push("/dashboard/calls")}>
                                  <Plus className="h-4 w-4" />
                              </Button>
                         </CardHeader>

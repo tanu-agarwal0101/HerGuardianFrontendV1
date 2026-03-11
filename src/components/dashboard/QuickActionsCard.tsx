@@ -2,12 +2,10 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import {
   Check,
   Clock,
   LocateIcon,
-  MoreHorizontal,
   PhoneCall,
 } from "lucide-react";
 
@@ -41,9 +39,7 @@ export function QuickActionsCard() {
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-xl font-bold text-primary">Quick Actions</CardTitle>
         <div title="Go to Actions">
-            <Button variant="ghost" size="icon" onClick={() => router.push("/dashboard/actions")}>
-                <MoreHorizontal className="h-4 w-4" />
-            </Button>
+            {/* Link removed */}
         </div>
       </CardHeader>
       <CardContent className="grid grid-cols-2 gap-3 flex-1">
@@ -53,10 +49,10 @@ export function QuickActionsCard() {
             className="flex flex-col items-center justify-center gap-2 border rounded-xl p-4 hover:bg-accent/50 hover:border-primary/30 transition-all cursor-pointer text-center"
             onClick={() => {
                 const routes: Record<number, string> = {
-                    1: "/dashboard/actions/timer", 
-                    2: "/dashboard/actions/location",
-                    3: "/dashboard/actions/calls",
-                    4: "/dashboard/actions/watch"
+                    1: "/dashboard/timer", 
+                    2: "/dashboard/location",
+                    3: "/dashboard/calls",
+                    4: "/dashboard/watch"
                 };
                 if(routes[tool.id]) router.push(routes[tool.id]);
             }}
