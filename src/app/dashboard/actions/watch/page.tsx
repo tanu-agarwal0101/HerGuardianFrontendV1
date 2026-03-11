@@ -2,7 +2,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Watch, ArrowLeft, Construction } from "lucide-react";
+import { Watch, Construction } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function SmartWatchComingSoon() {
@@ -10,14 +10,7 @@ export default function SmartWatchComingSoon() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] p-4 relative">
-      <Button 
-        variant="ghost" 
-        onClick={() => router.push("/dashboard/actions")}
-        className="absolute top-0 left-4 flex items-center gap-2 text-primary hover:bg-primary/10"
-      >
-        <ArrowLeft size={18} />
-        Back to Actions
-      </Button>
+      {/* TopBar Back Button handles navigation now */}
 
       <Card className="m-4 p-8 lg:w-[600px] w-full shadow-xl border-primary/10 bg-card/50 backdrop-blur-md text-center">
         <CardHeader className="flex flex-col items-center gap-4">

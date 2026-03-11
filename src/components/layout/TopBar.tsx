@@ -1,13 +1,21 @@
 "use client";
 
-import { Bell, Menu } from "lucide-react";
+import { ArrowLeft, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { usePathname, useRouter } from "next/navigation";
 
 interface TopBarProps {
   onMenuClick?: () => void;
 }
 
 export function TopBar({ onMenuClick }: TopBarProps) {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  // Hide TopBar completely on auth routes (as it should be wrapped in DashboardLayout anyway, but just in case)
+  // Determine if back button should be shown (e.g., not on root dashboard)
+  const showBackButton = pathname !== "/dashboard";
+
   return (
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-border/50 bg-white/50 px-6 backdrop-blur-xl dark:bg-black/50">
       <div className="flex items-center gap-4">
@@ -27,28 +35,18 @@ export function TopBar({ onMenuClick }: TopBarProps) {
             className="w-full bg-background pl-9 md:w-[300px] lg:w-[400px]"
           />
         </div> */}
-        <h2 className="text-lg font-semibold text-foreground hidden sm:block">
-            Dashboard
-        </h2>
+        {showBackButton && (
+          <Button 
+            variant="ghost" 
+            className="hidden lg:flex items-center gap-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl"
+            onClick={() => router.back()}
+          >
+            <ArrowLeft className="size-5" />
+            <span className="font-medium">Back</span>
+          </Button>
+        )}
       </div>
 
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" className="relative text-muted-foreground">
-          <Bell className="size-5" />
-          <span className="absolute right-2 top-2 size-2 rounded-full bg-red-500" />
-        </Button>
-
-        {/* Profile Dropdown Placeholder */}
-         <div className="flex items-center gap-3 pl-4 border-l border-border/50">
-             <div className="text-right hidden md:block">
-                <p className="text-sm font-medium leading-none">Tanu Agarwal</p>
-                <p className="text-xs text-muted-foreground text-right">Premium User</p>
-             </div>
-             <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
-                 TA
-             </div>
-         </div>
-      </div>
     </header>
   );
 }

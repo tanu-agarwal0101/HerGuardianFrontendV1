@@ -5,9 +5,10 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { Auth } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, Shield } from "lucide-react";
 import { useUserStore } from "@/store/userStore";
 import { toast } from "sonner";
+import Link from "next/link";
 import {
   InputOTP,
   InputOTPGroup,
@@ -69,7 +70,7 @@ function VerifyOtpInner() {
       await Auth.resendVerification(email);
       toast.success("Verification code resent! Please check your inbox.");
       setCountdown(60); // Reset timer
-    } catch (err: unknown) {
+    } catch {
       // Handled by global interceptor
     } finally {
       setIsResending(false);
@@ -85,8 +86,8 @@ function VerifyOtpInner() {
 
   if (!email) {
     return (
-      <Card className="max-w-md w-full mx-4">
-        <CardContent className="pt-6 text-center text-red-500">
+      <Card className="w-full max-w-md bg-white/80 dark:bg-card/80 backdrop-blur-2xl border-white/20 dark:border-white/10 shadow-2xl overflow-hidden relative">
+        <CardContent className="pt-6 text-center text-destructive font-medium">
           No email provided. Please go back to the login page.
         </CardContent>
       </Card>
@@ -94,16 +95,23 @@ function VerifyOtpInner() {
   }
 
   return (
-    <Card className="max-w-md w-full mx-4 shadow-lg border-2 border-purple-100">
-      <CardHeader className="text-center space-y-2 pt-8">
-        <CardTitle className="text-2xl font-bold text-gray-800">
+    <Card className="w-full max-w-md bg-white/80 dark:bg-card/80 backdrop-blur-2xl border-white/20 dark:border-white/10 shadow-2xl overflow-hidden relative">
+      <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary/0 via-primary to-primary/0 opacity-50" />
+      
+      <CardHeader className="space-y-3 pb-6 px-6 sm:px-8 pt-8 sm:pt-10">
+        <div className="flex justify-center mb-2">
+            <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center transform rotate-12">
+                <Shield className="w-6 h-6 text-primary -rotate-12" />
+            </div>
+        </div>
+        <CardTitle className="text-2xl sm:text-3xl font-bold tracking-tight text-center text-foreground">
           Verify Your Email
         </CardTitle>
-        <p className="text-gray-500 text-sm">
-          We sent a 6-digit code to <span className="font-semibold text-gray-800">{email}</span>.
+        <p className="text-sm sm:text-base text-muted-foreground mt-2 text-center font-medium">
+          We sent a 6-digit code to <span className="font-semibold text-foreground">{email}</span>.
         </p>
       </CardHeader>
-      <CardContent className="flex flex-col items-center pb-8 space-y-6">
+      <CardContent className="flex flex-col items-center px-6 sm:px-8 pb-8 sm:pb-10 space-y-6">
         
         <InputOTP
           maxLength={6}
@@ -112,34 +120,35 @@ function VerifyOtpInner() {
           disabled={status === "loading" || status === "success"}
         >
           <InputOTPGroup className="gap-2">
-            <InputOTPSlot index={0} className="w-12 h-14 text-xl border-purple-200" />
-            <InputOTPSlot index={1} className="w-12 h-14 text-xl border-purple-200" />
-            <InputOTPSlot index={2} className="w-12 h-14 text-xl border-purple-200" />
-            <InputOTPSlot index={3} className="w-12 h-14 text-xl border-purple-200" />
-            <InputOTPSlot index={4} className="w-12 h-14 text-xl border-purple-200" />
-            <InputOTPSlot index={5} className="w-12 h-14 text-xl border-purple-200" />
+            {[0, 1, 2, 3, 4, 5].map((index) => (
+                <InputOTPSlot 
+                    key={index}
+                    index={index} 
+                    className="w-12 h-14 sm:w-14 sm:h-16 text-xl sm:text-2xl border-white/10 dark:border-white/5 bg-background/50 focus-visible:ring-primary rounded-lg transition-all" 
+                />
+            ))}
           </InputOTPGroup>
         </InputOTP>
 
         {errorMessage && (
-          <p className="text-red-500 text-sm">{errorMessage}</p>
+          <p className="text-sm text-destructive font-medium">{errorMessage}</p>
         )}
 
         <Button 
-          className="w-full bg-purple-600 hover:bg-purple-700 text-white py-6 text-lg mt-4"
+          className="w-full h-11 text-base font-semibold shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all rounded-xl mt-4"
           disabled={otp.length !== 6 || status === "loading" || status === "success"}
           onClick={() => handleVerify(otp)}
         >
-          {status === "loading" ? <Loader2 className="animate-spin mr-2" /> : "Verify Code"}
+          {status === "loading" ? <span className="flex items-center gap-2"><Loader2 className="animate-spin w-4 h-4" /> Verifying...</span> : "Verify Code"}
         </Button>
 
-        <div className="text-center mt-4">
-          <p className="text-sm text-gray-500 mb-2">Didn&apos;t receive a code?</p>
+        <div className="text-center mt-2 w-full pt-4 border-t border-border/40">
+          <p className="text-sm text-muted-foreground mb-3 font-medium">Didn&apos;t receive a code?</p>
           <Button
             variant="outline"
             disabled={countdown > 0 || isResending}
             onClick={handleResend}
-            className="w-full text-purple-600 border-purple-200 hover:bg-purple-50"
+            className="w-full h-10 border-white/10 bg-background/30 hover:bg-background/50 transition-colors"
           >
             {isResending ? (
               <Loader2 className="animate-spin w-4 h-4 mr-2" />
@@ -157,13 +166,29 @@ function VerifyOtpInner() {
 
 export default function VerifyOtpPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="absolute top-4 left-4 p-4 text-purple-700 font-bold text-xl">
-        HerGuardian
+    <div className="flex flex-col min-h-screen relative z-10 p-4 sm:p-6 md:p-8">
+      
+      {/* Sleek transparent header */}
+      <div className="w-full max-w-7xl mx-auto flex justify-between items-center mb-8 sm:mb-12">
+        <Link href="/" className="flex items-center gap-2 group">
+          <div className="p-2 bg-primary/10 rounded-full group-hover:bg-primary/20 transition-colors">
+            <Shield className="w-6 h-6 text-primary" />
+          </div>
+          <span className="font-bold text-xl tracking-tight text-foreground hidden sm:block">HerGuardian</span>
+        </Link>
+        <Link 
+          href="/login" 
+          className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-2"
+        >
+          ← Back to Login
+        </Link>
       </div>
-      <Suspense fallback={<Loader2 className="animate-spin text-purple-600" />}>
-        <VerifyOtpInner />
-      </Suspense>
+
+      <div className="flex-1 flex flex-col justify-center items-center w-full">
+        <Suspense fallback={<Loader2 className="animate-spin text-primary w-8 h-8" />}>
+          <VerifyOtpInner />
+        </Suspense>
+      </div>
     </div>
   );
 }

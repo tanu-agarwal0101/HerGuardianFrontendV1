@@ -95,7 +95,7 @@ const Contacts = ({ nextStep, prevStep }: Props) => {
         exit={{ opacity: 0, x: -50 }}
         transition={{ duration: 0.4, ease: "easeInOut" }}
       >
-        <Card className="m-4">
+        <Card className="border-none shadow-none bg-transparent">
           <CardHeader>
             <CardTitle className="text-purple-600 ">
               <h1 className="text-xl">Emergency Contacts</h1>

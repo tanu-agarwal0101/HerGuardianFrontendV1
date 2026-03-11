@@ -41,7 +41,7 @@ const RegistrationComplete = ({ prevStep }: Props) => {
       exit={{ opacity: 0, x: 50 }}
       transition={{ duration: 0.4, ease: "easeInOut" }}
     >
-      <Card className="m-8">
+      <Card className="border-none shadow-none bg-transparent py-6">
         <CardHeader>
           <CardTitle className="flex flex-col items-center justify-center">
             <Check

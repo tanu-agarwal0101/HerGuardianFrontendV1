@@ -20,7 +20,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       <div className="flex flex-1 flex-col transition-all duration-300 lg:pl-64 w-full">
         <TopBar onMenuClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} />
         
-        <main className="flex-1 p-6 md:p-8 w-full max-w-7xl mx-auto">
+        <main className="flex-1 p-4 md:p-6 w-full max-w-7xl mx-auto">
             {children}
         </main>
       </div>

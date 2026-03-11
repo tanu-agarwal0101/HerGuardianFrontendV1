@@ -6,14 +6,13 @@ import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
-import { Play, StopCircle, ArrowLeft } from "lucide-react";
+import { Play, StopCircle } from "lucide-react";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Timer } from "@/lib/api";
 import { getCurrentLocation, logLocation } from "@/lib/locationService";
-import { useRouter } from "next/navigation";
 
 export default function SafetyTimer() {
-  const router = useRouter();
+
   const [duration, setDuration] = useState(30);
   const [shareLocation, setShareLocation] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
@@ -166,14 +165,7 @@ export default function SafetyTimer() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] p-4 relative">
-      <Button 
-        variant="ghost" 
-        onClick={() => router.push("/dashboard/actions")}
-        className="absolute top-0 left-4 flex items-center gap-2 text-primary hover:bg-primary/10"
-      >
-        <ArrowLeft size={18} />
-        Back to Actions
-      </Button>
+      {/* TopBar universal back button will display here visually via layout */}
 
       <Card className="m-4 p-6 lg:w-[600px] w-full shadow-lg border-primary/10">
         <CardHeader className="text-center">
