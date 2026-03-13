@@ -36,6 +36,14 @@ export function FakeCallCard() {
   });
 
   const schedule = () => {
+    // Trigger Fullscreen immediately on user gesture to avoid permission errors
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen().catch((err) => {
+        console.error(
+          `Error attempting to enable full-screen mode: ${err.message}`
+        );
+      });
+    }
     setPending(true);
     setCountdown(delay);
   };
@@ -71,20 +79,27 @@ export function FakeCallCard() {
          </div>
       </CardHeader>
 
-      <CardContent className="flex-1 flex flex-col items-center justify-center gap-6">
-        <Button
-            size="lg"
-            className="w-24 h-24 rounded-full bg-primary hover:bg-primary/90 flex flex-col items-center justify-center shadow-xl hover:scale-105 transition-all"
-            onClick={schedule}
-            disabled={pending}
-        >
-            <PhoneCall className="w-10 h-10" />
+      <CardContent className="flex-1 flex flex-col items-center justify-center gap-6 pb-8">
+        <div className="flex flex-col items-center gap-4">
+          <Button
+              size="lg"
+              className="w-24 h-24 rounded-full bg-primary hover:bg-primary/90 flex flex-col items-center justify-center shadow-xl hover:scale-105 transition-all relative overflow-visible"
+              onClick={schedule}
+              disabled={pending}
+          >
+              <PhoneCall className="w-10 h-10" />
+          </Button>
+          
+          {/* Countdown positioned relatively to avoid overlapping other cards */}
+          <div className="h-4">
             {pending && countdown !== null && (
-            <span className="mt-1 text-xs font-semibold animate-pulse absolute -bottom-8 text-foreground">
-                In {countdown}s
-            </span>
+              <span className="text-xs font-bold animate-pulse text-primary flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
+                Triggering in {countdown}s
+              </span>
             )}
-        </Button>
+          </div>
+        </div>
         
         <div className="text-sm text-muted-foreground flex items-center gap-2 bg-muted/50 px-3 py-1 rounded-md">
             <span>Delay:</span>

@@ -21,35 +21,66 @@ export default function FakeCall({
   const [callTimer, setCallTimer] = useState(0);
 
   useEffect(() => {
-    let audio: HTMLAudioElement;
+    let audio: HTMLAudioElement | null = null;
 
     if (!answered) {
       audio = new Audio(settings.ringtone);
       audio.loop = true;
-      audio.play();
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // Playback was interrupted or prevented
+        });
+      }
     }
     if (!answered && "vibrate" in navigator) {
       navigator.vibrate([500, 200, 500]);
     }
-    return () => audio && audio.pause();
+    return () => {
+      if (audio) {
+        audio.pause();
+        audio = null;
+      }
+    };
   }, [answered, settings.ringtone]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
+    let voice: HTMLAudioElement | null = null;
 
     if (answered) {
-      const voice = new Audio(settings.voice);
-      voice.play();
+      voice = new Audio(settings.voice);
+      const playPromise = voice.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // Playback was interrupted or prevented
+        });
+      }
       interval = setInterval(() => setCallTimer((prev) => prev + 1), 1000);
     }
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      if (voice) {
+        voice.pause();
+        voice = null;
+      }
+    };
   }, [answered, settings.voice]);
 
   const formatTime = (secs: number) =>
     `${Math.floor(secs / 60)
       .toString()
       .padStart(2, "0")}:${(secs % 60).toString().padStart(2, "0")}`;
+
+  const handleClose = () => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen().catch(err => {
+        console.error(`Error attempting to exit full-screen mode: ${err.message}`);
+      });
+    }
+    onClose();
+  };
 
   return (
     <div className="fixed inset-0 z-50 bg-black text-white flex flex-col items-center justify-center">
@@ -70,7 +101,7 @@ export default function FakeCall({
 
           <div className="flex justify-center space-x-16 mt-6">
             <button
-              onClick={onClose}
+              onClick={handleClose}
               className="bg-red-600 p-5 rounded-full"
               title="Decline call"
             >
@@ -99,7 +130,7 @@ export default function FakeCall({
           />
 
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="mt-6 bg-red-600 px-4 py-2 rounded-xl"
           >
             End Call
