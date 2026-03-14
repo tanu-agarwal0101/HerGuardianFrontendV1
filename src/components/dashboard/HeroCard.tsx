@@ -11,9 +11,6 @@ export function HeroCard() {
   return (
     <section className="w-full">
       <Card className="relative overflow-hidden border-none shadow-xl bg-gradient-to-br from-primary via-primary/80 to-secondary text-primary-foreground">
-        <div className="absolute top-0 right-0 p-12 opacity-10">
-            <Shield className="w-64 h-64" />
-        </div>
         
         <div className="relative z-10 p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8">
             <div className="space-y-4 text-center md:text-left max-w-2xl">
@@ -44,8 +41,8 @@ export function HeroCard() {
                 </div>
             </div>
             
-            <div className="hidden md:flex items-center justify-center bg-white/10 backdrop-blur-sm rounded-full p-6 shadow-inner ring-1 ring-white/20">
-                <Shield className="w-24 h-24 text-white drop-shadow-md" />
+            <div className="  items-center justify-center bg-white/10 backdrop-blur-sm rounded-full p-4 md:p-6 shadow-inner ring-1 ring-white/20">
+                <Shield className="w-16 md:w-24 h-16 md:h-24 text-white drop-shadow-md" />
             </div>
         </div>
       </Card>
