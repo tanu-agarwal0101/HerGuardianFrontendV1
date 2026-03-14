@@ -35,9 +35,8 @@ export function Sidebar({ className }: { className?: string }) {
       )}
     >
       <div className="flex flex-col gap-6 p-6">
-        {/* Brand */}
         <div className="flex items-center gap-2 px-2 text-2xl font-bold text-primary">
-          <ShieldCheck className="size-8" />
+          <img src="/image.png" alt="HerGuardian Logo" className="w-8 h-8 rounded-lg" />
           <span>HerGuardian</span>
         </div>
 

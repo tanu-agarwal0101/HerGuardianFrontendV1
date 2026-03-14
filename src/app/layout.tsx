@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   title: "HerGuardian",
   description: "HerGuardian is an app for safety and assistance.",
   icons: {
-    icon: "/favicon-32x32.png",
+    icon: "/favicon.png?v=7",
     shortcut: "/favicon.ico",
     apple: "/apple-touch-icon.png",
   },

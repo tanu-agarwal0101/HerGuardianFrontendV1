@@ -142,34 +142,31 @@ export default function Home() {
   return (
     <div className="bg-background min-h-screen font-sans selection:bg-primary/30 relative overflow-hidden">
       
-      {/* Global Animated Background Elements */}
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary/20 blur-[150px] pointer-events-none -z-10" />
       <div className="absolute top-[40%] right-[-10%] w-[40%] h-[40%] rounded-full bg-secondary/20 blur-[120px] pointer-events-none -z-10" />
       <div className="absolute bottom-[-10%] left-[20%] w-[30%] h-[30%] rounded-full bg-accent/20 blur-[100px] pointer-events-none -z-10" />
 
-      {/* Modern Floating Header */}
       <header className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-6 md:px-12 py-4 bg-background/50 backdrop-blur-xl border-b border-border/40">
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="p-2 bg-primary/10 rounded-full group-hover:bg-primary/20 transition-colors">
-            <Shield className="w-6 h-6 text-primary" />
+        <Link href="/" className="flex items-center gap-3 group">
+          <div className="rounded-xl group-hover:bg-primary/20 transition-colors">
+            <img src="/image.png" alt="HerGuardian Logo" className="w-8 h-8 rounded-lg" />
           </div>
           <span className="font-bold text-xl tracking-tight text-foreground">HerGuardian</span>
         </Link>
         <div className="flex items-center gap-3">
           <Button variant="ghost" onClick={() => router.push("/login")} className="hidden sm:inline-flex font-medium">Log In</Button>
-          <Button onClick={() => router.push("/registration")} className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg shadow-primary/20 rounded-full px-6">
+          <Button onClick={() => router.push("/registration")} className="hidden md:block bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg shadow-primary/20 rounded-full px-6">
             Get Started
           </Button>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative pt-32 lg:pt-48 pb-20 px-6 lg:px-12 flex flex-col items-center justify-center text-center min-h-[90vh]">
+      <section className="relative pt-38 md:pt-44 pb-16 px-6 lg:px-12 flex flex-col items-center justify-center text-center min-h-[90vh]">
         <motion.div 
             initial="hidden"
             animate="show"
             variants={staggerContainer}
-            className="flex flex-col items-center max-w-4xl mx-auto z-10"
+            className="flex flex-col items-center max-w-4xl mx-auto z-10 pb-6"
         >
           <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-semibold mb-8">
             <GlobeLock className="w-4 h-4" />
@@ -205,12 +202,12 @@ export default function Home() {
           </motion.div>
         </motion.div>
 
-        {/* App Mockup (Sleek HerGuardian Dashboard Desktop View) */}
+        {/* App Mockup*/}
         <motion.div 
             initial={{ opacity: 0, y: 80 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3, type: "spring" }}
-            className="mt-16 sm:mt-24 relative w-full max-w-6xl aspect-[16/10] sm:aspect-video rounded-xl sm:rounded-3xl bg-background/95 backdrop-blur-3xl border border-border shadow-2xl overflow-hidden flex flex-col group"
+            className="mt-24 relative w-full max-w-6xl aspect-[16/10] sm:aspect-video rounded-xl sm:rounded-3xl bg-background/95 backdrop-blur-3xl border border-border shadow-2xl overflow-hidden flex flex-col group max-h-144"
         >
             {/* OSX-style Desktop Header */}
             <div className="h-10 border-b border-border/40 flex items-center px-4 bg-muted/20">
@@ -224,116 +221,10 @@ export default function Home() {
                 </div>
             </div>
             
-            {/* Dashboard Layout */}
-            <div className="flex-1 flex overflow-hidden">
-                {/* Sidebar */}
-                <div className="w-1/4 max-w-[240px] border-r border-border/40 p-4 sm:p-6 hidden md:flex flex-col gap-8 bg-card/30">
-                    <div className="flex items-center gap-2 px-2">
-                        <div className="p-1.5 bg-primary/10 rounded-full">
-                            <Shield className="w-5 h-5 text-primary" />
-                        </div>
-                        <span className="font-bold text-lg tracking-tight text-foreground">HerGuardian</span>
-                    </div>
-                    
-                    <div className="space-y-2 flex-1">
-                        <div className="flex items-center gap-3 px-4 py-3 bg-primary text-primary-foreground rounded-xl shadow-sm shadow-primary/20 transition-all font-medium">
-                            <div className="w-4 h-4 bg-white/20 rounded-sm" /> Dashboard
-                        </div>
-                        <div className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:bg-muted/50 rounded-xl transition-all font-medium">
-                            <div className="w-4 h-4 rounded-sm border-2 border-current opacity-50" /> Guardian Chat
-                        </div>
-                        <div className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:bg-muted/50 rounded-xl transition-all font-medium">
-                            <div className="w-4 h-4 rounded-sm border-2 border-current opacity-50" /> Activity Logs
-                        </div>
-                        <div className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:bg-muted/50 rounded-xl transition-all font-medium">
-                            <div className="w-4 h-4 rounded-full border-2 border-current opacity-50" /> Profile
-                        </div>
-                    </div>
-
-                    <div className="mt-auto px-4 py-3 flex items-center gap-3 text-muted-foreground font-medium">
-                        <div className="w-6 h-6 rounded-full bg-foreground text-background flex items-center justify-center text-[10px] uppercase font-bold">N</div>
-                        Log Out
-                    </div>
-                </div>
-
-                {/* Main Content */}
-                <div className="flex-1 p-4 md:p-8 flex flex-col gap-6 overflow-hidden bg-background/50">
-                    {/* Top Bar */}
-                    <div className="flex justify-between items-center hidden md:flex">
-                        <h2 className="text-xl font-bold">Dashboard</h2>
-                        <div className="flex items-center gap-4">
-                            <div className="relative">
-                                <BellRing className="w-5 h-5 text-muted-foreground" />
-                                <div className="absolute top-0 right-0 w-2 h-2 bg-destructive rounded-full border-2 border-background" />
-                            </div>
-                            <div className="flex items-center gap-3 text-right">
-                                <div className="text-sm">
-                                    <div className="font-bold">Guardian User</div>
-                                    <div className="text-xs text-muted-foreground">Premium User</div>
-                                </div>
-                                <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold">
-                                    GU
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Warning Banner */}
-                    <div className="w-full bg-yellow-100/80 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800/30 p-3 rounded-lg text-sm text-center font-medium shadow-sm">
-                        Stealth mode requires &apos;Remember Me&apos; to be enabled. Please log in again with &apos;Remember Me&apos;.
-                    </div>
-
-                    {/* Welcome Banner */}
-                    <div className="w-full rounded-2xl bg-gradient-to-r from-[#6366f1] to-[#a5b4fc] p-6 md:p-8 text-white relative overflow-hidden shadow-lg border border-white/10 shrink-0">
-                        {/* Huge faint shield logo */}
-                        <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 sm:translate-x-0 sm:right-12 w-48 h-48 bg-white/20 blur-[1px] rounded-[3rem] rotate-12 flex items-center justify-center">
-                            <Shield className="w-24 h-24 text-white drop-shadow-lg" />
-                        </div>
-                        
-                        <div className="relative z-10 max-w-lg">
-                            <h3 className="text-3xl md:text-4xl font-bold mb-3 tracking-tight">Welcome back, Guardian</h3>
-                            <p className="text-white/90 text-sm md:text-base font-medium mb-6">Your safety command center is active. All systems are monitoring normally.</p>
-                            <div className="flex flex-wrap gap-3">
-                                <div className="px-4 py-2 bg-white text-primary rounded-lg font-bold shadow-sm flex items-center gap-2 text-sm hover:scale-105 transition-transform cursor-pointer">
-                                    <span className="w-0 h-0 border-t-[5px] border-t-transparent border-l-[8px] border-l-current border-b-[5px] border-b-transparent"></span> Quick Tutorial
-                                </div>
-                                <div className="px-4 py-2 text-white/70 font-medium flex items-center gap-2 text-sm cursor-not-allowed">
-                                    <div className="w-4 h-4 border border-current rounded-full" /> Stealth Mode — Coming Soon
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Large Action Cards */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 min-h-[200px]">
-                        <div className="rounded-2xl bg-card border border-border shadow-sm p-6 flex flex-col items-center justify-center text-center gap-4 hover:shadow-md transition-shadow relative overflow-hidden group">
-                           <h4 className="text-xl font-bold text-[#eb4b4b]">Emergency SOS</h4>
-                           <p className="text-xs text-muted-foreground font-medium max-w-[200px]">Activate to immediately alert your emergency contacts and share your live location.</p>
-                           <div className="mt-4 w-32 h-32 rounded-full border-[6px] border-[#ef4444]/10 flex items-center justify-center group-hover:scale-105 transition-transform cursor-pointer shadow-inner">
-                                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#f87171] to-[#ef4444] flex items-center justify-center text-white font-bold tracking-widest text-sm shadow-xl shadow-red-500/20">
-                                    ACTIVATE
-                                </div>
-                           </div>
-                        </div>
-
-                        <div className="rounded-2xl bg-card border border-border shadow-sm p-6 flex flex-col items-center justify-center text-center gap-4 hover:shadow-md transition-shadow relative overflow-hidden group">
-                           <h4 className="text-xl font-bold text-primary flex items-center justify-center gap-2">
-                               <div className="w-4 h-4 rounded-full border-2 border-current border-t-transparent animate-spin-slow" /> Safety Timer
-                           </h4>
-                           <p className="text-xs text-muted-foreground font-medium max-w-[200px]">Set a countdown for risky activities. Alerts contacts if not stopped.</p>
-                           <div className="mt-4 w-32 h-32 rounded-full border-[6px] border-primary/10 flex items-center justify-center group-hover:scale-105 transition-transform cursor-pointer shadow-inner">
-                                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#818cf8] to-[#4f46e5] flex items-center justify-center text-white font-bold tracking-widest text-sm shadow-xl shadow-primary/20">
-                                    START
-                                </div>
-                           </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <img src="/dashboard.png" className=""/>
         </motion.div>
       </section>
 
-      {/* Designed for Your Safety (Features Grid) */}
       <section className="py-24 px-6 lg:px-12 max-w-7xl mx-auto relative z-10">
         <div className="text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold mb-4">Protecting What Matters</h2>
@@ -412,7 +303,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Our Mission (Abstracted) */}
+      {/* Our Mission */}
       <section className="py-24 px-6 lg:px-12 max-w-7xl mx-auto relative z-10">
         <div className="flex flex-col lg:flex-row gap-16 items-center">
           <div className="lg:w-1/2 space-y-6">
@@ -449,7 +340,7 @@ export default function Home() {
       {/* Final CTA / Safe Space */}
       <section className="py-24 px-6 lg:px-12 relative z-10">
         <div className="max-w-5xl mx-auto bg-gradient-to-br from-primary via-[#4f46e5] to-[#312e81] rounded-[3rem] p-10 md:p-16 text-center text-white shadow-[0_20px_50px_-12px_rgba(99,102,241,0.6)] relative overflow-hidden">
-            {/* Flowing background shapes */}
+            
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/20 rounded-full blur-3xl mix-blend-overlay" />
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full blur-2xl mix-blend-overlay" />
             
@@ -471,7 +362,7 @@ export default function Home() {
                 </div>
                 <div className="pt-8 flex justify-center gap-4">
                     <Button variant="ghost" className="text-white hover:bg-white/20 hover:text-white rounded-full">
-                        <Smartphone className="w-5 h-5 mr-2" /> Install to your home screen for faster access
+                        <Smartphone className="w-5 h-5" /> Install to your home screen for faster access
                     </Button>
                 </div>
             </div>

@@ -10,10 +10,10 @@ export default function Header() {
   const [smallMenuOpen, setSmallMenuOpen] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   return (
-    <header className="bg-purple-500 text-white h-15 p-4 flex items-center justify-between">
+    <header className="bg-[#6366f1] text-white h-15 p-4 flex items-center justify-between">
       <div className="flex items-center space-x-4">
         <h1 className="flex">
-          <ShieldCheck />
+          <img src="/image.png" alt="HerGuardian Logo" className="w-8 h-8 rounded-lg" />
           HerGuardian
         </h1>
         <span className="bg-green-300/90 p-1 rounded-lg text-green-700 w-fit h-fit flex">
