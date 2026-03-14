@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
 import React from "react";
-import { Shield, Twitter, Instagram, Linkedin, Mail } from "lucide-react";
+import { Mail } from "lucide-react";
+import Image from "next/image";
 
 export const Footer = () => {
   return (
@@ -17,7 +18,7 @@ export const Footer = () => {
           <div className="lg:col-span-4 space-y-6">
             <Link href="/" className="flex items-center gap-2 group w-fit">
                 <div className="rounded-full  p-2 group-hover:bg-primary/20 transition-colors">
-                    <img src="/image.png" alt="HerGuardian Logo" className="w-8 h-8 rounded-lg" />
+                    <Image src="/image.png" alt="HerGuardian Logo" width={32} height={32} className="w-8 h-8 rounded-lg" />
                 </div>
                 <span className="font-bold text-xl tracking-tight text-foreground">HerGuardian</span>
             </Link>

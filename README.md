@@ -80,7 +80,7 @@ export default function RootLayout({
 Ensure backend exposes and sets:
 
 - `ACCESS_TOKEN_EXPIRY` (e.g. 15m)
-- `REFRESH_TOKEN_SHORT_EXPIRY` (e.g. 2h)
+- `REFRESH_TOKEN_EXPIRY` (e.g. 24h)
 - `REFRESH_TOKEN_LONG_EXPIRY` (e.g. 30d)
 - `REFRESH_TOKEN_LONG_CAP` (e.g. 90d)
 

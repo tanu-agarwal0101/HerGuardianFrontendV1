@@ -38,7 +38,7 @@ const loginSchema = z.object({
 
 export default function LoginPage() {
   const [showStealthDialog, setShowStealthDialog] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const {

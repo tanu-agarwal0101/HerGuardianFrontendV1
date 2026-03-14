@@ -1,7 +1,8 @@
 "use client";
-import { CheckCircle, Menu, ShieldCheck, X } from "lucide-react";
+import { CheckCircle, Menu, X } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import MobileDrawer from "./mobileDrawer";
 import { LogoutDialog } from "./logout";
@@ -13,7 +14,7 @@ export default function Header() {
     <header className="bg-[#6366f1] text-white h-15 p-4 flex items-center justify-between">
       <div className="flex items-center space-x-4">
         <h1 className="flex">
-          <img src="/image.png" alt="HerGuardian Logo" className="w-8 h-8 rounded-lg" />
+          <Image src="/image.png" alt="HerGuardian Logo" width={32} height={32} className="w-8 h-8 rounded-lg mr-2" />
           HerGuardian
         </h1>
         <span className="bg-green-300/90 p-1 rounded-lg text-green-700 w-fit h-fit flex">

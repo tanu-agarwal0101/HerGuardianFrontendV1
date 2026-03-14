@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
@@ -8,7 +9,6 @@ import {
   ScrollText,
   User,
   MessageCircle,
-  ShieldCheck,
   LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -36,7 +36,7 @@ export function Sidebar({ className }: { className?: string }) {
     >
       <div className="flex flex-col gap-6 p-6">
         <div className="flex items-center gap-2 px-2 text-2xl font-bold text-primary">
-          <img src="/image.png" alt="HerGuardian Logo" className="w-8 h-8 rounded-lg" />
+          <Image src="/image.png" alt="HerGuardian Logo" width={32} height={32} className="w-8 h-8 rounded-lg" />
           <span>HerGuardian</span>
         </div>
 

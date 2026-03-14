@@ -14,7 +14,6 @@ import {
   Users,
   Sliders,
   ShieldCheck,
-  Shield,
   ArrowRight,
   Smartphone,
   GlobeLock
@@ -24,6 +23,7 @@ import { useEffect } from "react";
 import { useUserStore } from "@/store/userStore";
 import { motion } from "motion/react";
 import Link from "next/link";
+import Image from "next/image";
 
 const cards = [
   {
@@ -149,7 +149,7 @@ export default function Home() {
       <header className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-6 md:px-12 py-4 bg-background/50 backdrop-blur-xl border-b border-border/40">
         <Link href="/" className="flex items-center gap-3 group">
           <div className="rounded-xl group-hover:bg-primary/20 transition-colors">
-            <img src="/image.png" alt="HerGuardian Logo" className="w-8 h-8 rounded-lg" />
+            <Image src="/image.png" alt="HerGuardian Logo" width={32} height={32} className="w-8 h-8 rounded-lg" />
           </div>
           <span className="font-bold text-xl tracking-tight text-foreground">HerGuardian</span>
         </Link>
@@ -221,7 +221,7 @@ export default function Home() {
                 </div>
             </div>
             
-            <img src="/dashboard.png" className=""/>
+            <Image src="/dashboard.png" alt="Dashboard Preview" width={1200} height={675} className="w-full object-cover"/>
         </motion.div>
       </section>
 

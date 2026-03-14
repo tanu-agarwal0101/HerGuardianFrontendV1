@@ -65,7 +65,7 @@ export default function RegistrationForm() {
       email: "",
       password: "",
       confirmPassword: "",
-      rememberMe: false,
+      rememberMe: true,
     },
   });
 
