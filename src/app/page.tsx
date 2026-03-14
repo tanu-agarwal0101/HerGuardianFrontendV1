@@ -362,7 +362,7 @@ export default function Home() {
                 </div>
                 <div className="pt-8 flex justify-center gap-4">
                     <Button variant="ghost" className="text-white hover:bg-white/20 hover:text-white rounded-full">
-                        <Smartphone className="w-5 h-5" /> Install to your home screen for faster access
+                        <Smartphone className="w-5 h-5" /> Install to your phone for faster access
                     </Button>
                 </div>
             </div>

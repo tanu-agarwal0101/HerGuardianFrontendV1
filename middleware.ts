@@ -58,11 +58,11 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/",
-    "/dashboard",
+    "/dashboard/:path*",
     "/stealth/:path*",
     "/login",
     "/registration",
-    "/profile",
+    "/profile/:path*",
   ],
 };
 

@@ -21,16 +21,15 @@ export default function RequireAuth({
   const _hasHydrated = useUserStore((s) => s._hasHydrated);
 
   useEffect(() => {
-    // Wait until hydration finishes; if there's no user, act based on authError
+    
     if (!_hasHydrated || loadingUser) return;
     if (!user) {
-      // If we have a transient server error, don't immediately redirect — let UI show message
+   
       if (authError && authError.toLowerCase().includes("server")) {
-        // show toast once
         toast.error(authError);
         return;
       }
-      // otherwise assume unauthenticated and redirect
+      
       toast.error(authError || "Please sign in to continue.");
       router.replace("/");
     }
@@ -50,11 +49,6 @@ export default function RequireAuth({
         }
     }
 
-    // if user exists, render children
-    
-    // Add pageshow listener for BFCache (restore from history)
-    // STEALTH BFCache CHECK: TEMPORARILY DISABLED (feature paused)
-    // Preserved for when stealth is re-enabled. Remove `false &&` to restore.
     const onPageShow = (event: PageTransitionEvent) => {
         if (false && event.persisted) {
              const stealth = useUserStore.getState().stealth;
@@ -73,8 +67,7 @@ export default function RequireAuth({
 
   }, [loadingUser, user, authError, router, _hasHydrated]);
 
-  // While loading AND no user, show loading UI
-  // If we have a user (e.g. from login or cache), show the app while revalidating in background
+
   if ((!_hasHydrated || loadingUser) && !user) {
       return (
            <div className="flex items-center justify-center min-h-screen">
@@ -85,7 +78,6 @@ export default function RequireAuth({
       );
   }
 
-  // If hydration completed but server error prevented login, show friendly message + retry
   if (!user && authError) {
     return (
       <div className="mx-auto max-w-3xl p-6">
@@ -117,7 +109,7 @@ export default function RequireAuth({
   }
 
   if (!user) {
-       // We let the useEffect handle the redirect, but render a fallback to avoid white screen
+      
        return (
            <div className="flex items-center justify-center min-h-screen">
                <div className="text-center">

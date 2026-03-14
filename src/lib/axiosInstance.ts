@@ -1,7 +1,7 @@
 import axios from "axios";
 import { notifyError, handleUnauthorizedSideEffects } from "./httpErrors";
+import { useUserStore } from "@/store/userStore";
 
-// In-memory access token cache populated after refresh/login responses
 let accessTokenCache: string | null = null;
 let accessTokenExpiryEpoch = 0; // ms epoch
 
@@ -25,7 +25,6 @@ const axiosInstance = axios.create({
   timeout: 60000, // 60s timeout to handle Render cold starts
 });
 
-// Attach Authorization header if we have a cached token
 axiosInstance.interceptors.request.use((config) => {
   if (accessTokenCache) {
     config.headers = config.headers || {};
@@ -38,18 +37,17 @@ axiosInstance.interceptors.request.use((config) => {
 
 axiosInstance.interceptors.response.use(
   (response) => {
-    // If auth endpoints return tokens, capture them
     if (
       response.config.url?.includes("/users/login") ||
       response.config.url?.includes("/users/register")
     ) {
-      const newToken = response.data?.accessToken; // backend currently not returning accessToken on login/register; future-proof
+      const newToken = response.data?.accessToken; 
       const expiresIn = response.data?.expiresIn; // seconds
       if (newToken && expiresIn) {
         accessTokenCache = newToken;
         accessTokenExpiryEpoch = Date.now() + expiresIn * 1000;
       } else if (expiresIn) {
-        // We only got expiresIn (current backend) – no token body; cookies will hold tokens
+        
         accessTokenExpiryEpoch = Date.now() + expiresIn * 1000;
       }
     }
@@ -57,6 +55,13 @@ axiosInstance.interceptors.response.use(
   },
   async (error) => {
     const originalRequest = error.config;
+    const url = originalRequest.url || "";
+
+    
+    if (url.includes("/users/refresh-token")) {
+      return Promise.reject(error);
+    }
+
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
@@ -74,9 +79,12 @@ axiosInstance.interceptors.response.use(
 
       isRefreshing = true;
       try {
-        const res = await axiosInstance.post("/users/refresh-token");
+        
+        const refreshBaseUrl = axiosInstance.defaults.baseURL;
+        const res = await axios.post(`${refreshBaseUrl}/users/refresh-token`, {}, { withCredentials: true });
+        
         const newAccessToken = res.data?.accessToken;
-        const expiresIn = res.data?.expiresIn; // seconds
+        const expiresIn = res.data?.expiresIn; 
         if (newAccessToken) {
           accessTokenCache = newAccessToken;
           axiosInstance.defaults.headers.common["Authorization"] =
@@ -91,7 +99,12 @@ axiosInstance.interceptors.response.use(
         processQueue(refreshErr, null);
         const status = (refreshErr as { response?: { status?: number } })?.response?.status;
         if (status === 401 || status === 403 || status === 404) {
-          // Refresh is invalid; force sign-out UX
+          
+          try {
+            useUserStore.getState().logout();
+          } catch (e) {
+            console.error("Failed to clear store", e);
+          }
           handleUnauthorizedSideEffects();
         }
         return Promise.reject(refreshErr);
@@ -99,8 +112,6 @@ axiosInstance.interceptors.response.use(
         isRefreshing = false;
       }
     }
-
-    // For other errors, surface a human-friendly toast
     try {
       if (error?.config?.suppressToast !== true) {
         notifyError(error);

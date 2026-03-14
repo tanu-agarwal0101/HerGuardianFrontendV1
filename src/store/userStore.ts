@@ -88,14 +88,27 @@ export const useUserStore = create<UserState>()(
 
       hydrateUser: async () => {
         if (typeof window === "undefined") return;
-        if (get().user || get().loadingUser) return;
-        if (typeof document !== "undefined" && !/(?:^|; )isAuthenticated=true/.test(document.cookie)) return;
+        
+        
+        const hasAuthCookie = typeof document !== "undefined" && /(?:^|; )isAuthenticated=true/.test(document.cookie);
+        
+        if (!hasAuthCookie) {
+          
+          if (get().user) {
+            get().logout();
+          }
+          return;
+        }
+
+        
+        if (get().loadingUser) return;
+        
         try {
           set({ loadingUser: true, authError: null });
           const { Users } = await import("@/lib/api");
           const profile = await Users.getProfile();
           
-          // Sync stealth state from profile
+          
           const stealthUpdates = {
               stealthMode: profile.stealthMode ?? false,
               stealthType: profile.stealthType ?? null,
@@ -109,7 +122,6 @@ export const useUserStore = create<UserState>()(
               authError: null 
           });
         } catch (e) {
-          // Capture and expose error for UI
           try {
             const err = e as { response?: { status?: number, data?: { message?: string } }, message?: string };
             const status = err?.response?.status;
@@ -117,13 +129,13 @@ export const useUserStore = create<UserState>()(
               err?.response?.data?.message ||
               err?.message ||
               "Failed to hydrate user";
-            // If server unavailable, provide clear message
             if (status === 503) {
               set({ authError: "Server unavailable. Please try again later." });
             } else if (status === 500) {
               set({ authError: msg });
             } else if (status === 401 || status === 403) {
-              set({ authError: "Session invalid. Please sign in again." });
+              get().logout();
+              set({ authError: null }); 
             } else {
               set({ authError: String(msg) });
             }
@@ -152,13 +164,12 @@ export const useUserStore = create<UserState>()(
       },
     }),
     {
-      name: "user-storage", // key used in localStorage
-      // only persist user and stealth, ignore loading states
+      name: "user-storage", 
       partialize: (state) => ({
         user: state.user,
         stealth: state.stealth,
       }),
-      // ensure transient state is clean on rehydration
+      
       onRehydrateStorage: () => (state) => {
         if (state) {
           state.loadingUser = false;
@@ -166,7 +177,6 @@ export const useUserStore = create<UserState>()(
           state.authError = null;
           state._hasHydrated = true;
         } else {
-            // If state is null (e.g. storage empty/error), we must still assume hydration "finished" (using defaults)
             useUserStore.setState({ _hasHydrated: true });
         }
       },

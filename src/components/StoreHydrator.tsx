@@ -4,8 +4,11 @@ import { useUserStore } from "@/store/userStore";
 
 export default function StoreHydrator() {
   useEffect(() => {
-    // Ensure we mark hydration as done even if persist middleware misses it
+    // Always mark hydration done
     useUserStore.setState({ _hasHydrated: true });
+    // ALWAYS verify session with the server on page load.
+    // If the stored user's cookies have expired, hydrateUser will call logout()
+    // to clear the stale localStorage entry, preventing the ghost-session bug.
     useUserStore.getState().hydrateUser?.();
   }, []);
   return null;

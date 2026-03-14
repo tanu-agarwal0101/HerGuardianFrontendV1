@@ -23,16 +23,15 @@ export function notifyError(error: unknown) {
 
 export function handleUnauthorizedSideEffects() {
   try {
-    // Best-effort client reset; server middleware will also protect routes
     if (typeof window !== "undefined") {
-      // Aggressively clear frontend-visible auth flags so the app stops trying to fetch
       document.cookie = "isAuthenticated=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       document.cookie = "stealthMode=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       document.cookie = "stealthType=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       document.cookie = "stealthSession=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       
-      // Redirect to landing
-      window.location.href = "/";
+      if (window.location.pathname !== "/") {
+        window.location.href = "/";
+      }
     }
   } catch {}
 }
