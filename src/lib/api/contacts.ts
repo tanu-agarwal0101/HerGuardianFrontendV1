@@ -4,6 +4,7 @@ export interface ContactPayload {
   name: string;
   phoneNumber: string;
   relation?: string;
+  email?: string;
 }
 
 export async function getAll() {

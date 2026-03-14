@@ -49,6 +49,7 @@ export default function CallsPage() {
         await Contacts.update({
           contactId: contact.id,
           name: contact.name,
+          email: contact.email,
           phoneNumber: contact.phoneNumber,
           relation: contact.relationship,
         });
@@ -57,6 +58,7 @@ export default function CallsPage() {
         setNewContactLoading(true);
         await Contacts.addSingle({
           name: contact.name!,
+          email: contact.email!,
           phoneNumber: contact.phoneNumber!,
           relation: contact.relationship!,
         });
@@ -87,15 +89,14 @@ export default function CallsPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6 relative p-4 lg:p-8 min-h-[85vh]">
       
-      {/* Background Glows for Glassmorphism Context */}
       <div className="absolute top-1/4 left-0 w-64 h-64 bg-primary/10 rounded-full blur-[100px] -z-10" />
       <div className="absolute bottom-1/4 right-0 w-64 h-64 bg-secondary/10 rounded-full blur-[100px] -z-10" />
 
-      {/* Global TopBar provides navigation now, no local back button needed */}
+      
 
       <Card className="w-full bg-card/60 backdrop-blur-2xl border-white/10 dark:border-white/5 shadow-2xl overflow-hidden relative group">
         
-        {/* Animated top border line */}
+        
         <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary/0 via-primary to-primary/0 opacity-50" />
         
         <CardHeader className="text-center pt-8 pb-4 space-y-4">
@@ -145,7 +146,7 @@ export default function CallsPage() {
                                 <UserPlus className="w-5 h-5" />
                                 Add New Contact
                             </h3>
-                            <div className="grid gap-6 md:grid-cols-3">
+                            <div className="grid gap-6 md:grid-cols-2">
                                 <div className="space-y-2">
                                     <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Name</Label>
                                     <Input
@@ -153,6 +154,16 @@ export default function CallsPage() {
                                         onChange={(e) => setNewContact({ ...newContact, name: e.target.value })}
                                         className="bg-background/50 border-white/10 rounded-xl"
                                         placeholder="Full Name"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Email</Label>
+                                    <Input
+                                        type="email"
+                                        value={newContact.email}
+                                        onChange={(e) => setNewContact({ ...newContact, email: e.target.value })}
+                                        className="bg-background/50 border-white/10 rounded-xl"
+                                        placeholder="email@example.com"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -230,6 +241,14 @@ export default function CallsPage() {
                                     />
                                     <Input
                                         size={1}
+                                        type="email"
+                                        value={editContact.email}
+                                        onChange={(e) => setEditContact({ ...editContact, email: e.target.value })}
+                                        className="bg-background/40 border-primary/20"
+                                        placeholder="Email"
+                                    />
+                                    <Input
+                                        size={1}
                                         value={editContact.phoneNumber}
                                         onChange={(e) => setEditContact({ ...editContact, phoneNumber: e.target.value })}
                                         className="bg-background/40 border-primary/20"
@@ -285,9 +304,17 @@ export default function CallsPage() {
                                 </div>
                                 
                                 <div className="mt-6 pt-4 border-t border-border/40 flex items-center justify-between">
-                                    <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                                        <Phone className="w-3.5 h-3.5 text-primary/60" />
-                                        {contact.phoneNumber}
+                                    <div className="flex flex-col gap-1 text-sm font-medium text-muted-foreground">
+                                        <div className="flex items-center gap-2">
+                                            <Phone className="w-3.5 h-3.5 text-primary/60" />
+                                            {contact.phoneNumber}
+                                        </div>
+                                        {contact.email && (
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-primary/60 text-xs">@</span>
+                                                <span className="text-xs truncate max-w-[150px]">{contact.email}</span>
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
                                 </div>

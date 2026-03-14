@@ -1,4 +1,3 @@
-// import axiosInstance from "@/lib/axiosInstance";
 import { SOS } from "@/lib/api";
 import { toast } from "sonner";
 
@@ -35,8 +34,24 @@ export const triggerSOS = async () => {
       longitude: coords.longitude,
       triggeredAt: new Date().toISOString(),
     };
-    await SOS.trigger(payload);
-    toast.success("SOS triggered successfully!");
+    const response = await SOS.trigger(payload);
+    const { message, warning, error: hasError, notifications } = response.data;
+
+    if (hasError || warning) {
+      const failures = [];
+      if (notifications?.email?.success === false) failures.push("Email");
+      if (notifications?.push?.success === false) failures.push("Push");
+      
+      const failureDetail = failures.length > 0 ? ` [Failed: ${failures.join(", ")}]` : "";
+      
+      if (hasError) {
+        toast.error((message || "SOS logged, but ALL notification attempts failed!") + failureDetail);
+      } else {
+        toast.warning((message || "SOS logged, but some notifications failed.") + failureDetail);
+      }
+    } else {
+      toast.success(message || "SOS triggered successfully!");
+    }
   } catch (error: unknown) {
     console.error("Error triggering SOS:", error);
     if ((error as { response?: { status?: number } })?.response?.status === 429) {
@@ -50,13 +65,8 @@ export const triggerSOS = async () => {
     }
   } finally {
     if (toastId !== undefined) toast.dismiss(toastId);
-    // Reset flag after a delay to prevent immediate re-trigger? or just immediately?
-    // Immediate is fine since pure function execution is supposedly atomic enough, 
-    // but async might overlap. Let's wait a bit or just reset.
-    // Resetting immediately allows next distinct trigger.
+
     setTimeout(() => { isTriggering = false; }, 2000); 
   }
 };
 
-//  Step 3: (Optional but cool) Show "SOS triggered" status in frontend history/log
-// 🔔 Step 4: Notify emergency contacts (SMS, email, push)
