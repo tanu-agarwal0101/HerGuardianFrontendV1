@@ -49,43 +49,31 @@ export function StealthTriggerProvider({
 
     function checkTriggers() {
         const buffer = pinBuffer.current;
-        console.log("Checking triggers for buffer:", buffer);
 
-        // Check SOS First (Higher Priority / usually longer)
         if (stealth?.sosPass && buffer.endsWith(stealth.sosPass)) {
-            console.log("SOS Triggered!");
             triggerSOS(); 
-            pinBuffer.current = ""; // Clear buffer
+            pinBuffer.current = ""; 
             return; 
         }
 
-        // Check Dashboard Pass (Toggle Logic)
         else if (stealth?.dashboardPass && buffer.endsWith(stealth.dashboardPass)) {
-            console.log("Dashboard Pass Triggered!");
-            
             const isDashboard = window.location.pathname.startsWith("/dashboard");
 
             if (isDashboard) {
-                console.log("Locking Dashboard -> Stealth");
-                // Call lock API to clear session cookie
-                // Call lock API to clear session cookie
                 fetch("/api/stealth/lock", { method: "POST" })
                     .finally(() => {
-                         // Redirect to stealth
                          const target = stealth.stealthType || "calculator";
                          window.location.replace(`/stealth/${target}`);
                     });
             } else {
-                console.log("Unlocking Stealth -> Dashboard");
-                // Unlock the app
-                fetch("/api/stealth/unlock", { 
+                  fetch("/api/stealth/unlock", { 
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ pin: stealth.dashboardPass }) 
                 })
                     .then(async (res) => {
                         if (res.ok) {
-                             // Session is active. Redirect to dashboard.
+                            
                              window.location.href = "/dashboard"; 
                         } else if (res.status === 401) {
                              console.error("Unlock failed auth check");
@@ -94,7 +82,7 @@ export function StealthTriggerProvider({
                     .catch((err) => console.error("Unlock failed", err));
             }
             
-            pinBuffer.current = ""; // Clear buffer
+            pinBuffer.current = ""; 
             return;
         }
     }

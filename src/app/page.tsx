@@ -131,9 +131,7 @@ export default function Home() {
     if (process.env.NODE_ENV === "development" && "serviceWorker" in navigator) {
       navigator.serviceWorker.getRegistrations().then((registrations) => {
         registrations.forEach((registration) => {
-          registration.unregister().then(() => {
-            console.log("Service Worker unregistered (dev):", registration);
-          });
+          registration.unregister();
         });
       });
     }

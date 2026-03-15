@@ -119,7 +119,7 @@ export default function SafetyTimer() {
                 }
             })
             .catch((err) => {
-                console.log("Location not shared on expiry:", err);
+                // Location not shared on expiry
             });
       }
 
