@@ -128,3 +128,8 @@ export const getAccessTokenMeta = () => ({
   token: accessTokenCache,
   expiresAt: accessTokenExpiryEpoch,
 });
+
+export function clearTokenCache() {
+  accessTokenCache = null;
+  accessTokenExpiryEpoch = 0;
+}

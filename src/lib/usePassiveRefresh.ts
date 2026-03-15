@@ -1,4 +1,5 @@
 import { useEffect, useRef, useCallback } from "react";
+import axios from "axios";
 import axiosInstance, { getAccessTokenMeta } from "./axiosInstance";
 
 /**
@@ -29,7 +30,8 @@ export function usePassiveRefresh(enabled: boolean) {
     const delay = lead > 0 ? lead : Math.max(remaining - 5_000, 5_000);
     timerRef.current = window.setTimeout(async () => {
       try {
-        await axiosInstance.post("/users/refresh-token");
+        const baseURL = axiosInstance.defaults.baseURL;
+        await axios.post(`${baseURL}/users/refresh-token`, {}, { withCredentials: true });
       } catch {
         // Ignore; 401 will cascade normal logout or retry via interceptor
       } finally {
@@ -51,7 +53,8 @@ export function usePassiveRefresh(enabled: boolean) {
         if (!expiresAt) return;
         const remaining = expiresAt - Date.now();
         if (remaining < 30_000 && remaining > 0) {
-          axiosInstance.post("/users/refresh-token").finally(schedule);
+          const baseURL = axiosInstance.defaults.baseURL;
+          axios.post(`${baseURL}/users/refresh-token`, {}, { withCredentials: true }).finally(schedule);
         }
       }
     };

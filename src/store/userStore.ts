@@ -150,6 +150,13 @@ export const useUserStore = create<UserState>()(
       logout: () => {
         if (typeof window !== "undefined") {
           useUserStore.persist?.clearStorage();
+          try {
+            const bc = new BroadcastChannel("auth");
+            bc.postMessage({ type: "logout" });
+            bc.close();
+          } catch {
+            // BroadcastChannel not supported (e.g. some older browsers)
+          }
         }
         set({
           user: null,

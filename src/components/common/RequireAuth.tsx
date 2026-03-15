@@ -67,8 +67,7 @@ export default function RequireAuth({
 
   }, [loadingUser, user, authError, router, _hasHydrated]);
 
-
-  if ((!_hasHydrated || loadingUser) && !user) {
+  if (!_hasHydrated || loadingUser) {
       return (
            <div className="flex items-center justify-center min-h-screen">
                <div className="text-center">

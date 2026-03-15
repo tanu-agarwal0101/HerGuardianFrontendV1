@@ -1,4 +1,5 @@
 import { toast } from "sonner";
+import { clearTokenCache } from "./axiosInstance";
 
 export function toHumanMessage(error: unknown): string {
   const err = error as { response?: { status?: number, data?: { message?: string, error?: string } }, message?: string, code?: string };
@@ -23,6 +24,9 @@ export function notifyError(error: unknown) {
 
 export function handleUnauthorizedSideEffects() {
   try {
+    // Clear in-memory token cache
+    clearTokenCache();
+
     if (typeof window !== "undefined") {
       document.cookie = "isAuthenticated=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       document.cookie = "stealthMode=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";

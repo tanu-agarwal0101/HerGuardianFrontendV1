@@ -1,15 +1,30 @@
 "use client";
 import { useEffect } from "react";
 import { useUserStore } from "@/store/userStore";
+import { handleUnauthorizedSideEffects } from "@/lib/httpErrors";
+import { clearTokenCache } from "@/lib/axiosInstance";
 
 export default function StoreHydrator() {
   useEffect(() => {
-    // Always mark hydration done
     useUserStore.setState({ _hasHydrated: true });
-    // ALWAYS verify session with the server on page load.
-    // If the stored user's cookies have expired, hydrateUser will call logout()
-    // to clear the stale localStorage entry, preventing the ghost-session bug.
     useUserStore.getState().hydrateUser?.();
+    let bc: BroadcastChannel | null = null;
+    try {
+      bc = new BroadcastChannel("auth");
+      bc.onmessage = (event) => {
+        if (event.data?.type === "logout") {
+          clearTokenCache();
+          useUserStore.getState().logout?.();
+          handleUnauthorizedSideEffects();
+        }
+      };
+    } catch {
+      // BroadcastChannel not supported — skip multi-tab sync
+    }
+
+    return () => {
+      bc?.close();
+    };
   }, []);
   return null;
 }
