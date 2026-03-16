@@ -118,8 +118,8 @@ export default function SafetyTimer() {
                     });
                 }
             })
-            .catch((err) => {
-                // Location not shared on expiry
+            .catch(() => {
+                
             });
       }
 

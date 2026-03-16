@@ -2,9 +2,21 @@ import { toast } from "sonner";
 import { clearTokenCache } from "./axiosInstance";
 
 export function toHumanMessage(error: unknown): string {
-  const err = error as { response?: { status?: number, data?: { message?: string, error?: string } }, message?: string, code?: string };
+  const err = error as { 
+    response?: { 
+      status?: number, 
+      data?: { message?: string, error?: string, errors?: string[] } 
+    }, 
+    message?: string, 
+    code?: string 
+  };
   const status = err?.response?.status;
   const data = err?.response?.data;
+
+  if (data?.errors && Array.isArray(data.errors) && data.errors.length > 0) {
+    return data.errors.join(", ");
+  }
+
   const msg = data?.message || data?.error || err?.message;
 
   if (status === 0 || err?.code === "ERR_NETWORK") return "Network error. Please check your connection.";
@@ -24,7 +36,6 @@ export function notifyError(error: unknown) {
 
 export function handleUnauthorizedSideEffects() {
   try {
-    // Clear in-memory token cache
     clearTokenCache();
 
     if (typeof window !== "undefined") {

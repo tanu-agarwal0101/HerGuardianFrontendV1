@@ -24,7 +24,6 @@ export default function CallsPage() {
       setContacts(data);
     } catch (e) {
       console.error("Error fetching contacts:", e);
-      toast.error("Failed to load contacts");
     }
     setLoading(false);
   };
@@ -70,7 +69,6 @@ export default function CallsPage() {
       fetchContacts();
     } catch (e) {
       console.error("Error saving contact:", e);
-      toast.error("Error saving contact");
       setNewContactLoading(false);
     }
   };
@@ -82,7 +80,6 @@ export default function CallsPage() {
       fetchContacts();
     } catch (e) {
       console.error("Error deleting contact:", e);
-      toast.error("Failed to remove contact");
     }
   };
 
@@ -150,7 +147,7 @@ export default function CallsPage() {
                                 <div className="space-y-2">
                                     <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Name</Label>
                                     <Input
-                                        value={newContact.name}
+                                        value={newContact.name || ""}
                                         onChange={(e) => setNewContact({ ...newContact, name: e.target.value })}
                                         className="bg-background/50 border-white/10 rounded-xl"
                                         placeholder="Full Name"
@@ -160,7 +157,7 @@ export default function CallsPage() {
                                     <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Email</Label>
                                     <Input
                                         type="email"
-                                        value={newContact.email}
+                                        value={newContact.email || ""}
                                         onChange={(e) => setNewContact({ ...newContact, email: e.target.value })}
                                         className="bg-background/50 border-white/10 rounded-xl"
                                         placeholder="email@example.com"
@@ -169,7 +166,7 @@ export default function CallsPage() {
                                 <div className="space-y-2">
                                     <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Phone Number</Label>
                                     <Input
-                                        value={newContact.phoneNumber}
+                                        value={newContact.phoneNumber || ""}
                                         onChange={(e) => setNewContact({ ...newContact, phoneNumber: e.target.value })}
                                         className="bg-background/50 border-white/10 rounded-xl"
                                         placeholder="+1..."
@@ -178,7 +175,7 @@ export default function CallsPage() {
                                 <div className="space-y-2">
                                     <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Relationship</Label>
                                     <Input
-                                        value={newContact.relationship}
+                                        value={newContact.relationship || ""}
                                         onChange={(e) => setNewContact({ ...newContact, relationship: e.target.value })}
                                         className="bg-background/50 border-white/10 rounded-xl"
                                         placeholder="Family/Friend"
@@ -234,7 +231,7 @@ export default function CallsPage() {
                                 <div className="space-y-3">
                                     <Input
                                         size={1}
-                                        value={editContact.name}
+                                        value={editContact.name || ""}
                                         onChange={(e) => setEditContact({ ...editContact, name: e.target.value })}
                                         className="bg-background/40 border-primary/20"
                                         placeholder="Name"
@@ -242,21 +239,21 @@ export default function CallsPage() {
                                     <Input
                                         size={1}
                                         type="email"
-                                        value={editContact.email}
+                                        value={editContact.email || ""}
                                         onChange={(e) => setEditContact({ ...editContact, email: e.target.value })}
                                         className="bg-background/40 border-primary/20"
                                         placeholder="Email"
                                     />
                                     <Input
                                         size={1}
-                                        value={editContact.phoneNumber}
+                                        value={editContact.phoneNumber || ""}
                                         onChange={(e) => setEditContact({ ...editContact, phoneNumber: e.target.value })}
                                         className="bg-background/40 border-primary/20"
                                         placeholder="Phone"
                                     />
                                     <Input
                                         size={1}
-                                        value={editContact.relationship}
+                                        value={editContact.relationship || ""}
                                         onChange={(e) => setEditContact({ ...editContact, relationship: e.target.value })}
                                         className="bg-background/40 border-primary/20"
                                         placeholder="Relationship"
