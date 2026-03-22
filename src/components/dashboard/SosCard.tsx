@@ -4,8 +4,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { triggerSOS } from "@/lib/sosTrigger";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 export function SosCard() {
+  const router = useRouter();
+
+  const handleActivate = () => {
+    triggerSOS(router);
+  };
+
   return (
     <Card className="flex flex-col items-center justify-between p-6 shadow-lg border-destructive/20 dark:border-destructive/30">
       <CardHeader className="p-0 text-center space-y-2 w-full">
@@ -35,7 +42,7 @@ export function SosCard() {
                 size="lg"
                 variant="destructive"
                 className="w-40 h-40 rounded-full text-xl font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all z-10 border-4 border-background"
-                onClick={triggerSOS}
+                onClick={handleActivate}
             >
                 ACTIVATE
             </Button>

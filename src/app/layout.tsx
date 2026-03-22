@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "leaflet/dist/leaflet.css";
 import { SonnerToaster } from "@/components/common/SonnerToaster";
+import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from "@vercel/analytics/next"
 
 import { SessionRefresherProvider } from "@/components/SessionRefresherProvider";
 import StoreHydrator from "@/components/StoreHydrator";
@@ -51,6 +53,8 @@ export default function RootLayout({
           {/* <StealthTriggerProvider>{children}</StealthTriggerProvider> */}
           {children}
         </SessionRefresherProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

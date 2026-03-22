@@ -20,7 +20,7 @@ export default function NotesApp() {
        return;
     }
     if (sosPass && note.trim() === sosPass) {
-       triggerSOS();
+       triggerSOS(router);
        // Don't save SOS pass
        setNote("");
        return;

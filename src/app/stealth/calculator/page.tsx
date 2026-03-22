@@ -88,7 +88,7 @@ export default function Calculator() {
             await unlockApp();
             return true;
           } else if (data.type === "sos") {
-            triggerSOS();
+            triggerSOS(router);
             setInput("0");
             setPrevInput(null);
             setOperator(null);

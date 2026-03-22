@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useUserStore } from "@/store/userStore";
 import { HeroCard } from "@/components/dashboard/HeroCard";
 import { SosCard } from "@/components/dashboard/SosCard";
+import { ActiveSOSBanner } from "@/components/dashboard/ActiveSOSBanner";
 import { SafetyTimerCard } from "@/components/dashboard/SafetyTimerCard";
 import { ResourcesPanel } from "@/components/dashboard/ResourcesPanel";
 import { FakeCallCard } from "@/components/dashboard/FakeCallCard";
@@ -44,6 +45,9 @@ export default function Dashboard() {
           {warning}
         </div>
       )}
+
+      <ActiveSOSBanner />
+
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -53,7 +57,6 @@ export default function Dashboard() {
       </motion.div>
 
       <section className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Primary Safety Tools */}
           <motion.div 
              initial={{ opacity: 0, scale: 0.95 }}
              animate={{ opacity: 1, scale: 1 }}
@@ -72,7 +75,6 @@ export default function Dashboard() {
              <SafetyTimerCard />
           </motion.div>
 
-          {/* Safety Circle + Resources */}
           <div className="space-y-6">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -90,9 +92,7 @@ export default function Dashboard() {
              </motion.div>
           </div>
 
-          {/* Address, Watch, FakeCall & Notifications */}
           <div className="space-y-6">
-             {/* Address Card */}
              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -114,7 +114,6 @@ export default function Dashboard() {
                 </Link>
              </motion.div>
 
-             {/* Smart Watch Card */}
              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -136,7 +135,6 @@ export default function Dashboard() {
                 </Link>
              </motion.div>
 
-             {/* Fake Call */}
              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -145,7 +143,6 @@ export default function Dashboard() {
                 <FakeCallCard />
              </motion.div>
 
-             {/* Enable Notifications */}
              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}

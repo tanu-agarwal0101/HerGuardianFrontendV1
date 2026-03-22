@@ -27,6 +27,8 @@
     "@radix-ui/react-tabs": "^1.1.13",
     "@tabler/icons-react": "^3.34.0",
     "@tailwindcss/typography": "^0.5.19",
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
     "add": "^2.0.6",
     "axios": "^1.8.4",
     "class-variance-authority": "^0.7.1",

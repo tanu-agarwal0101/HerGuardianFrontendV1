@@ -1,5 +1,4 @@
 "use client";
-// Fix for window.__stealth_kw_buffer property
 declare global {
   interface Window {
     __stealth_kw_buffer?: string;
@@ -8,13 +7,14 @@ declare global {
 import { useEffect, useRef } from "react";
 import { useUserStore } from "@/store/userStore";
 import { triggerSOS } from "@/lib/sosTrigger";
+import { useRouter } from "next/navigation";
 
 export function StealthTriggerProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // Listen for PIN, keyword, gesture globally
+  const router = useRouter();
   const stealth = useUserStore((s) => s.stealth);
   const setStealth = useUserStore((s) => s.setStealth);
   const pinBuffer = useRef("");
@@ -22,7 +22,6 @@ export function StealthTriggerProvider({
   
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
-      // Clear existing timer on any key press
       if (timerRef.current) {
         clearTimeout(timerRef.current);
         timerRef.current = null;
@@ -30,18 +29,14 @@ export function StealthTriggerProvider({
 
       const key = typeof e.key === "string" ? e.key : "";
       
-      // Update buffers
-      // Dashboard Pass (Numbers only usually, but let's allow all for flexibility if needed, typically numpad)
+
       if (stealth?.dashboardPass) {
-          // Only add if it's a character we care about (length 1)
           if (key.length === 1) {
              pinBuffer.current += key;
              if (pinBuffer.current.length > 20) pinBuffer.current = pinBuffer.current.slice(-20);
           }
       }
 
-      // Set a debounce timer to check triggers after typing stops (e.g., 800ms)
-      // This allows "1234" (Dash) to wait and see if it becomes "12345" (SOS)
       timerRef.current = setTimeout(() => {
          checkTriggers();
       }, 500);
@@ -51,7 +46,7 @@ export function StealthTriggerProvider({
         const buffer = pinBuffer.current;
 
         if (stealth?.sosPass && buffer.endsWith(stealth.sosPass)) {
-            triggerSOS(); 
+            triggerSOS(router); 
             pinBuffer.current = ""; 
             return; 
         }
@@ -92,6 +87,6 @@ export function StealthTriggerProvider({
       window.removeEventListener("keydown", onKeyDown);
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [stealth?.dashboardPass, stealth?.sosPass, stealth?.stealthType, setStealth]);
+  }, [stealth?.dashboardPass, stealth?.sosPass, stealth?.stealthType, setStealth, router]);
   return <>{children}</>;
 }

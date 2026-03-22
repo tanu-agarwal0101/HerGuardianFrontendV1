@@ -3,7 +3,7 @@ import { toast } from "sonner";
 
 let isTriggering = false;
 
-export const triggerSOS = async () => {
+export const triggerSOS = async (router?: { push: (url: string) => void }) => {
   if (isTriggering) return;
   isTriggering = true;
   
@@ -35,7 +35,7 @@ export const triggerSOS = async () => {
       triggeredAt: new Date().toISOString(),
     };
     const response = await SOS.trigger(payload);
-    const { message, warning, error: hasError, notifications } = response.data;
+    const { message, warning, error: hasError, notifications, trackingSessionId } = response.data;
 
     if (hasError || warning) {
       const failures = [];
@@ -51,6 +51,9 @@ export const triggerSOS = async () => {
       }
     } else {
       toast.success(message || "SOS triggered successfully!");
+      if (router && trackingSessionId) {
+        router.push(`/dashboard/sos?sessionId=${trackingSessionId}`);
+      }
     }
   } catch (error: unknown) {
     console.error("Error triggering SOS:", error);
