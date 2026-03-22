@@ -5,16 +5,15 @@ import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from "react-
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-const fixLeafletIcon = () => {
-
-  const prototype = L.Icon.Default.prototype as any;
-  delete prototype._getIconUrl;
-  L.Icon.Default.mergeOptions({
-    iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-    iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-    shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-  });
-};
+const defaultIcon = L.icon({
+  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
 
 function RecenterMap({ lat, lon }: { lat: number; lon: number }) {
   const map = useMap();
@@ -42,7 +41,6 @@ export default function SOSMap({
 
   useEffect(() => {
     setIsClient(true);
-    fixLeafletIcon();
   }, []);
 
   if (!isClient) return <div className={className} />;
@@ -73,7 +71,7 @@ export default function SOSMap({
             positions={polylinePositions} 
             pathOptions={{ color: '#ef4444', weight: 4, opacity: 0.7, dashArray: '5, 10' }} 
         />
-        <Marker position={[center.lat, center.lon]}>
+        <Marker position={[center.lat, center.lon]} icon={defaultIcon}>
           <Popup>
             <div className="text-black">
               Current Location
