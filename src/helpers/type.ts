@@ -38,6 +38,7 @@ export interface User {
   stealthOnboardingSkipped?: boolean;
   dashboardPass?: string;
   sosPass?: string;
+  voiceTriggerPhrase?: string;
   createdAt: string;
   updatedAt: string;
 }

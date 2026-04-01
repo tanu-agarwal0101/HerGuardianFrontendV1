@@ -10,17 +10,32 @@ interface StealthPrefs {
   sosPass: string | null;
 }
 
+interface VoiceSOSPrefs {
+  enabled: boolean;
+  triggerPhrase: string;
+  hasOnboardedVoice: boolean;   // user has seen the privacy gate
+  isPermissionGranted: boolean; // mic permission confirmed
+  sessionExpiry: number | null; // epoch ms — null means always-on
+}
+
 interface UserState {
   user: User | null;
   stealth: StealthPrefs;
+  voiceSOS: VoiceSOSPrefs;
   loadingUser: boolean;
   authError: string | null;
   loadingStealth: boolean;
   setUser: (user: User) => void;
   updateUser: (fields: Partial<User>) => void;
   setStealth: (data: Partial<StealthPrefs>) => void;
+  setVoiceSOS: (data: Partial<VoiceSOSPrefs>) => void;
+  enableVoiceSOS: () => void;
+  disableVoiceSOS: () => void;
+  onboardVoice: () => void;
+  setSessionExpiry: (durationMs: number | null) => void;
   loadStealth: () => Promise<void>;
   saveStealth: (data: Partial<StealthPrefs>) => Promise<void>;
+  saveVoiceSOS: (data: { triggerPhrase: string; enabled?: boolean }) => Promise<void>;
   hydrateUser: () => Promise<void>;
   logout: () => void;
   _hasHydrated: boolean;
@@ -36,22 +51,33 @@ export const useUserStore = create<UserState>()(
         dashboardPass: null,
         sosPass: null,
       },
+      voiceSOS: {
+        enabled: false,
+        triggerPhrase: "Activate Emergency",
+        hasOnboardedVoice: false,
+        isPermissionGranted: false,
+        sessionExpiry: null,
+      },
       loadingUser: false,
       authError: null,
       loadingStealth: false,
       _hasHydrated: false,
 
       setUser: (user) => {
-          // Auto-sync stealth state when user is set (e.g. login)
+
           const stealthUpdates = {
               stealthMode: user.stealthMode ?? false,
               stealthType: user.stealthType ?? null,
               dashboardPass: user.dashboardPass ?? null,
               sosPass: user.sosPass ?? null,
           };
+          const voiceSOSUpdates = {
+              triggerPhrase: user.voiceTriggerPhrase || "Activate Emergency",
+          };
           set({ 
               user, 
-              stealth: { ...get().stealth, ...stealthUpdates } 
+              stealth: { ...get().stealth, ...stealthUpdates },
+              voiceSOS: { ...get().voiceSOS, ...voiceSOSUpdates }
           });
       },
 
@@ -64,6 +90,27 @@ export const useUserStore = create<UserState>()(
 
       setStealth: (data) => {
         set({ stealth: { ...get().stealth, ...data } });
+      },
+
+      setVoiceSOS: (data) => {
+        set({ voiceSOS: { ...get().voiceSOS, ...data } });
+      },
+
+      enableVoiceSOS: () => {
+        set({ voiceSOS: { ...get().voiceSOS, enabled: true } });
+      },
+
+      disableVoiceSOS: () => {
+        set({ voiceSOS: { ...get().voiceSOS, enabled: false, sessionExpiry: null } });
+      },
+
+      onboardVoice: () => {
+        set({ voiceSOS: { ...get().voiceSOS, hasOnboardedVoice: true, isPermissionGranted: true } });
+      },
+
+      setSessionExpiry: (durationMs) => {
+        const expiry = durationMs !== null ? Date.now() + durationMs : null;
+        set({ voiceSOS: { ...get().voiceSOS, sessionExpiry: expiry } });
       },
 
       loadStealth: async () => {
@@ -84,6 +131,14 @@ export const useUserStore = create<UserState>()(
         const { Stealth } = await import("@/lib/api");
         await Stealth.updateSettings(data);
         set({ stealth: { ...get().stealth, ...data } });
+      },
+
+      saveVoiceSOS: async (data) => {
+        const { Users } = await import("@/lib/api");
+        if (data.triggerPhrase) {
+           await Users.updateVoiceTrigger({ voiceTriggerPhrase: data.triggerPhrase });
+        }
+        set({ voiceSOS: { ...get().voiceSOS, ...data } });
       },
 
       hydrateUser: async () => {
@@ -115,10 +170,15 @@ export const useUserStore = create<UserState>()(
               dashboardPass: profile.dashboardPass ?? null,
               sosPass: profile.sosPass ?? null
           };
+          
+          const voiceSOSUpdates = {
+              triggerPhrase: profile.voiceTriggerPhrase || "Activate Emergency",
+          };
 
           set({ 
               user: profile as unknown as User,
               stealth: { ...get().stealth, ...stealthUpdates },
+              voiceSOS: { ...get().voiceSOS, ...voiceSOSUpdates },
               authError: null 
           });
         } catch (e) {
@@ -155,7 +215,7 @@ export const useUserStore = create<UserState>()(
             bc.postMessage({ type: "logout" });
             bc.close();
           } catch {
-            // BroadcastChannel not supported (e.g. some older browsers)
+            
           }
         }
         set({
@@ -166,6 +226,13 @@ export const useUserStore = create<UserState>()(
             dashboardPass: null,
             sosPass: null,
           },
+          voiceSOS: {
+            enabled: false,
+            triggerPhrase: "Activate Emergency",
+            hasOnboardedVoice: false,
+            isPermissionGranted: false,
+            sessionExpiry: null,
+          },
           loadingUser: false,
         });
       },
@@ -175,6 +242,7 @@ export const useUserStore = create<UserState>()(
       partialize: (state) => ({
         user: state.user,
         stealth: state.stealth,
+        voiceSOS: state.voiceSOS,
       }),
       
       onRehydrateStorage: () => (state) => {

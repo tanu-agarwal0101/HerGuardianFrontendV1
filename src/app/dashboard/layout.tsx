@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 // import { ToastSetup } from "./toast-setup";
 import RequireAuth from "@/components/common/RequireAuth";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import { VoiceSOSProvider } from "@/providers/VoiceSOSProvider";
 
 export const metadata: Metadata = {
   title: "Her Guardian | Dashboard",
@@ -17,7 +18,9 @@ export default function DashboardRootLayout({
     <>
       {/* <ToastSetup /> */}
       <RequireAuth>
-        <DashboardLayout>{children}</DashboardLayout>
+        <VoiceSOSProvider>
+          <DashboardLayout>{children}</DashboardLayout>
+        </VoiceSOSProvider>
       </RequireAuth>
     </>
   );

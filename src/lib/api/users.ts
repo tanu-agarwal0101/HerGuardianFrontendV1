@@ -15,6 +15,7 @@ export interface UserProfile {
   stealthMode?: boolean;
   dashboardPass?: string;
   sosPass?: string;
+  voiceTriggerPhrase?: string;
 }
 
 export async function getProfile(): Promise<UserProfile> {
@@ -46,4 +47,7 @@ export async function sosTrigger(payload: {
   longitude: number;
 }) {
   return axiosInstance.post("/users/sos-trigger", payload);
+}
+export async function updateVoiceTrigger(payload: { voiceTriggerPhrase: string }) {
+  return axiosInstance.patch("/users/update-voice-settings", payload);
 }
