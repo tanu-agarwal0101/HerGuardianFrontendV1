@@ -19,7 +19,7 @@ const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/dashboard/chat", label: "Guardian Chat", icon: MessageCircle },
   { href: "/dashboard/logs", label: "Activity Logs", icon: ScrollText },
-  { href: "/profile", label: "Profile", icon: User },
+  { href: "/dashboard/profile", label: "Profile", icon: User },
   // { href: "/settings", label: "Settings", icon: Settings },
 ];
 

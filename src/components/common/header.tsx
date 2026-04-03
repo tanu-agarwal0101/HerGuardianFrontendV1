@@ -32,7 +32,7 @@ export default function Header() {
         <Link href="/test" className="text-white hover:text-purple-200">
           About Us
         </Link>
-        <Link href="/profile" className="text-white hover:text-purple-200">
+        <Link href="/dashboard/profile" className="text-white hover:text-purple-200">
           Profile
         </Link>
         <Button

@@ -62,7 +62,6 @@ export const config = {
     "/stealth/:path*",
     "/login",
     "/registration",
-    "/profile/:path*",
   ],
 };
 

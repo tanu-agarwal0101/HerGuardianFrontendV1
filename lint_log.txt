@@ -1,0 +1,31 @@
+
+> her-guardian-frontend@0.1.0 lint
+> next lint
+
+`next lint` is deprecated and will be removed in Next.js 16.
+For new projects, use create-next-app to choose your preferred linter.
+For existing projects, migrate to the ESLint CLI:
+npx @next/codemod@canary next-lint-to-eslint-cli .
+
+
+./src/components/dashboard/SosCard.tsx
+15:21  Error: 'setVoiceSOS' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+15:51  Error: 'enableVoiceSOS' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+16:11  Error: 'isListening' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/dashboard/VoiceActiveIndicator.tsx
+4:26  Error: 'ChevronLeft' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/dashboard/VoiceOnboardingDialog.tsx
+54:52  Error: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+
+./src/components/dashboard/VoiceSettingsDialog.tsx
+116:18  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/providers/VoiceSOSProvider.tsx
+67:18  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+68:18  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+142:6  Warning: React Hook useEffect has a missing dependency: 'setVoiceSOS'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+201:6  Warning: React Hook useEffect has a missing dependency: 'voiceSOS'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules

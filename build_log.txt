@@ -1,0 +1,56 @@
+
+> her-guardian-frontend@0.1.0 build
+> next build
+
+   ▲ Next.js 15.5.12
+   - Environments: .env
+
+   Creating an optimized production build ...
+> [PWA] Compile server
+> [PWA] Compile server
+> [PWA] Compile client (static)
+> [PWA] Auto register service worker with: D:\HerGuardian\her-guardian-frontend\node_modules\next-pwa\register.js
+> [PWA] Service worker: D:\HerGuardian\her-guardian-frontend\public\sw.js
+> [PWA]   url: /sw.js
+> [PWA]   scope: /
+> [PWA] Inject manifest in D:\HerGuardian\her-guardian-frontend\public\service-worker.js
+ ✓ Compiled successfully in 7.3s
+   Linting and checking validity of types ...
+
+Failed to compile.
+
+./src/components/dashboard/SosCard.tsx
+6:18  Error: 'AnimatePresence' is defined but never used.  @typescript-eslint/no-unused-vars
+15:21  Error: 'setVoiceSOS' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+15:51  Error: 'enableVoiceSOS' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+16:11  Error: 'isListening' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/dashboard/VoiceActiveIndicator.tsx
+4:26  Error: 'ChevronLeft' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/dashboard/VoiceOnboardingDialog.tsx
+54:52  Error: `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`.  react/no-unescaped-entities
+
+./src/components/dashboard/VoiceSettingsDialog.tsx
+84:37  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+101:18  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+102:18  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+110:36  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+112:18  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+123:35  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/dashboard/VoiceSOSOverlay.tsx
+40:18  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+41:18  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+49:36  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/providers/VoiceSOSProvider.tsx
+36:34  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+66:18  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+67:18  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+95:36  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+116:35  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+139:6  Warning: React Hook useEffect has a missing dependency: 'setVoiceSOS'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+198:6  Warning: React Hook useEffect has a missing dependency: 'voiceSOS'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
