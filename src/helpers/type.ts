@@ -28,6 +28,8 @@ export interface User {
   lastName: string;
   email: string;
   phoneNumber?: string;
+  location?: string;
+  bio?: string;
   profilePicture?: string;
   addresses?: Address[];
   contacts?: Contact[];
