@@ -19,8 +19,7 @@ export function middleware(request: NextRequest) {
   // or uncomment the block at the bottom of this file.
   // -------------------------------------------------------------------
 
-  // AUTH REDIRECTS
-  // No token → redirect to landing (except landing itself and auth pages)
+
   if (
     !token &&
     url.pathname !== "/" &&
@@ -31,7 +30,6 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // If logged in, don't show auth pages
   if (
     token &&
     (url.pathname === "/login" || url.pathname === "/registration")
@@ -40,7 +38,6 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // ROOT REDIRECT — logged-in user at "/" → dashboard
   if (url.pathname === "/" && token) {
     url.pathname = "/dashboard";
     return NextResponse.redirect(url);
