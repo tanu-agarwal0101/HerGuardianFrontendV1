@@ -1,7 +1,7 @@
 // stores/userStore.ts
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { User } from "@/helpers/type"; // adjust this path if needed
+import { User } from "@/helpers/type"; 
 
 interface StealthPrefs {
   stealthMode: boolean;
@@ -13,15 +13,22 @@ interface StealthPrefs {
 interface VoiceSOSPrefs {
   enabled: boolean;
   triggerPhrase: string;
-  hasOnboardedVoice: boolean;   // user has seen the privacy gate
-  isPermissionGranted: boolean; // mic permission confirmed
-  sessionExpiry: number | null; // epoch ms — null means always-on
+  hasOnboardedVoice: boolean;   
+  isPermissionGranted: boolean; 
+  sessionExpiry: number | null; 
+}
+
+interface QuickExitPrefs {
+  contactName: string;
+  message: string;
+  enabled: boolean;
 }
 
 interface UserState {
   user: User | null;
   stealth: StealthPrefs;
   voiceSOS: VoiceSOSPrefs;
+  quickExit: QuickExitPrefs;
   loadingUser: boolean;
   authError: string | null;
   loadingStealth: boolean;
@@ -29,6 +36,7 @@ interface UserState {
   updateUser: (fields: Partial<User>) => void;
   setStealth: (data: Partial<StealthPrefs>) => void;
   setVoiceSOS: (data: Partial<VoiceSOSPrefs>) => void;
+  setQuickExit: (data: Partial<QuickExitPrefs>) => void;
   enableVoiceSOS: () => void;
   disableVoiceSOS: () => void;
   onboardVoice: () => void;
@@ -57,6 +65,11 @@ export const useUserStore = create<UserState>()(
         hasOnboardedVoice: false,
         isPermissionGranted: false,
         sessionExpiry: null,
+      },
+      quickExit: {
+        contactName: "Mom",
+        message: "Please come pick me up ASAP!",
+        enabled: false,
       },
       loadingUser: false,
       authError: null,
@@ -94,6 +107,10 @@ export const useUserStore = create<UserState>()(
 
       setVoiceSOS: (data) => {
         set({ voiceSOS: { ...get().voiceSOS, ...data } });
+      },
+
+      setQuickExit: (data) => {
+        set({ quickExit: { ...get().quickExit, ...data } });
       },
 
       enableVoiceSOS: () => {
@@ -243,6 +260,7 @@ export const useUserStore = create<UserState>()(
         user: state.user,
         stealth: state.stealth,
         voiceSOS: state.voiceSOS,
+        quickExit: state.quickExit,
       }),
       
       onRehydrateStorage: () => (state) => {

@@ -94,4 +94,33 @@ export async function enableNotifications() {
   }
 }
 
+export async function showLocalNotification(title: string, body: string) {
+  if (typeof window === "undefined") return;
+
+  if (Notification.permission !== "granted") {
+    console.warn("Push: Permission not granted for local notification");
+    return;
+  }
+
+  try {
+    const registration = await navigator.serviceWorker.getRegistration("/notifications-sw.js");
+    if (registration) {
+      const options = {
+        body,
+        icon: "/android-chrome-192x192.png",
+        badge: "/favicon-32x32.png",
+        vibrate: [200, 100, 200],
+        tag: "smart-exit-alert",
+        renotify: true,
+      } as NotificationOptions;
+      
+      await registration.showNotification(title, options);
+    } else {
+      new Notification(title, { body });
+    }
+  } catch (err) {
+    console.error("Push: Failed to show local notification", err);
+  }
+}
+
 

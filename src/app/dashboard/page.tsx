@@ -8,6 +8,8 @@ import { SafetyTimerCard } from "@/components/dashboard/SafetyTimerCard";
 import { ResourcesPanel } from "@/components/dashboard/ResourcesPanel";
 import { FakeCallCard } from "@/components/dashboard/FakeCallCard";
 import { SafetyCircleCard } from "@/components/dashboard/SafetyCircleCard";
+import { ExitAssistantCard } from "@/components/dashboard/ExitAssistantCard";
+import { ExitAssistantDialog } from "@/components/exit-assistant/ExitAssistantDialog";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
@@ -46,6 +48,7 @@ export default function Dashboard() {
         </div>
       )}
 
+      <ExitAssistantDialog />
       <ActiveSOSBanner />
 
       <motion.div
@@ -147,6 +150,14 @@ export default function Dashboard() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.35 }}
+             >
+                <ExitAssistantCard />
+             </motion.div>
+
+             <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.4 }}
              >
                 <Card className="shadow-md hover:shadow-lg transition-all p-4 cursor-pointer group" onClick={() => enableNotifications()}>
                   <CardHeader className="flex flex-row items-center gap-3 p-0 pb-2">

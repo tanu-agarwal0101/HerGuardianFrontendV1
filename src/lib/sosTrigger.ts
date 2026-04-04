@@ -56,8 +56,11 @@ export const triggerSOS = async (router?: { push: (url: string) => void }) => {
       }
     }
   } catch (error: unknown) {
-    console.error("Error triggering SOS:", error);
-    if ((error as { response?: { status?: number } })?.response?.status === 429) {
+    const err = error as Record<string, unknown>;
+    const errorDetails = (err?.message as string) || (typeof err === "string" ? err : JSON.stringify(err, Object.getOwnPropertyNames(err)));
+    console.error("Error triggering SOS:", errorDetails, err);
+
+    if ((err?.response as Record<string, unknown>)?.status === 429) {
       toast.error(
         "You are triggering SOS too quickly. Please wait and try again."
       );
