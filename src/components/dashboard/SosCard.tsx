@@ -41,7 +41,7 @@ export function SosCard() {
             </motion.div>
         </div>
 
-        <CardHeader className="p-0 text-center space-y-2 w-full">
+        <CardHeader className="p-0 pt-4 text-center space-y-2 w-full">
           <CardTitle className="text-2xl font-bold text-destructive">
             Emergency SOS
           </CardTitle>
@@ -117,9 +117,9 @@ export function SosCard() {
           </div>
         </CardContent>
 
-        <div className="text-xs text-destructive-foreground/80 text-center bg-destructive/10 px-4 py-2 rounded-full font-medium">
+        {/* <div className="text-xs text-destructive-foreground/80 text-center bg-destructive/10 px-4 py-2 rounded-full font-medium">
           Long press for 3s to trigger silently
-        </div>
+        </div> */}
       </Card>
 
       <VoiceSettingsDialog 

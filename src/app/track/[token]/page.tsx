@@ -38,6 +38,7 @@ export default function TrackingPage() {
   const [locationHistory, setLocationHistory] = useState<LocationPoint[]>([]);
   const [latestLocation, setLatestLocation] = useState<LocationPoint | null>(null);
   const [endMessage, setEndMessage] = useState("");
+  const [locationError, setLocationError] = useState<string | null>(null);
   const socketRef = useRef<Socket | null>(null);
   // const mapRef = useRef<HTMLDivElement>(null);
 
@@ -89,6 +90,13 @@ export default function TrackingPage() {
     socket.on("location_updated", (point: LocationPoint) => {
       setLatestLocation(point);
       setLocationHistory((prev) => [...prev, point]);
+      setLocationError(null); 
+    });
+
+    socket.on("location_error", ({ type }: { type: string }) => {
+      if (type === "PERMISSION_DENIED") {
+        setLocationError("The user has denied location access. Real-time tracking is currently unavailable.");
+      }
     });
 
     socket.on("sos_resolved", () => {
@@ -172,7 +180,7 @@ export default function TrackingPage() {
 
   return (
     <div className="min-h-screen bg-gray-950 text-white flex flex-col">
-      {/* Header */}
+      
       <div className="bg-red-900/40 border-b border-red-700 px-4 py-3 flex items-center justify-between">
         <div>
           <h1 className="text-lg font-bold text-red-400">🚨 Live SOS Tracking</h1>
@@ -189,9 +197,14 @@ export default function TrackingPage() {
           )}
         </div>
       </div>
+      
+      {locationError && (
+        <div className="bg-yellow-600 text-black px-4 py-2 flex items-center gap-2 font-bold text-sm">
+          <span className="text-xl">⚠️</span> {locationError}
+        </div>
+      )}
 
       <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
-        {/* Map area */}
         <div className="flex-1 relative bg-gray-900 overflow-hidden">
           {latestLocation ? (
             <div className="h-full w-full">
@@ -200,7 +213,6 @@ export default function TrackingPage() {
                 history={locationHistory}
                 className="h-full w-full"
               />
-              {/* Overlay stats */}
               <div className="absolute bottom-4 left-4 z-[1000] bg-gray-950/80 backdrop-blur-md p-3 rounded-lg border border-gray-800 pointer-events-none">
                  <div className="flex items-center gap-2 mb-1">
                     <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
@@ -222,7 +234,6 @@ export default function TrackingPage() {
           )}
         </div>
 
-        {/* Breadcrumb history sidebar */}
         <div className="w-full lg:w-72 bg-gray-900 border-t lg:border-t-0 lg:border-l border-gray-800 overflow-y-auto max-h-64 lg:max-h-full">
           <div className="px-4 py-3 border-b border-gray-800">
             <h2 className="text-sm font-semibold text-gray-400">

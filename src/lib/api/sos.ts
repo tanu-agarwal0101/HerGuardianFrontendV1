@@ -1,8 +1,10 @@
 import axiosInstance from "../axiosInstance";
 
 export async function trigger(payload: {
-  latitude: number;
-  longitude: number;
+  latitude: number | null;
+  longitude: number | null;
+  triggeredAt?: string;
+  timerId?: string;
 }) {
   return axiosInstance.post("/users/sos-trigger", payload);
 }

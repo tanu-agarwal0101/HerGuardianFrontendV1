@@ -28,6 +28,7 @@ export default function SOSActivePage() {
   const [lastUpdateTime, setLastUpdateTime] = useState<Date | null>(null);
   const [socketConnected, setSocketConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isTrackingPaused, setIsTrackingPaused] = useState(false);
 
   const socketRef = useRef<Socket | null>(null);
   const watchIdRef = useRef<number | null>(null);
@@ -41,7 +42,6 @@ export default function SOSActivePage() {
       if ("wakeLock" in navigator) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         wakeLockRef.current = await (navigator as any).wakeLock.request("screen");
-        console.log("Wake Lock active");
       }
     } catch (err) {
       console.error("Wake Lock failed:", err);
@@ -91,13 +91,71 @@ export default function SOSActivePage() {
     }
   }, [sessionId]);
 
+  const startTracking = useCallback(() => {
+    if (!navigator.geolocation) {
+      setError("Geolocation is not supported by your browser.");
+      return;
+    }
+
+    setError(null);
+    setIsTrackingPaused(false);
+
+    if (watchIdRef.current !== null) {
+      navigator.geolocation.clearWatch(watchIdRef.current);
+    }
+
+    watchIdRef.current = navigator.geolocation.watchPosition(
+      handleLocationUpdate,
+      (err) => {
+        console.error("Geolocation error details:", {
+          code: err.code,
+          message: err.message,
+        }, err);
+        let errorMsg = "An unknown location error occurred.";
+        let isPaused = false;
+        
+        if (err.code === 1) { 
+          errorMsg = "Location access denied. Please enable GPS and allow browser permissions to share your location.";
+          isPaused = true;
+          
+          if (socketRef.current?.connected && sessionId) {
+            socketRef.current.emit("location_error", { 
+              sessionId, 
+              type: "PERMISSION_DENIED", 
+              message: "User denied location access" 
+            });
+          }
+        } else if (err.code === 2) { 
+          errorMsg = "Location information is unavailable. Ensure GPS is on and you have a clear view of the sky.";
+        } else if (err.code === 3) { 
+          errorMsg = "Location request timed out. Retrying...";
+        }
+
+        setError(errorMsg);
+        toast.error(errorMsg, { id: "geo-error" });
+        
+        if (isPaused) {
+          setIsTrackingPaused(true);
+          if (watchIdRef.current !== null) {
+            navigator.geolocation.clearWatch(watchIdRef.current);
+            watchIdRef.current = null;
+          }
+        }
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 0
+      }
+    );
+  }, [handleLocationUpdate, sessionId]);
+
   useEffect(() => {
     if (!sessionId) {
       setError("Active SOS session ID missing. Unable to track.");
       return;
     }
 
-  
     const socket = io(BACKEND_URL, { withCredentials: true });
     socketRef.current = socket;
 
@@ -111,41 +169,17 @@ export default function SOSActivePage() {
     });
 
     socket.on("track_error", (err) => {
-      console.error("Socket tracking error:", err);
+      console.error("Socket tracking error details:", {
+        message: err?.message,
+        error: err
+      }, err);
       if (err.message?.includes("ended") || err.message?.includes("no longer active")) {
         toast.info("SOS session has been resolved or expired.");
         router.push("/dashboard");
       }
     });
 
-    if (!navigator.geolocation) {
-      setError("Geolocation is not supported by your browser.");
-    } else {
-      watchIdRef.current = navigator.geolocation.watchPosition(
-        handleLocationUpdate,
-      (err) => {
-        console.error("Geolocation error full:", err);
-        let errorMsg = "An unknown location error occurred.";
-        
-        if (err.code === 1) { 
-          errorMsg = "Location access denied. Please enable GPS and allow browser permissions to share your location.";
-        } else if (err.code === 2) { 
-          errorMsg = "Location information is unavailable. Ensure GPS is on and you have a clear view of the sky.";
-        } else if (err.code === 3) { 
-          errorMsg = "Location request timed out. Retrying...";
-        }
-
-        setError(errorMsg);
-        toast.error(errorMsg, { id: "geo-error" });
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 15000,
-        maximumAge: 0
-      }
-    );
-    }
-    
+    startTracking();
     requestWakeLock();
 
     return () => {
@@ -161,7 +195,7 @@ export default function SOSActivePage() {
         });
       }
     };
-  }, [sessionId, BACKEND_URL, handleLocationUpdate, router]);
+  }, [sessionId, BACKEND_URL, startTracking, router]);
 
   const handleResolve = async () => {
     if (!sessionId) return;
@@ -191,7 +225,7 @@ export default function SOSActivePage() {
           <p className="text-red-400 font-medium">Your location is being tracked by guardians.</p>
         </div>
 
-        <Card className="bg-gray-900 border-red-900/50 text-white">
+        <Card className="bg-gray-900 border-red-900/50 text-white py-4">
           <CardHeader>
             <CardTitle className="text-xl flex items-center gap-2">
               <MapPin className="text-red-500" /> Live Status
@@ -225,7 +259,23 @@ export default function SOSActivePage() {
               </div>
             )}
 
-            {error && (
+            {isTrackingPaused ? (
+              <div className="bg-yellow-900/20 border border-yellow-600/50 p-4 rounded-xl space-y-3">
+                <div className="flex items-center gap-3 text-yellow-500">
+                   <AlertTriangle className="w-6 h-6 flex-shrink-0" />
+                   <p className="font-bold">Tracking Paused</p>
+                </div>
+                <p className="text-sm text-gray-300">
+                  You have denied location permissions. Your guardians cannot track your movement in real-time.
+                </p>
+                <Button 
+                  onClick={startTracking}
+                  className="w-full bg-yellow-600 hover:bg-yellow-700 text-black font-bold h-10"
+                >
+                  <MapPin className="mr-2 h-4 w-4" /> RE-ENABLE TRACKING
+                </Button>
+              </div>
+            ) : error && (
               <div className="bg-red-900/20 border border-red-600/50 p-3 rounded-lg flex items-center gap-3 text-red-200 text-sm">
                 <AlertTriangle className="w-5 h-5 flex-shrink-0" />
                 <p>{error}</p>

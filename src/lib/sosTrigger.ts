@@ -10,28 +10,31 @@ export const triggerSOS = async (router?: { push: (url: string) => void }) => {
   let toastId: string | number | undefined;
   try {
     toastId = toast.loading("Triggering SOS...");
-    const coords = await new Promise<{ latitude: number; longitude: number }>(
-      (resolve, reject) => {
-        if (!navigator.geolocation) {
-          toast.error("Geolocation is not supported");
-          return reject(new Error("Geolocation is not supported"));
-        }
-        navigator.geolocation.getCurrentPosition(
-          (pos) =>
-            resolve({
-              latitude: pos.coords.latitude,
-              longitude: pos.coords.longitude,
-            }),
-          (err) => {
-            toast.error("Unable to retrieve location");
-            reject(err);
+    let coords: { latitude: number; longitude: number } | null = null;
+    try {
+      coords = await new Promise<{ latitude: number ; longitude: number } | null>(
+        (resolve) => {
+          if (!navigator.geolocation) {
+            return resolve(null);
           }
-        );
-      }
-    );
+          navigator.geolocation.getCurrentPosition(
+            (pos) =>
+              resolve({
+                latitude: pos.coords.latitude,
+                longitude: pos.coords.longitude,
+              }),
+            () => resolve(null), 
+            { timeout: 5000 }
+          );
+        }
+      );
+    } catch {
+      coords = null;
+    }
+
     const payload = {
-      latitude: coords.latitude,
-      longitude: coords.longitude,
+      latitude: coords?.latitude ?? null,
+      longitude: coords?.longitude ?? null,
       triggeredAt: new Date().toISOString(),
     };
     const response = await SOS.trigger(payload);
