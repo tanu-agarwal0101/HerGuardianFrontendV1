@@ -64,7 +64,7 @@ export function FakeCallCard() {
   }, [pending, countdown]);
 
   return (
-    <Card className="relative flex flex-col h-full shadow-md hover:shadow-lg transition-all p-4">
+    <Card className="relative flex flex-col h-full shadow-md hover:shadow-lg transition-all">
       <CardHeader className="">
          <div className="flex justify-between items-start">
             <div>
@@ -89,8 +89,7 @@ export function FakeCallCard() {
           >
               <PhoneCall className="w-10 h-10" />
           </Button>
-          
-          {/* Countdown positioned relatively to avoid overlapping other cards */}
+
           <div className="h-4">
             {pending && countdown !== null && (
               <span className="text-xs font-bold animate-pulse text-primary flex items-center gap-1">
@@ -140,91 +139,3 @@ export function FakeCallCard() {
 }
 
 
-
-//     const [fakeCall, setFakeCall] = useState(false);
-//   const scheduleFakeCall = () => {
-//     setFakeCallPending(true);
-//     setCountdown(delay);
-//   };
-
-//   useEffect(() => {
-//     let timer: NodeJS.Timeout;
-//     if (fakeCallPending && countdown !== null && countdown > 0) {
-//       timer = setInterval(() => {
-//         setCountdown((prev) => (prev !== null ? prev - 1 : null));
-//       }, 1000);
-//     } else if (fakeCallPending && countdown === 0) {
-//       document.documentElement.requestFullscreen();
-//       setFakeCall(true);
-//       setFakeCallPending(false);
-//       setCountdown(null);
-//     }
-//     return () => clearInterval(timer);
-//   }, [fakeCallPending, countdown]);
-
-//   const [openSettings, setOpenSettings] = useState(false);
-//   const [settings, setSettings] = useState({
-//     name: "Mom",
-//     photo: "/mom.jpg",
-//     ringtone: "/fake-ring.mp3",
-//     voice: "/voice1.mp3",
-//   });
-
-
-{/* <Card className="flex flex-col justify-center items-center gap-4 lg:w-1/2 w-full h-100 my-2 p-4 relative">
-  <h1 className="text-2xl font-bold text-purple-500">Fake Call</h1>
-  <button
-    className="absolute right-4 top-4"
-    onClick={() => setOpenSettings(true)}
-    aria-label="Open fake call settings"
-    title="Open fake call settings"
-  >
-    <Settings2 />
-  </button>
-  <p className="text-gray-600">
-    Trigger a fake incoming call to help escape uncomfortable situations.
-  </p>
-  <Button
-    className="w-40 h-40 rounded-full bg-purple-500 text-white hover:bg-purple-700 flex flex-col items-center justify-center"
-    onClick={() => scheduleFakeCall()}
-    disabled={fakeCallPending}
-  >
-    <PhoneCall width={200} height={200} className="font-bold" />
-    {fakeCallPending && countdown !== null && (
-      <span className="mt-2 text-lg font-bold animate-pulse">
-        Fake call in {countdown}s
-      </span>
-    )}
-  </Button>
-
-  <p className="text-gray-600">
-    Trigger a Fake Call in{" "}
-    <select
-      className="bg-white text-black rounded px-3 py-1"
-      value={delay}
-      onChange={(e) => setDelay(Number(e.target.value))}
-      aria-label="Fake call delay"
-      title="Fake call delay"
-    >
-      <option value={0}>0s</option>
-      <option value={5}>5s</option>
-      <option value={10}>10s</option>
-      <option value={30}>30s</option>
-    </select>{" "}
-    seconds
-  </p>
-
-  {openSettings && (
-    <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-40">
-      <FakeCallSettings
-        onSave={(newSettings) => {
-          setSettings(newSettings);
-          setOpenSettings(false);
-        }}
-      />
-    </div>
-  )}
-  {fakeCall && (
-    <FakeCall onClose={() => setFakeCall(false)} settings={settings} />
-  )}
-</Card>; */}

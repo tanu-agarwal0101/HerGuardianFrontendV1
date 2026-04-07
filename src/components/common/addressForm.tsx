@@ -205,7 +205,7 @@ export default function AddressForm({ onAdded }: AddressFormProps) {
         onSubmit={handleSubmit(onSubmit)}
         className="lg:w-3xl md:w-2xl w-xl"
       >
-        <Card className=" h-full p-4 m-4">
+        <Card className="h-full m-4">
           <CardHeader>
             <CardTitle className="text-3xl font-extrabold">
               Add Location

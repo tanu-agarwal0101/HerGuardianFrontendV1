@@ -12,7 +12,6 @@ import { AnimatePresence, motion } from "motion/react";
 import { contactSchema } from "../../helpers/schema";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-// import axios from "axios";
 import { Contacts as ContactsApi } from "@/lib/api";
 import * as z from "zod";
 
@@ -23,13 +22,6 @@ interface Props {
   prevStep: () => void;
 }
 const Contacts = ({ nextStep, prevStep }: Props) => {
-  // const [contacts, setContacts] = useState<ContactValues>([
-  //     { id: 1, name: "", relationship: "", phone: "" },
-  // ])
-
-  // const [contacts, setContacts] = useState([
-  //   { name: "", relationship: "", phone: "" },
-  // ]);
 
   const {
     register,
@@ -60,7 +52,7 @@ const Contacts = ({ nextStep, prevStep }: Props) => {
     } catch (error) {
       console.error("Error submitting contacts:", error);
     }
-    // api call
+
   };
 
   const { fields, append } = useFieldArray({
@@ -68,23 +60,7 @@ const Contacts = ({ nextStep, prevStep }: Props) => {
     name: "emergencyContacts",
   });
 
-  // const addContact = () => {
-  //   setContacts([
-  //     ...contacts,
-  //     {
-  //       name: "",
-  //       relationship: "",
-  //       phone: "",
-  //     },
-  //   ]);
-  // };
-  // function handleInputChange(index: any, field: string, value: string): void {
-  //   setContacts(
-  //     contacts.map((contact, i) =>
-  //       i === index ? { ...contact, [field]: value } : contact,
-  //     ),
-  //   );
-  // }
+ 
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -115,7 +91,7 @@ const Contacts = ({ nextStep, prevStep }: Props) => {
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.4, ease: "easeInOut" }}
                 >
-                  <Card key={index}>
+                  <Card key={index} className="border-none shadow-none py-2">
                     <CardHeader>
                       <CardTitle>Contact {index + 1}</CardTitle>
                     </CardHeader>
@@ -190,7 +166,7 @@ const Contacts = ({ nextStep, prevStep }: Props) => {
 
             <Button
               type="button"
-              className="text-purple-500 w-full mt-8 bg-white border-2"
+              className="text-purple-500 w-full mt-2 bg-white border-2 hover:text-white hover:bg-purple-500"
               onClick={() =>
                 append({
                   name: "",

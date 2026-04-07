@@ -41,7 +41,7 @@ const RegistrationComplete = ({ prevStep }: Props) => {
       exit={{ opacity: 0, x: 50 }}
       transition={{ duration: 0.4, ease: "easeInOut" }}
     >
-      <Card className="border-none shadow-none bg-transparent py-6">
+      <Card className="border-none shadow-none bg-transparent">
         <CardHeader>
           <CardTitle className="flex flex-col items-center justify-center">
             <Check
@@ -57,7 +57,7 @@ const RegistrationComplete = ({ prevStep }: Props) => {
             Your account has been successfully created. You can now access all
             safety features through our web platform.
           </p>
-          <Card className="my-8 w-fit p-4 bg-slate-50">
+          <Card className="my-8 w-fit bg-slate-50">
             <h1 className="text-purple-600 text-xl text-center font-bold mt-2">
               Get Started Now
             </h1>

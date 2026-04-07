@@ -10,6 +10,7 @@ import {
   User,
   MessageCircle,
   LogOut,
+  Shield,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -18,6 +19,7 @@ import { LogoutDialog } from "@/components/common/logout";
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/dashboard/chat", label: "Guardian Chat", icon: MessageCircle },
+  { href: "/dashboard/guardian", label: "My People", icon: Shield },
   { href: "/dashboard/logs", label: "Activity Logs", icon: ScrollText },
   { href: "/dashboard/profile", label: "Profile", icon: User },
   // { href: "/settings", label: "Settings", icon: Settings },

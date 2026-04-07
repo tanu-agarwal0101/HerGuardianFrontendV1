@@ -30,7 +30,7 @@ export function SosCard() {
 
   return (
     <>
-      <Card className="relative flex flex-col items-center justify-between p-6 shadow-lg border-destructive/20 dark:border-destructive/30 overflow-hidden group">
+      <Card className="relative flex flex-col items-center justify-between shadow-lg border-destructive/20 dark:border-destructive/30 overflow-hidden group">
         <div className="absolute top-3 right-3 z-20">
             <motion.div 
                 animate={{ scale: [1, 1.1, 1] }}

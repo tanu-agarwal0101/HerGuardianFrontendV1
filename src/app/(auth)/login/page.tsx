@@ -71,7 +71,7 @@ export default function LoginPage() {
         try {
           const profile = await Users.getProfile();
           setUser(profile as unknown as import("@/helpers/type").User);
-        } catch {}
+        } catch { }
       }
       // STEALTH ONBOARDING: TEMPORARILY DISABLED (feature paused)
       // Preserved for when stealth is re-enabled. Remove `false &&` to restore.
@@ -90,23 +90,28 @@ export default function LoginPage() {
         }
         setShowStealthDialog(true);
       } else {
-        router.push("/dashboard");
+        const redirect = sessionStorage.getItem("postAuthRedirect");
+        sessionStorage.removeItem("postAuthRedirect");
+        if (redirect && redirect.startsWith("/") && !redirect.startsWith("//")) {
+          router.push(redirect);
+        } else {
+          router.push("/dashboard");
+        }
       }
     } catch (error: unknown) {
       const axiosErr = error as { response?: { status?: number, data?: { message?: string, isVerified?: boolean } } };
-      
-      const isUnverified = 
-        axiosErr?.response?.status === 403 && 
+
+      const isUnverified =
+        axiosErr?.response?.status === 403 &&
         (axiosErr.response.data?.isVerified === false || axiosErr.response.data?.message?.toLowerCase().includes("verify"));
 
-      // If user is unverified, push them to the OTP page instantly
       if (isUnverified) {
-         router.push(`/verify-otp?email=${encodeURIComponent(data.email)}`);
-         return;
+        router.push(`/verify-otp?email=${encodeURIComponent(data.email)}`);
+        return;
       }
 
       if (axiosErr?.response?.data?.message) {
-         setRememberWarning(axiosErr.response.data.message);
+        setRememberWarning(axiosErr.response.data.message);
       }
     } finally {
       setIsSubmitting(false);
@@ -114,13 +119,11 @@ export default function LoginPage() {
   };
 
   const handleEnableStealth = () => {
-    // Call API to enable stealth mode for user
     setShowStealthDialog(false);
     router.push("/stealth");
   };
 
   const handleSkipStealth = () => {
-    // Call API to skip onboarding for user
     setShowStealthDialog(false);
     router.push("/dashboard");
   };
@@ -150,8 +153,7 @@ export default function LoginPage() {
         </DialogContent>
       </Dialog>
       <div className="flex flex-col min-h-screen relative z-10 p-4 sm:p-6 md:p-8">
-        
-        {/* Sleek transparent header */}
+
         <div className="w-full max-w-7xl mx-auto flex justify-between items-center mb-8 sm:mb-12">
           <Link href="/" className="flex items-center gap-2 group">
             <div className="p-2 bg-primary/10 rounded-full group-hover:bg-primary/20 transition-colors">
@@ -159,8 +161,8 @@ export default function LoginPage() {
             </div>
             <span className="font-bold text-xl tracking-tight text-foreground hidden sm:block">HerGuardian</span>
           </Link>
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-2"
           >
             ← Back to Home
@@ -169,9 +171,8 @@ export default function LoginPage() {
 
         <div className="flex-1 flex flex-col justify-center items-center w-full">
           <Card className="w-full max-w-md bg-white/80 dark:bg-card/80 backdrop-blur-2xl border-white/20 dark:border-white/10 shadow-2xl overflow-hidden relative">
-            {/* Subtle card glow */}
             <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary/0 via-primary to-primary/0 opacity-50" />
-            
+
             <CardHeader className="space-y-3 pb-6 px-6 sm:px-8 pt-8 sm:pt-10">
               <div className="flex justify-center mb-2">
                 <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center transform rotate-12">
@@ -189,7 +190,7 @@ export default function LoginPage() {
             </CardHeader>
             <form onSubmit={handleSubmit(onSubmit)}>
               <CardContent className="flex flex-col px-6 sm:px-8 pb-8 sm:pb-10 space-y-4">
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-sm font-medium text-foreground">
                     Email Address

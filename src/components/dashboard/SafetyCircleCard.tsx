@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Contacts as ContactsApi } from "@/lib/api";
 import type { Contact } from "../../helpers/type.ts";
@@ -34,7 +35,7 @@ export function SafetyCircleCard() {
   }, []);
 
   return (
-    <Card className="flex flex-col h-full shadow-md p-4">
+    <Card className="flex flex-col h-full shadow-md">
       <CardHeader>
         <div className="flex justify-between items-center">
           <CardTitle className="text-xl font-bold text-primary">
@@ -89,7 +90,9 @@ export function SafetyCircleCard() {
                           Do you want to call {c.name} at <span className="font-mono bg-muted px-2 py-1 rounded">{c.phoneNumber}</span>?
                         </p>
                         <DialogFooter>
-                          <Button variant="ghost" onClick={() => setOpenContactDialog(null)}>Cancel</Button>
+                          <DialogClose asChild>
+                            <Button variant="ghost">Cancel</Button>
+                          </DialogClose>
                           <Button onClick={() => (window.location.href = `tel:${c.phoneNumber}`)}>Call Now</Button>
                         </DialogFooter>
                       </DialogContent>

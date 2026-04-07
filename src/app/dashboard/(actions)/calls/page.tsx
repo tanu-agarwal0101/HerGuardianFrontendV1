@@ -133,7 +133,7 @@ export default function CallsPage() {
                         exit={{ opacity: 0, y: -20 }}
                         className="mb-8"
                     >
-                        <Card className="p-6 bg-primary/5 border-primary/20 rounded-3xl relative overflow-hidden">
+                        <Card className="bg-primary/5 border-primary/20 rounded-3xl relative overflow-hidden">
                             <div className="absolute top-0 right-0 p-2">
                                 <Button variant="ghost" size="icon" onClick={() => setNewContact(null)} className="rounded-full">
                                     <X className="h-4 w-4" />

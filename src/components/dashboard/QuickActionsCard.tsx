@@ -35,7 +35,7 @@ const tools = [
 export function QuickActionsCard() {
   const router = useRouter();
   return (
-    <Card className="flex flex-col h-full shadow-md hover:shadow-lg transition-all p-4">
+    <Card className="flex flex-col h-full shadow-md hover:shadow-lg transition-all">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-xl font-bold text-primary">Quick Actions</CardTitle>
         <div title="Go to Actions">

@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { io, Socket } from "socket.io-client";
 import { toast } from "sonner";
-import { Shield, MapPin, CheckCircle, AlertTriangle, LogOut } from "lucide-react";
+import { Shield, MapPin, CheckCircle, AlertTriangle, LogOut, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { SOS } from "@/lib/api";
@@ -17,7 +17,7 @@ const SOSMap = dynamic(() => import("@/components/common/SOSMap"), {
 
 const UPDATE_INTERVAL_MS = 5000; 
 
-export default function SOSActivePage() {
+function SOSActiveContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const sessionId = searchParams?.get("sessionId");
@@ -225,7 +225,7 @@ export default function SOSActivePage() {
           <p className="text-red-400 font-medium">Your location is being tracked by guardians.</p>
         </div>
 
-        <Card className="bg-gray-900 border-red-900/50 text-white py-4">
+        <Card className="bg-gray-900 border-red-900/50 text-white">
           <CardHeader>
             <CardTitle className="text-xl flex items-center gap-2">
               <MapPin className="text-red-500" /> Live Status
@@ -314,4 +314,16 @@ export default function SOSActivePage() {
       </div>
     </div>
   );
+}
+
+export default function SOSActivePage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            </div>
+        }>
+            <SOSActiveContent />
+        </Suspense>
+    );
 }

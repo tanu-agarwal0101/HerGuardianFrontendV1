@@ -93,7 +93,7 @@ export default function CustomizeStealthPage() {
         )}
 
         {/* Master Switch */}
-        <Card className={cn(stealthMode ? "border-purple-500/50 bg-purple-50/50 dark:bg-purple-950/10 p-4" : "p-4")}>
+        <Card className={cn(stealthMode ? "border-purple-500/50 bg-purple-50/50 dark:bg-purple-950/10" : "")}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <div className="space-y-1">
                     <CardTitle className="text-xl">Enable Stealth Mode</CardTitle>
@@ -112,7 +112,7 @@ export default function CustomizeStealthPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             {/* Appearance Selection */}
-            <Card className="p-4">
+            <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <Eye className="size-5" />
@@ -161,7 +161,7 @@ export default function CustomizeStealthPage() {
             </Card>
 
             {/* Triggers */}
-            <Card className="p-4">
+            <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <Lock className="size-5" />

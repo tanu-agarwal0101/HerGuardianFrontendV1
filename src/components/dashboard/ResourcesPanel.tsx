@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -110,7 +111,7 @@ export function ResourcesPanel() {
     //   </div>
     // </Card>
 
-    <Card className="flex flex-col h-full shadow-md p-4">
+    <Card className="flex flex-col h-full shadow-md">
        <CardHeader className="">
         <CardTitle className="text-xl font-bold text-primary">
           Emergency Resources
@@ -134,7 +135,9 @@ export function ResourcesPanel() {
                     </DialogHeader>
                      <p className="py-4">Do you want to call the Police Station?</p>
                     <DialogFooter>
-                        <Button variant="ghost" onClick={() => setOpenPoliceDialog(false)}>Cancel</Button>
+                        <DialogClose asChild>
+                            <Button variant="ghost">Cancel</Button>
+                        </DialogClose>
                         <Button onClick={() => { window.location.href = "tel:100"; setOpenPoliceDialog(false); }}>Call</Button>
                     </DialogFooter>
                 </DialogContent>
@@ -156,20 +159,14 @@ export function ResourcesPanel() {
                     </DialogHeader>
                      <p className="py-4">Do you want to call the Women&apos;s Helpline?</p>
                     <DialogFooter>
-                        <Button variant="ghost" onClick={() => setOpenWomenDialog(false)}>Cancel</Button>
+                        <DialogClose asChild>
+                            <Button variant="ghost">Cancel</Button>
+                        </DialogClose>
                         <Button onClick={() => { window.location.href = "tel:1090"; setOpenWomenDialog(false); }}>Call</Button>
                     </DialogFooter>
                 </DialogContent>
              </Dialog>
          </div>
-
-         {/* Support Chat */}
-         {/* <div className="flex items-center justify-between p-3 border border-border/50 bg-muted/10 rounded-lg">
-             <span className="font-medium text-sm">Anonymous Support Chat</span>
-             <Button variant="ghost" size="icon" className="text-primary bg-primary/10 hover:bg-primary hover:text-white" onClick={() => router.push("/dashboard/support-chat")}>
-                <MessageCircle className="h-4 w-4" />
-             </Button>
-         </div> */}
       </CardContent>
     </Card>
   );

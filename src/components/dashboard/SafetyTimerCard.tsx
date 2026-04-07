@@ -8,7 +8,7 @@ import { Timer } from "lucide-react";
 export function SafetyTimerCard() {
   const router = useRouter();
   return (
-    <Card className="flex flex-col items-center justify-between p-6  hover:border-primary/50 transition-colors">
+    <Card className="flex flex-col items-center justify-between hover:border-primary/50 transition-colors">
       <CardHeader className="p-0 text-center space-y-2 w-full">
         <CardTitle className="text-2xl font-bold text-primary flex items-center justify-center gap-2">
           <Timer className="w-6 h-6" />
@@ -21,7 +21,6 @@ export function SafetyTimerCard() {
       
       <CardContent className="flex flex-col items-center justify-center py-6 w-full">
         <div className="relative flex items-center justify-center">
-            {/* Pulsing Effect */}
             <div className="absolute w-48 h-48 rounded-full bg-primary/10 animate-pulse" />
             
              <Button

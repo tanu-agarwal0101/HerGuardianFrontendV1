@@ -57,7 +57,7 @@ const PermissionBox = ({ prevStep, nextStep }: Props) => {
             we need them and how they&apos;re used.
           </p>
           {permissions.map((permission) => (
-            <Card key={permission.id}>
+            <Card key={permission.id} className="py-4">
               <CardHeader>
                 <CardTitle className="flex gap-2 items-center">
                   <Bell className="rounded-full text-purple-600 bg-purple-200 p-1" />
@@ -79,21 +79,23 @@ const PermissionBox = ({ prevStep, nextStep }: Props) => {
               </CardContent>
             </Card>
           ))}
-          <Button
-            type="submit"
-            className="bg-purple-500 w-full mt-8  text-white "
-            onClick={() => prevStep()}
-          >
-            <ArrowLeft /> Back
-          </Button>
-          <Button
-            type="submit"
-            className="bg-purple-500 w-full mb-8  text-white "
-            onClick={() => nextStep()}
-          >
-            Next: Finish Registration
-            <ArrowRight />
-          </Button>
+          <div className="flex flex-wrap gap-2 my-6 w-full justify-center items-start">
+            <Button
+              type="button"
+              className="bg-purple-500 text-white w-full md:w-fit "
+              onClick={prevStep}
+            >
+              <ArrowLeft /> Back
+            </Button>
+            <Button
+              type="button"
+              className="bg-purple-500 text-white w-full md:w-fit"
+              onClick={nextStep}
+            >
+              Next: Finish Registration
+              <ArrowRight />
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </motion.div>

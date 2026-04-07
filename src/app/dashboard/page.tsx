@@ -102,7 +102,7 @@ export default function Dashboard() {
                 transition={{ duration: 0.4, delay: 0.2 }}
              >
                 <Link href="/dashboard/location">
-                  <Card className="shadow-md hover:shadow-lg transition-all p-4 cursor-pointer group">
+                  <Card className="shadow-md hover:shadow-lg transition-all cursor-pointer group">
                     <CardHeader className="flex flex-row items-center gap-3 p-0 pb-2">
                       <div className="p-2 bg-primary/10 rounded-full text-primary">
                         <MapPin className="h-5 w-5" />
@@ -123,7 +123,7 @@ export default function Dashboard() {
                 transition={{ duration: 0.4, delay: 0.25 }}
              >
                 <Link href="/dashboard/watch">
-                  <Card className="shadow-md hover:shadow-lg transition-all p-4 cursor-pointer group">
+                  <Card className="shadow-md hover:shadow-lg transition-all cursor-pointer group">
                     <CardHeader className="flex flex-row items-center gap-3 p-0 pb-2">
                       <div className="p-2 bg-primary/10 rounded-full text-primary">
                         <Watch className="h-5 w-5" />
@@ -159,7 +159,7 @@ export default function Dashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.4 }}
              >
-                <Card className="shadow-md hover:shadow-lg transition-all p-4 cursor-pointer group" onClick={() => enableNotifications()}>
+                <Card className="shadow-md hover:shadow-lg transition-all cursor-pointer group" onClick={() => enableNotifications()}>
                   <CardHeader className="flex flex-row items-center gap-3 p-0 pb-2">
                     <div className="p-2 bg-primary/10 rounded-full text-primary">
                       <Bell className="h-5 w-5" />
