@@ -36,15 +36,24 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/Textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import Link from "next/link";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   updateProfileSchema,
@@ -52,6 +61,7 @@ import {
 } from "@/helpers/profileSchema";
 import { useProfile } from "@/hooks/useProfile";
 import { AvatarPickerDialog } from "@/components/profile/AvatarPickerDialog";
+import { GuardianManagement } from "@/components/guardian/GuardianManagement";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -72,6 +82,7 @@ export default function ProfilePage() {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
   } = useForm<UpdateProfileFormData>({
     resolver: zodResolver(updateProfileSchema),
@@ -81,6 +92,7 @@ export default function ProfilePage() {
       phoneNumber: "",
       location: "",
       bio: "",
+      role: "user" as const,
     },
   });
 
@@ -96,6 +108,7 @@ export default function ProfilePage() {
         phoneNumber: profile.phoneNumber || "",
         location: profile.location || "",
         bio: profile.bio || "",
+        role: profile.role || "user",
       });
     }
   }, [isEditOpen, profile, reset]);
@@ -264,17 +277,47 @@ export default function ProfilePage() {
                   <p className="text-xs text-red-500">{errors.bio.message}</p>
                 )}
               </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="role">Safety Role</Label>
+                <Controller
+                  name="role"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value || "user"}
+                    >
+                      <SelectTrigger className="bg-background/50">
+                        <SelectValue placeholder="Select your role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="user">User (Needs Protection)</SelectItem>
+                        <SelectItem value="guardian">Guardian (Protects Others)</SelectItem>
+                        <SelectItem value="both">Both</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {errors.role && (
+                  <p className="text-xs text-red-500">{errors.role.message}</p>
+                )}
+                <p className="text-[10px] text-muted-foreground">
+                  Your safety role helps customize your experience on HerGuardian.
+                </p>
+              </div>
             </div>
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsEditOpen(false)}
-                disabled={isUpdating}
-              >
-                Cancel
-              </Button>
+              <DialogClose asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={isUpdating}
+                >
+                  Cancel
+                </Button>
+              </DialogClose>
               <Button type="submit" disabled={isUpdating}>
                 {isUpdating ? "Saving..." : "Save changes"}
               </Button>
@@ -333,7 +376,7 @@ export default function ProfilePage() {
                   </h3>
                   <p className="text-muted-foreground text-sm flex items-center justify-center gap-1 mt-1 mb-2">
                     <MapPin className="h-3 w-3" />
-                    {profile?.location || "Location not set"} • Guardian
+                    {profile?.location || "Location not set"} • <span className="capitalize">{profile?.role || "User"}</span>
                   </p>
                   {profile?.bio && (
                     <p className="text-sm text-muted-foreground px-4">
@@ -352,7 +395,7 @@ export default function ProfilePage() {
           </Card>
 
           
-          <Card className="p-4">
+          <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-lg">Contact Info</CardTitle>
             </CardHeader>
@@ -390,7 +433,7 @@ export default function ProfilePage() {
           </Card>
 
           
-          <Card className="p-4">
+          <Card className="">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-lg">Safety Circle</CardTitle>
               <Button
@@ -440,6 +483,7 @@ export default function ProfilePage() {
               </div>
             </CardContent>
           </Card>
+          <GuardianManagement />
         </div>
 
         
@@ -543,7 +587,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Safety History */}
-          <Card className="p-4">
+          <Card>
             <CardHeader>
               <CardTitle>Safety History</CardTitle>
               <CardDescription>
@@ -569,13 +613,14 @@ export default function ProfilePage() {
                   {[
                     ...(profile?.safetyTimers || []).map(
                       (t: {
+                        id: string;
                         createdAt: string;
                         duration?: number;
                         isActive?: boolean;
                       }) => ({ ...t, type: "timer", date: t.createdAt })
                     ),
                     ...(profile?.sosTriggers || []).map(
-                      (s: { triggeredAt: string; resolved?: boolean }) => ({
+                      (s: { id: string; timerId?: string; triggeredAt: string; resolved?: boolean }) => ({
                         ...s,
                         type: "sos",
                         date: s.triggeredAt,
@@ -590,6 +635,8 @@ export default function ProfilePage() {
                     .map(
                       (
                         item: {
+                          id: string;
+                          timerId?: string;
                           type: string;
                           date: string;
                           duration?: number;
@@ -597,43 +644,55 @@ export default function ProfilePage() {
                           isActive?: boolean;
                         },
                         i
-                      ) => (
-                        <div key={i} className="flex items-start gap-4">
-                          <div
-                            className={`mt-1 h-2 w-2 rounded-full ${
-                              item.type === "sos"
-                                ? "bg-red-500"
-                                : "bg-blue-500"
-                            }`}
-                          />
-                          <div className="space-y-1">
-                            <p className="text-sm font-medium leading-none">
-                              {item.type === "sos"
-                                ? "SOS Alert Triggered"
-                                : `Safety Timer (${item.duration}m)`}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              {format(new Date(item.date), "PPP p")}
-                            </p>
+                      ) => {
+                        const targetId = item.type === "sos" ? item.timerId : item.id;
+                        const cardBase = (
+                          <div key={i} className="flex items-start gap-4 p-2 -mx-2 rounded-lg hover:bg-muted/40 transition-colors cursor-pointer group">
+                            <div
+                              className={`mt-1 h-2 w-2 rounded-full ${
+                                item.type === "sos"
+                                  ? "bg-red-500"
+                                  : "bg-blue-500"
+                              }`}
+                            />
+                            <div className="space-y-1 flex-1">
+                              <p className="text-sm font-medium leading-none group-hover:text-primary transition-colors">
+                                {item.type === "sos"
+                                  ? "SOS Alert Triggered"
+                                  : `Safety Timer (${item.duration}m)`}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {format(new Date(item.date), "PPP p")}
+                              </p>
+                            </div>
+                            <div className="ml-auto font-medium text-sm flex items-center gap-2">
+                              {item.type === "sos" ? (
+                                <Badge
+                                  variant={
+                                    item.resolved ? "secondary" : "destructive"
+                                  }
+                                >
+                                  {item.resolved ? "Resolved" : "Active"}
+                                </Badge>
+                              ) : (
+                                <Badge variant="outline">
+                                  {item.isActive ? "Running" : "Completed"}
+                                </Badge>
+                              )}
+                            </div>
                           </div>
-                          <div className="ml-auto font-medium text-sm">
-                            {item.type === "sos" ? (
-                              <Badge
-                                variant={
-                                  item.resolved ? "secondary" : "destructive"
-                                }
-                              >
-                                {item.resolved ? "Resolved" : "Active"}
-                              </Badge>
-                            ) : (
-                              <Badge variant="outline">
-                                {item.isActive ? "Running" : "Completed"}
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                      )
-                    )}
+                        );
+
+                        return targetId ? (
+                          <Link key={i} href={`/dashboard/timers/${targetId}`} className="block">
+                            {cardBase}
+                          </Link>
+                        ) : (
+                          cardBase
+                        );
+                      }
+                    )
+                  }
                   {!profile?.safetyTimers?.length &&
                     !profile?.sosTriggers?.length && (
                       <p className="text-center text-muted-foreground py-8">

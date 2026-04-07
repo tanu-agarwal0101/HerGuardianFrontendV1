@@ -24,6 +24,13 @@ export const updateProfileSchema = z.object({
     .max(250, "Bio must be under 250 characters")
     .optional()
     .or(z.literal("")),
+  role: z
+    .enum(["user", "guardian", "both"], {
+      errorMap: () => ({ message: "Please select a valid role" }),
+    })
+    .optional()
+    .or(z.literal(""))
+    .or(z.null()),
 });
 
 export type UpdateProfileFormData = z.infer<typeof updateProfileSchema>;

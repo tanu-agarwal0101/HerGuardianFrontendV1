@@ -16,3 +16,7 @@ export async function cancel() {
 export async function getDetails(timerId: string) {
   return axiosInstance.get(`/timer/${encodeURIComponent(timerId)}/details`);
 }
+
+export async function getActive() {
+  return axiosInstance.get("/timer/active");
+}

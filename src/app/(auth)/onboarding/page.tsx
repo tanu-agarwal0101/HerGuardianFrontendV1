@@ -23,7 +23,6 @@ export default function OnboardingPage() {
   return (
     <div className="flex flex-col min-h-screen relative z-10 p-4 sm:p-6 md:p-8">
       
-      {/* Sleek transparent header */}
       <div className="w-full max-w-7xl mx-auto flex justify-between items-center mb-4 sm:mb-8">
         <Link href="/" className="flex items-center gap-2 group">
           <div className="p-2 bg-primary/10 rounded-full group-hover:bg-primary/20 transition-colors">
@@ -39,7 +38,7 @@ export default function OnboardingPage() {
         </Link>
       </div>
 
-      <div className="flex-1 flex flex-col items-center w-full max-w-2xl mx-auto pt-4 sm:pt-10">
+      <div className="flex-1 flex flex-col sm:pt-6 items-center w-full max-w-2xl mx-auto pt-4">
         <div className="mb-8 w-full">
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground text-center">
                 Configure HerGuardian

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -18,6 +18,41 @@ export default function SafetyTimer() {
   const [progress, setProgress] = useState(100);
   const [loading, setLoading] = useState(false);
   const [currentTimerId, setCurrentTimerId] = useState<string | null>(null);
+  const isInitialCheckDone = useRef(false);
+
+  useEffect(() => {
+    if (isInitialCheckDone.current) return;
+    isInitialCheckDone.current = true;
+
+    const checkActiveTimer = async () => {
+      try {
+        setLoading(true);
+        const response = await Timer.getActive();
+        const activeTimer = response.data?.timer;
+        
+        if (activeTimer && activeTimer.isActive) {
+          const expirationTime = new Date(activeTimer.expiresAt).getTime();
+          const currentTime = Date.now();
+          const remainingSeconds = Math.max(0, Math.floor((expirationTime - currentTime) / 1000));
+          
+          if (remainingSeconds > 0) {
+            setCountdown(remainingSeconds);
+            setTimerActive(true);
+            setCurrentTimerId(activeTimer.id);
+            setDuration(activeTimer.duration);
+            setShareLocation(activeTimer.sharedLocation);
+            toast.info("Resuming your active safety timer.");
+          }
+        }
+      } catch (error) {
+        console.error("Failed to check active timer:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkActiveTimer();
+  }, [setDuration, setShareLocation]);
 
   const startTimer = async () => {
     try {
@@ -159,20 +194,16 @@ export default function SafetyTimer() {
     }
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
-
-  // Premium Duration Presets
   const presets = [15, 30, 45, 60, 120];
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[85vh] p-4 relative w-full max-w-2xl mx-auto">
       
-      {/* Background Glows for Glassmorphism Context */}
       <div className="absolute top-1/4 left-0 w-64 h-64 bg-primary/10 rounded-full blur-[100px] -z-10" />
       <div className="absolute bottom-1/4 right-0 w-64 h-64 bg-secondary/10 rounded-full blur-[100px] -z-10" />
 
       <Card className="w-full bg-card/60 backdrop-blur-2xl border-white/10 dark:border-white/5 shadow-2xl relative overflow-hidden group">
         
-        {/* Animated subtle top border */}
         <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary/0 via-primary to-primary/0 opacity-50 group-hover:opacity-100 transition-opacity duration-1000" />
         
         <CardHeader className="text-center pt-8 pb-4 space-y-4">
@@ -192,7 +223,6 @@ export default function SafetyTimer() {
         <CardContent className="px-6 pb-8 sm:px-10 sm:pb-10 pt-4">
             <AnimatePresence mode="wait">
                 
-                {/* --- SETUP STATE --- */}
                 {!timerActive ? (
                     <motion.div 
                         key="setup"
@@ -202,7 +232,6 @@ export default function SafetyTimer() {
                         transition={{ duration: 0.4, ease: "easeInOut" }}
                         className="space-y-8"
                     >
-                        {/* Interactive Duration Selector */}
                         <div className="flex flex-col items-center space-y-6 bg-background/50 rounded-3xl p-6 border border-border/50 shadow-inner">
                             <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Select Duration</span>
                             
@@ -240,7 +269,6 @@ export default function SafetyTimer() {
                                 </Button>
                             </div>
 
-                            {/* Presets */}
                             <div className="flex flex-wrap justify-center gap-2 pt-2">
                                 {presets.map((preset) => (
                                     <Button
@@ -260,7 +288,6 @@ export default function SafetyTimer() {
                             </div>
                         </div>
 
-                        {/* Location Toggle */}
                         <div className="flex items-center justify-between p-5 bg-card border border-border/50 rounded-2xl shadow-sm hover:border-primary/30 transition-colors">
                             <div className="flex items-center gap-4">
                                 <div className={`p-2 rounded-xl transition-colors ${shareLocation ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
@@ -278,7 +305,6 @@ export default function SafetyTimer() {
                             />
                         </div>
 
-                        {/* Start Button */}
                         <div className="pt-2">
                             <Button
                                 onClick={startTimer}
@@ -302,7 +328,6 @@ export default function SafetyTimer() {
                     </motion.div>
                 ) : (
                     
-                    /* --- ACTIVE TIMER STATE --- */
                     <motion.div 
                         key="active"
                         initial={{ opacity: 0, scale: 0.95, filter: "blur(4px)" }}
@@ -311,9 +336,7 @@ export default function SafetyTimer() {
                         transition={{ duration: 0.5, ease: "backOut" }}
                         className="flex flex-col items-center py-6 space-y-10"
                     >
-                        {/* Premium SVG Progress Ring */}
                         <div className="relative flex items-center justify-center group">
-                            {/* Inner ambient glow */}
                             <div className="absolute inset-0 bg-primary/5 rounded-full blur-2xl transition-all duration-1000" />
                             
                             <svg className="transform -rotate-90 w-64 h-64 sm:w-72 sm:h-72 drop-shadow-2xl">
@@ -327,14 +350,12 @@ export default function SafetyTimer() {
                                         <stop offset="0%" stopColor="#fca5a5" />
                                         <stop offset="100%" stopColor="#ef4444" />
                                     </linearGradient>
-                                    {/* Subtle shadow filter for the glowing ring */}
                                     <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
                                         <feGaussianBlur stdDeviation="6" result="blur" />
                                         <feComposite in="SourceGraphic" in2="blur" operator="over" />
                                     </filter>
                                 </defs>
                                 
-                                {/* Background Ring */}
                                 <circle 
                                     cx="50%" 
                                     cy="50%" 
@@ -343,7 +364,6 @@ export default function SafetyTimer() {
                                     strokeWidth="6" 
                                     fill="none" 
                                 />
-                                {/* Track Ring (Thicker) */}
                                 <circle 
                                     cx="50%" 
                                     cy="50%" 
@@ -353,7 +373,6 @@ export default function SafetyTimer() {
                                     fill="none" 
                                 />
                                 
-                                {/* Active Animated Ring */}
                                 {progress > 0 && (
                                     <circle
                                         cx="50%"
@@ -361,7 +380,7 @@ export default function SafetyTimer() {
                                         r="44%"
                                         stroke={countdown !== null && countdown <= 60 ? "url(#dangerGradient)" : "url(#activeGradient)"}
                                         strokeWidth="14"
-                                        strokeDasharray="276%" /* Circumference approximation */
+                                        strokeDasharray="276%"
                                         strokeDashoffset={`${276 * (1 - progress / 100)}%`}
                                         strokeLinecap="round"
                                         fill="none"
@@ -385,14 +404,7 @@ export default function SafetyTimer() {
                             </div>
                         </div>
 
-                        {/* Status & Cancel Control */}
                         <div className="flex flex-col items-center w-full space-y-6">
-                            <div className="flex items-center justify-center gap-2 px-4 py-2 bg-primary/5 rounded-full border border-primary/10">
-                                <Shield className="w-4 h-4 text-primary" />
-                                <span className="text-sm font-semibold text-primary">Guardian Active</span>
-                                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse ml-1" />
-                            </div>
-
                             <Button
                                 onClick={cancelTimer}
                                 variant="destructive"
@@ -407,8 +419,7 @@ export default function SafetyTimer() {
             </AnimatePresence>
         </CardContent>
       </Card>
-      
-      {/* Footer hint */}
+    
       <p className="text-xs font-medium text-muted-foreground text-center mt-6 max-w-sm">
         Closing the app will not stop the timer. Your trusted contacts will be notified if time expires.
       </p>

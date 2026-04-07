@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 import Link from "next/link";
@@ -8,8 +8,10 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Timer } from "@/lib/api";
+import { Timer, SOS } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import { Loader2, AlertTriangle } from "lucide-react";
 
 const LocationMap = dynamic(() => import("@/components/common/LocationMap"), {
   ssr: false,
@@ -90,29 +92,60 @@ export default function TimerDetailsPage() {
   const [data, setData] = useState<TimerDetailsPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [resolving, setResolving] = useState(false);
+
+  const hasActiveSOS = useMemo(() => {
+    return data?.sosLogs?.some((log) => !log.resolved) ?? false;
+  }, [data]);
+
+  const handleResolveSOS = async () => {
+    if (!confirm("Are you sure you want to resolve this emergency? This will notify your guardians that you are safe.")) return;
+    
+    setResolving(true);
+    try {
+      // 1. Get the current active session ID for the user
+      const sessionRes = await SOS.getActiveSession();
+      const sessionId = sessionRes.data?.id;
+
+      if (!sessionId) {
+        toast.error("Could not find an active tracking session to resolve.", {
+            description: "The session may have already expired or been resolved elsewhere."
+        });
+        
+        await loadData();
+        return;
+      }
+
+      await SOS.resolve(sessionId);
+      toast.success("Emergency resolved successfully. You are marked as safe.");
+      
+      await loadData();
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "Failed to resolve SOS"));
+    } finally {
+      setResolving(false);
+    }
+  };
+
+  const loadData = useCallback(async () => {
+    if (!timerId) return;
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await Timer.getDetails(timerId);
+      setData(res?.data);
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Failed to load timer details"));
+    } finally {
+      setLoading(false);
+    }
+  }, [timerId]);
 
   useEffect(() => {
-    if (!timerId) return;
-    let mounted = true;
-    async function load() {
-      try {
-        setLoading(true);
-        setError(null);
-        const res = await Timer.getDetails(timerId);
-        if (!mounted) return;
-        setData(res?.data);
-      } catch (err: unknown) {
-        if (!mounted) return;
-        setError(getErrorMessage(err, "Failed to load timer details"));
-      } finally {
-        if (mounted) setLoading(false);
-      }
+    if (timerId) {
+      loadData();
     }
-    load();
-    return () => {
-      mounted = false;
-    };
-  }, [timerId]);
+  }, [timerId, loadData]);
 
   const latestLocation = useMemo(() => {
     if (data?.locationLogs?.length) {
@@ -163,12 +196,30 @@ export default function TimerDetailsPage() {
           <h1 className="text-2xl font-semibold text-gray-900">Timer #{timer.id.slice(-6)}</h1>
           <p className="text-sm text-gray-500">Created {formatDate(timer.createdAt)}</p>
         </div>
-        <Badge className={cn("text-sm px-3 py-1 capitalize", statusVariant[timer.status] || "bg-blue-100 text-blue-700")}>
-          {timer.status}
-        </Badge>
+        <div className="flex items-center gap-3">
+            {hasActiveSOS && (
+                <Button 
+                    variant="destructive" 
+                    size="sm" 
+                    onClick={handleResolveSOS}
+                    disabled={resolving}
+                    className="animate-pulse hover:animate-none font-bold shadow-lg shadow-red-900/20"
+                >
+                    {resolving ? (
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : (
+                        <AlertTriangle className="h-4 w-4 mr-2" />
+                    )}
+                    Resolve Emergency
+                </Button>
+            )}
+            <Badge className={cn("text-sm px-3 py-1 capitalize", statusVariant[timer.status] || "bg-blue-100 text-blue-700")}>
+                {timer.status}
+            </Badge>
+        </div>
       </div>
 
-      <Card className="p-4">
+      <Card>
         <CardHeader>
           <CardTitle>Timer Summary</CardTitle>
         </CardHeader>

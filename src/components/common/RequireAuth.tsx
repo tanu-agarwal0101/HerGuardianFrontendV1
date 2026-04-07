@@ -80,7 +80,7 @@ export default function RequireAuth({
   if (!user && authError) {
     return (
       <div className="mx-auto max-w-3xl p-6">
-        <Card className="p-4">
+        <Card>
           <h3 className="text-lg font-semibold mb-2">Authentication Error</h3>
           <p className="text-sm text-gray-600 mb-4">{authError}</p>
           <div className="flex gap-2">

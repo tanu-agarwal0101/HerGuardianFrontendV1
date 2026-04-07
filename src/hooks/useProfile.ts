@@ -41,13 +41,13 @@ export function useProfile(): UseProfileReturn {
     async (formData: UpdateProfileFormData) => {
       setIsUpdating(true);
       try {
-        // Sanitize: convert empty strings to undefined so backend ignores them
         const payload = {
           firstName: formData.firstName || undefined,
           lastName: formData.lastName || undefined,
           phoneNumber: formData.phoneNumber || undefined,
           location: formData.location || undefined,
           bio: formData.bio || undefined,
+          role: formData.role || undefined,
         };
         await UsersApi.updateProfile(payload);
         // Refresh profile data after a successful update
@@ -62,14 +62,11 @@ export function useProfile(): UseProfileReturn {
   const updateAvatar = useCallback(
     async (avatarSrc: string) => {
       setIsUpdatingAvatar(true);
-      // Optimistic update — instant preview in the main profile card
       setProfile((prev) => (prev ? { ...prev, profilePicture: avatarSrc } : prev));
       try {
         await UsersApi.updateProfile({ profilePicture: avatarSrc });
-        // Refresh to sync with server
         await fetchProfile();
       } catch {
-        // Roll back optimistic update on failure
         await fetchProfile();
         throw new Error("Failed to update avatar");
       } finally {

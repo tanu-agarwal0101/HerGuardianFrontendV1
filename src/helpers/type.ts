@@ -41,6 +41,7 @@ export interface User {
   dashboardPass?: string;
   sosPass?: string;
   voiceTriggerPhrase?: string;
+  role?: "user" | "guardian" | "both";
   createdAt: string;
   updatedAt: string;
 }
