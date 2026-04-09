@@ -42,6 +42,11 @@ export interface User {
   sosPass?: string;
   voiceTriggerPhrase?: string;
   role?: "user" | "guardian" | "both";
+  guardianStatus?: {
+    activeCount: number;
+    pendingCount: number;
+    anyActiveRecently: boolean;
+  };
   createdAt: string;
   updatedAt: string;
 }
@@ -59,7 +64,7 @@ export interface SOSTrigger {
 export interface SafetyTimer {
   id: string;
   userId: string;
-  duration: number; // Duration in minutes
+  duration: number;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

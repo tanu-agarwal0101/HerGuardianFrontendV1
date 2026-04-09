@@ -8,8 +8,10 @@ import { StopCircle, Clock, MapPin, Shield } from "lucide-react";
 import { Timer } from "@/lib/api";
 import { getCurrentLocation, logLocation } from "@/lib/locationService";
 import { motion, AnimatePresence } from "motion/react";
+import { useGuardianStatus } from "@/hooks/useGuardianStatus";
 
 export default function SafetyTimer() {
+  const { activeGuardianCount, anyActiveRecently } = useGuardianStatus();
 
   const [duration, setDuration] = useState(30);
   const [shareLocation, setShareLocation] = useState(false);
@@ -221,6 +223,30 @@ export default function SafetyTimer() {
         </CardHeader>
 
         <CardContent className="px-6 pb-8 sm:px-10 sm:pb-10 pt-4">
+            {activeGuardianCount > 0 && (
+                <motion.div 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                    className="flex justify-center mb-6"
+                >
+                    <div className="flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-primary/5 border border-primary/10 shadow-sm backdrop-blur-md">
+                        <div className="relative">
+                            <Shield className={`h-4 w-4 text-primary transition-all duration-500 ${anyActiveRecently ? 'scale-110' : 'opacity-70'}`} />
+                            {anyActiveRecently && (
+                                <span className="absolute inset-0 rounded-full bg-primary/40 animate-ping opacity-75" />
+                            )}
+                        </div>
+                        <div className="flex flex-col items-start leading-none">
+                            <span className="text-[10px] font-black text-primary/60 uppercase tracking-[0.2em]">Protection Status</span>
+                            <span className="text-xs font-bold text-primary mt-0.5">
+                                {activeGuardianCount} {activeGuardianCount === 1 ? 'Guardian' : 'Guardians'} Active
+                            </span>
+                        </div>
+                    </div>
+                </motion.div>
+            )}
+
             <AnimatePresence mode="wait">
                 
                 {!timerActive ? (

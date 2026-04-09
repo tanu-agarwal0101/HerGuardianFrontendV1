@@ -1,7 +1,6 @@
 import axiosInstance from "../axiosInstance";
 import { User } from "@/helpers/type";
 
-// Re-export User as UserProfile for backward compat — single source of truth is helpers/type.ts
 export type { User as UserProfile };
 
 export async function getProfile(): Promise<User> {
@@ -51,4 +50,13 @@ export async function updateVoiceTrigger(payload: {
   voiceTriggerPhrase: string;
 }) {
   return axiosInstance.patch("/users/update-voice-settings", payload);
+}
+
+export async function updateDeviceStatus(payload: {
+  batteryLevel?: number;
+  isCharging?: boolean;
+  isOnline?: boolean;
+  connectionType?: string;
+}) {
+  return axiosInstance.post("/users/device-status", payload);
 }
