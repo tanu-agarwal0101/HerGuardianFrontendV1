@@ -38,3 +38,8 @@ export const getSentInvites = async (config?: AxiosRequestConfig) => {
   const response = await api.get("/api/guardian/invites/sent", config);
   return response.data;
 };
+
+export const getUserActivityTimeline = async (userId: string, config?: AxiosRequestConfig) => {
+  const response = await api.get(`/api/guardian/activity/${userId}`, config);
+  return response.data;
+};

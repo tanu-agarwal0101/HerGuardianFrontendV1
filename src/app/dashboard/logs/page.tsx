@@ -57,7 +57,6 @@ export default function LogsPage() {
   return (
     <div className="max-w-6xl mx-auto space-y-8 relative p-4 lg:p-8 min-h-[85vh]">
       
-      {/* Background Glows for Glassmorphism Context */}
       <div className="absolute top-0 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px] -z-10 animate-pulse" />
       <div className="absolute bottom-0 left-1/4 w-80 h-80 bg-secondary/5 rounded-full blur-[100px] -z-10" />
 
@@ -74,22 +73,22 @@ export default function LogsPage() {
         </p>
       </motion.div>
 
-      <Card className="w-full bg-card/60 backdrop-blur-2xl border-white/10 dark:border-white/5 shadow-2xl overflow-hidden relative">
+      <Card className="w-full max-w-[calc(100vw-2rem)] md:max-w-full bg-card/60 backdrop-blur-2xl border-white/10 dark:border-white/5 shadow-2xl overflow-hidden relative mx-auto">
         <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
         
         <Tabs defaultValue="sos" className="w-full">
             <div className="px-6 pt-6 border-b border-white/5">
-                <TabsList className="bg-background/40 backdrop-blur-md p-1 rounded-2xl border border-white/10 h-12 w-full md:w-auto grid grid-cols-2 md:inline-flex">
+                <TabsList className="bg-background/40 backdrop-blur-md p-1 rounded-2xl border border-white/10 h-auto w-full md:w-auto flex flex-wrap md:inline-flex">
                     <TabsTrigger 
                         value="sos" 
-                        className="rounded-xl px-8 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-300"
+                        className="rounded-xl px-4 md:px-8 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-300"
                     >
                         <AlertTriangle className="w-4 h-4 mr-2" />
                         SOS Alerts
                     </TabsTrigger>
                     <TabsTrigger 
                         value="locations" 
-                        className="rounded-xl px-8 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-300"
+                        className="rounded-xl px-4 md:px-8 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-300"
                     >
                         <History className="w-4 h-4 mr-2" />
                         Location Path
@@ -137,20 +136,20 @@ export default function LogsPage() {
                                     </p>
                                 </div>
                             ) : (
-                                <div className="rounded-3xl border border-white/5 bg-background/20 backdrop-blur-sm overflow-hidden shadow-inner">
-                                    <Table>
+                                <div className="rounded-3xl border border-white/5 bg-background/20 backdrop-blur-sm overflow-x-auto shadow-inner">
+                                    <Table className="min-w-[600px]">
                                         <TableHeader className="bg-muted/30">
                                             <TableRow className="border-white/5 hover:bg-transparent">
-                                                <TableHead className="font-bold py-5 pl-8 text-foreground/80 uppercase tracking-widest text-[10px]">Timestamp</TableHead>
+                                                <TableHead className="font-bold py-5 pl-4 md:pl-8 text-foreground/80 uppercase tracking-widest text-[10px]">Timestamp</TableHead>
                                                 <TableHead className="font-bold py-5 text-foreground/80 uppercase tracking-widest text-[10px]">Status</TableHead>
                                                 <TableHead className="font-bold py-5 text-foreground/80 uppercase tracking-widest text-[10px]">Source</TableHead>
-                                                <TableHead className="font-bold py-5 pr-8 text-foreground/80 uppercase tracking-widest text-[10px] text-right">Location</TableHead>
+                                                <TableHead className="font-bold py-5 pr-4 md:pr-8 text-foreground/80 uppercase tracking-widest text-[10px] text-right">Location</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
                                             {sos.map((row) => (
                                                 <TableRow key={row.id || `sos-${row.triggeredAt}-${Math.random()}`} className="border-white/5 hover:bg-white/5 transition-colors group">
-                                                    <TableCell className="py-6 pl-8">
+                                                    <TableCell className="py-6 pl-4 md:pl-8">
                                                         <div className="flex items-center gap-3">
                                                             <div className="w-10 h-10 rounded-xl bg-background/40 flex items-center justify-center border border-white/5 group-hover:bg-primary/10 transition-colors">
                                                                 <Clock className="w-4 h-4 text-muted-foreground group-hover:text-primary" />
@@ -179,7 +178,7 @@ export default function LogsPage() {
                                                             <span className="text-muted-foreground/80 italic">Manual Trigger</span>
                                                         )}
                                                     </TableCell>
-                                                    <TableCell className="py-6 pr-8 text-right">
+                                                    <TableCell className="py-6 pr-4 md:pr-8 text-right">
                                                         {row.latitude != null && row.longitude != null ? (
                                                             <a
                                                                 className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:text-primary/80 transition-colors"
@@ -236,20 +235,20 @@ export default function LogsPage() {
                                     </p>
                                 </div>
                             ) : (
-                                <div className="rounded-3xl border border-white/5 bg-background/20 backdrop-blur-sm overflow-hidden shadow-inner">
-                                    <Table>
+                                <div className="rounded-3xl border border-white/5 bg-background/20 backdrop-blur-sm overflow-x-auto shadow-inner">
+                                    <Table className="min-w-[600px]">
                                         <TableHeader className="bg-muted/30">
                                             <TableRow className="border-white/5 hover:bg-transparent">
-                                                <TableHead className="font-bold py-5 pl-8 text-foreground/80 uppercase tracking-widest text-[10px]">Logged At</TableHead>
+                                                <TableHead className="font-bold py-5 pl-4 md:pl-8 text-foreground/80 uppercase tracking-widest text-[10px]">Logged At</TableHead>
                                                 <TableHead className="font-bold py-5 text-foreground/80 uppercase tracking-widest text-[10px]">Event Type</TableHead>
                                                 <TableHead className="font-bold py-5 text-foreground/80 uppercase tracking-widest text-[10px]">Coordinates</TableHead>
-                                                <TableHead className="font-bold py-5 pr-8 text-foreground/80 uppercase tracking-widest text-[10px] text-right">Context</TableHead>
+                                                <TableHead className="font-bold py-5 pr-4 md:pr-8 text-foreground/80 uppercase tracking-widest text-[10px] text-right">Context</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
                                             {locations.map((row) => (
                                                 <TableRow key={row.id || `loc-${row.createdAt}-${Math.random()}`} className="border-white/5 hover:bg-white/5 transition-colors group">
-                                                    <TableCell className="py-6 pl-8">
+                                                    <TableCell className="py-6 pl-4 md:pl-8">
                                                         <div className="flex items-center gap-3">
                                                             <div className="w-10 h-10 rounded-xl bg-background/40 flex items-center justify-center border border-white/5 group-hover:bg-primary/10 transition-colors">
                                                                 <Clock className="w-4 h-4 text-muted-foreground group-hover:text-primary" />
@@ -276,7 +275,7 @@ export default function LogsPage() {
                                                             </div>
                                                         </div>
                                                     </TableCell>
-                                                    <TableCell className="py-6 pr-8 text-right">
+                                                    <TableCell className="py-6 pr-4 md:pr-8 text-right">
                                                         {row.timerId ? (
                                                             <Link href={`/dashboard/timers/${row.timerId}`} className="text-primary font-bold text-sm hover:underline hover:underline-offset-4 decoration-primary/30">
                                                                 View Path
@@ -298,7 +297,6 @@ export default function LogsPage() {
         </Tabs>
       </Card>
       
-      {/* Visual Footer */}
       <div className="flex justify-center pt-4 mb-10">
           <div className="w-32 h-1 bg-gradient-to-r from-transparent via-primary/10 to-transparent rounded-full" />
       </div>

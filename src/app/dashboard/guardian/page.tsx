@@ -7,8 +7,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Shield, MapPin, AlertTriangle, Battery, BatteryFull, BatteryLow, BatteryMedium, Wifi, WifiOff, LogOut } from "lucide-react";
-import { getGuardianDashboardUsers, revokeGuardianLink } from "@/lib/api/guardian";
+import { Shield, MapPin, AlertTriangle, Battery, BatteryFull, BatteryLow, BatteryMedium, Wifi, WifiOff, LogOut, History, Clock, ChevronDown, ChevronUp } from "lucide-react";
+import { getGuardianDashboardUsers, revokeGuardianLink, getUserActivityTimeline } from "@/lib/api/guardian";
 import {
   Dialog,
   DialogContent,
@@ -29,6 +29,14 @@ interface DeviceStatus {
   connectionType?: string;
 }
 
+interface ActivityEvent {
+  id: string;
+  type: string;
+  message: string;
+  timestamp: string;
+  severity: "critical" | "warning" | "safe" | "info";
+}
+
 interface GuardianUser {
   linkId: string;
   userId: string;
@@ -46,6 +54,10 @@ export default function GuardianDashboardPage() {
   const [users, setUsers] = useState<GuardianUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRevoking, setIsRevoking] = useState<string | null>(null);
+  const [expandedUserId, setExpandedUserId] = useState<string | null>(null);
+  const [timelineData, setTimelineData] = useState<Record<string, ActivityEvent[]>>({});
+  const [timelineError, setTimelineError] = useState<Record<string, boolean>>({});
+  const [isLoadingTimeline, setIsLoadingTimeline] = useState<string | null>(null);
 
   const fetchUsers = async () => {
     try {
@@ -53,9 +65,33 @@ export default function GuardianDashboardPage() {
       setUsers(data);
     } catch {
       toast.error("Failed to load your guardian dashboard.");
-
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchTimeline = async (userId: string) => {
+    if (timelineData[userId]) return;
+    
+    setIsLoadingTimeline(userId);
+    setTimelineError(prev => ({ ...prev, [userId]: false }));
+    try {
+      const data = await getUserActivityTimeline(userId);
+      setTimelineData(prev => ({ ...prev, [userId]: data }));
+    } catch {
+      setTimelineError(prev => ({ ...prev, [userId]: true }));
+      toast.error("Failed to load activity history.");
+    } finally {
+      setIsLoadingTimeline(null);
+    }
+  };
+
+  const toggleTimeline = (userId: string) => {
+    if (expandedUserId === userId) {
+      setExpandedUserId(null);
+    } else {
+      setExpandedUserId(userId);
+      fetchTimeline(userId);
     }
   };
 
@@ -74,7 +110,7 @@ export default function GuardianDashboardPage() {
 
   useEffect(() => {
     fetchUsers();
-    // Poll every 30 seconds for MVP
+    // Poll every 30 seconds
     const interval = setInterval(fetchUsers, 30000);
     return () => clearInterval(interval);
   }, []);
@@ -222,10 +258,76 @@ export default function GuardianDashboardPage() {
                       </div>
                     </div>
                   ) : (
-                    <div className="flex justify-center mt-4">
-                      <span className="text-xs text-muted-foreground opacity-60">No recent device telemetry</span>
+                    <div className="flex justify-center mt-4 text-xs font-medium text-muted-foreground opacity-60">
+                      No recent device telemetry
                     </div>
                   )}
+
+                  <div className="mt-6 pt-2 border-t border-border/50">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="w-full h-8 text-[11px] uppercase tracking-wider font-bold text-muted-foreground hover:text-primary transition-colors flex justify-between px-2"
+                      onClick={() => toggleTimeline(u.userId)}
+                    >
+                      <span className="flex items-center gap-2">
+                        <History className="w-3 h-3" /> Recent Activity
+                      </span>
+                      {expandedUserId === u.userId ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                    </Button>
+
+                    {expandedUserId === u.userId && (
+                      <div className="mt-3 space-y-3 animate-in slide-in-from-top-1 duration-200">
+                        {isLoadingTimeline === u.userId ? (
+                          <div className="space-y-2 py-2">
+                             {[...Array(2)].map((_, i) => <Skeleton key={i} className="h-8 w-full rounded" />)}
+                          </div>
+                        ) : timelineError[u.userId] ? (
+                          <div className="text-[10px] text-center py-4 space-y-2">
+                            <p className="text-destructive font-medium">Failed to load history</p>
+                            <Button 
+                              variant="link" 
+                              size="sm" 
+                              className="h-auto p-0 text-[10px] text-primary underline"
+                              onClick={() => {
+                                setTimelineData(prev => {
+                                  const newState = { ...prev };
+                                  delete newState[u.userId];
+                                  return newState;
+                                });
+                                fetchTimeline(u.userId);
+                              }}
+                            >
+                              Tap to retry
+                            </Button>
+                          </div>
+                        ) : !timelineData[u.userId] || timelineData[u.userId].length === 0 ? (
+                          <div className="text-[10px] text-center py-4 text-muted-foreground italic">
+                            No recent safety events recorded.
+                          </div>
+                        ) : (
+                          <div className="space-y-3 pl-2 border-l-2 border-muted/50 ml-1.5 py-1">
+                            {timelineData[u.userId].map((event) => (
+                              <div key={event.id} className="relative group">
+                                <div className={`absolute -left-[11px] top-1 w-2 h-2 rounded-full border-2 border-background ${
+                                  event.severity === "critical" ? "bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.5)]" :
+                                  event.severity === "warning" ? "bg-yellow-500" :
+                                  event.severity === "safe" ? "bg-emerald-500" : "bg-primary"
+                                }`} />
+                                <div className="space-y-0.5">
+                                  <p className="text-[11px] font-semibold leading-none">{event.message}</p>
+                                  <div className="flex items-center gap-1.5 text-[9px] text-muted-foreground/80">
+                                    <Clock className="w-2.5 h-2.5" />
+                                    {getRelativeTime(event.timestamp)}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </CardContent>
 
                 <CardFooter className="pt-2 pb-4">
